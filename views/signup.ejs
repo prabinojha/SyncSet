@@ -1,41 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('includes/head', {title: 'Sign Up'}) %>
-<body>
-    <%- include('includes/header') %>
-    <main>
-        <h1>Sign Up</h1>
-        <p>Enter your email and password</p>
-        <form id="signupForm">
-            <input type="email" name="email" placeholder="name@example.com" required>
-            <input type="password" name="password" placeholder="password" required>
-            <button type="submit">Sign Up</button>
-        </form>
-        <p id="message"></p>
-        <p>Already have an account? <a href="/login">Login</a></p>
-    </main>
-    <script>
-        document.getElementById('signupForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const form = event.target;
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
+<%- include('includes/head', {title: 'Sign Up' }) %>
 
-            const response = await fetch('/signup', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
+    <body>
+        <%- include('includes/header') %>
+            <main>
+                <div class="onboardingFormDiv">
+                    <h1>Sign Up</h1>
+                    <form id="signupForm">
+                        <input type="email" name="email" placeholder="name@example.com" required>
+                        <input type="password" name="password" placeholder="password" required>
+                        <button type="submit">Sign Up</button>
+                    </form>
+                    <p class="errorP" id="message"></p>
+                    <p>Already have an account? <a href="/login">Login</a></p>
+                </div>
+            </main>
+            <script>
+                document.getElementById('signupForm').addEventListener('submit', async (event) => {
+                    event.preventDefault();
+                    const form = event.target;
+                    const formData = new FormData(form);
+                    const data = Object.fromEntries(formData.entries());
 
-            const result = await response.json();
-            if (response.ok) {
-                window.location.href = '/overview';
-            } else {
-                document.getElementById('message').textContent = result.error;
-            }
-        });
-    </script>
-</body>
+                    const response = await fetch('/signup', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data),
+                    });
+
+                    const result = await response.json();
+                    if (response.ok) {
+                        window.location.href = '/overview';
+                    } else {
+                        document.getElementById('message').textContent = result.error;
+                    }
+                });
+            </script>
+    </body>
+
 </html>

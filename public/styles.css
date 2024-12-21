@@ -1,7 +1,7 @@
 /* Default styles */
 :root {
-    --primary-blue: ##ebf8ff;
-    --primary-purple: ##9766f9;
+    --primary-light-blue: #ebf8ff;
+    --primary-purple: #9766f9;
     --primary-font: 'Poppins', sans-serif;
 }
 
@@ -20,6 +20,71 @@ body {
 }
 
 #logo {
-    width: 14rem;
+    width: 12rem;
     height: auto;
+    margin: 1rem 3%;
+
+}
+
+/* Error messages */
+
+.errorP {
+    color: red;
+}
+
+/* Header style */
+
+header {
+    background-color: var(--primary-light-blue);
+}
+
+/* Onboarding styles */
+.onboardingFormDiv {
+    padding: 2rem;
+    text-align: center;
+    max-width: 30rem;
+    margin: 0 auto;
+}
+
+.onboardingFormDiv h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.onboardingFormDiv input[type="email"],
+.onboardingFormDiv input[type="password"],
+.onboardingFormDiv button {
+    width: calc(100% - 2rem);
+    padding: 1rem;
+    margin: 0.5rem 0;
+    border-radius: 25px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.onboardingFormDiv input[type="email"],
+.onboardingFormDiv input[type="password"] {
+    border: 1px solid black;
+}
+
+.onboardingFormDiv button {
+    background-color: var(--primary-purple);
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    font-family: var(--primary-font);
+}
+
+.onboardingFormDiv p {
+    margin-top: 1rem;
+}
+
+.onboardingFormDiv a {
+    color: var(--primary-purple);
+    text-decoration: none;
+}
+
+.onboardingFormDiv a:hover {
+    text-decoration: underline;
 }
