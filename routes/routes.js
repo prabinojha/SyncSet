@@ -8,21 +8,19 @@ router.get('/login', async (req, res) => {
 });
 
 router.get('/signup', async (req, res) => {
-  
+  res.render('signup');
 })
 
-router.get('/data', async (req, res) => {
+// Post requests
+
+router.post('/signup', async (req, res) => {
+  const { email, password } = req.body;
   try {
-    const querySnapshot = await db.collection('your-collection').get();
-    const data = querySnapshot.docs.map(doc => doc.data());
-    res.status(200).json(data);
+    
   } catch (error) {
-    res.status(500).send(error.message);
+    res.status(401).send(error.message);
   }
 });
-
-
-// Post requests
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
