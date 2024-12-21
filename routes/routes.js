@@ -1,20 +1,35 @@
 const express = require('express');
 const { auth } = require('../firebase');
-const { createUserWithEmailAndPassword, signInWithEmailAndPassword } = require('firebase/auth');
+const { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } = require('firebase/auth');
 const router = express.Router();
 
+// Middleware to check if user is authenticated
+function checkAuth(req, res, next) {
+  const user = auth.currentUser;
+  if (user) {
+    return res.redirect('/overview');
+  }
+  next();
+}
 
 // GET Requests
-router.get('/login', (req, res) => {
+router.get('/login', checkAuth, (req, res) => {
   res.render('login');
 });
 
-router.get('/signup', (req, res) => {
+router.get('/signup', checkAuth, (req, res) => {
   res.render('signup');
 });
 
-// POST Requests
+router.get('/overview', (req, res) => {
+  const user = auth.currentUser;
+  if (user) {
+    return res.render('overview', { user });
+  }
+  res.redirect('/login');
+});
 
+// POST Requests
 router.post('/signup', async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -32,9 +47,22 @@ router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    res.status(200).json(userCredential.user);
+    res.status(200).json({
+      message: 'Login successful',
+      user: userCredential.user,
+    });
   } catch (error) {
     res.status(401).json({ error: error.message });
+  }
+});
+
+// Logout Route
+router.post('/logout', async (req, res) => {
+  try {
+    await signOut(auth);
+    res.redirect('/login');
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Overview</title>
+  <link rel="stylesheet" href="/styles.css"> <!-- Link to your CSS file -->
+</head>
+<body>
+  <header>
+    <h1>Welcome, <%= user.email %>!</h1>
+  </header>
+  <main>
+    <p>This is your overview page.</p>
+    <!-- Add more content here as needed -->
+    <form action="/logout" method="post">
+      <button type="submit">Logout</button>
+    </form>
+  </main>
+</body>
+</html>
