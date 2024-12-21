@@ -1,0 +1,25 @@
+/* Default styles */
+:root {
+    --primary-blue: ##ebf8ff;
+    --primary-purple: ##9766f9;
+    --primary-font: 'Poppins', sans-serif;
+}
+
+/* Main styles */
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: white;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+#logo {
+    width: 14rem;
+    height: auto;
+}
