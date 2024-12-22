@@ -26,7 +26,7 @@ body main {
 #logo {
     width: 10rem;
     height: auto;
-    margin: 1rem 3%;
+    margin: 1rem 2%;
 }
 
 /* Error messages */
@@ -44,7 +44,7 @@ header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 2rem;
+    padding: 0;
     background-color: var(--primary-light-blue);
 }
 
@@ -53,6 +53,7 @@ header {
     font-size: 1.5rem;
     cursor: pointer;
     margin-left: auto;
+    padding: 0 2rem;
 }
 
 /* Onboarding styles */
@@ -168,24 +169,27 @@ header {
 .sidebar {
     width: 250px;
     background-color: white;
-    border-right: 1px solid #e0e0e0;
-    padding: 2rem 1rem;
+    padding: 1rem 1rem;
     height: calc(100vh - var(--header-height));
     position: fixed;
     left: 0;
+    top: var(--header-height);
     overflow-y: auto;
+    z-index: 1;
+    border: 1px solid #e0e0e0;
 }
 
 .main-content {
-    margin-left: 250px;
-    padding: 2rem;
-    width: 100%;
+    margin-left: 400px;
+    padding: 1rem;
+    width: calc(100% - 250px);
+    min-height: calc(100vh - var(--header-height));
 }
 
 .nav-item {
     display: flex;
     align-items: center;
-    padding: 0.85rem 1rem;
+    padding: 0.75rem 1rem;
     color: #666;
     text-decoration: none;
     border-radius: var(--border-radius);
@@ -193,15 +197,21 @@ header {
     transition: all 0.2s;
 }
 
+.nav-item i, 
+.nav-item svg {
+    margin-right: 1rem;
+    width: 20px;
+    text-align: center;
+}
+
 .nav-item:hover {
-    background-color: #f5f5f5;
+    background-color: #f1f1f1;
     color: #333;
 }
 
 .nav-item.active {
-    background-color: var(--primary-light-blue);
-    color: var(--primary-purple);
-    font-weight: 500;
+    background-color: #ececec;
+    color: #333;
 }
 
 /* Mobile Responsive */
@@ -216,22 +226,21 @@ header {
     }
 
     .sidebar {
-        position: fixed;
-        left: 0;
-        top: var(--header-height);
+        top: 0;
+        height: 100vh;
         transform: translateX(-100%);
-        transition: transform 0.3s ease;
-        z-index: 1000;
-        background-color: white;
-    }
-
-    .sidebar.active {
-        transform: translateX(0);
+        transition: transform 0.5s ease;
+        z-index: 1001;
     }
 
     .main-content {
         margin-left: 0;
+        width: 100%;
         padding: 1rem;
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
     }
 
     .overlay {
