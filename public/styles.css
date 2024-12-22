@@ -22,7 +22,7 @@ body main {
 }
 
 #logo {
-    width: 12rem;
+    width: 10rem;
     height: auto;
     margin: 1rem 3%;
 }
@@ -151,20 +151,14 @@ header {
 
 .sidebar {
     width: 250px;
-    background-color: var(--primary-light-blue);
     padding: 2rem 1rem;
-}
-
-.dashboard-main {
-    flex: 1;
-    padding: 2rem;
-    background-color: #f8f9fa;
+    border: 1px solid #000000;
 }
 
 .nav-item {
     display: flex;
     align-items: center;
-    padding: 1rem;
+    padding: 0.85rem 0.5rem;
     color: #333;
     text-decoration: none;
     border-radius: 0.5rem;
@@ -173,12 +167,12 @@ header {
 }
 
 .nav-item:hover {
-    background-color: rgba(151, 102, 249, 0.1);
+    background-color: rgb(220, 220, 221);
 }
 
 .nav-item.active {
-    background-color: var(--primary-purple);
-    color: white;
+    background-color: var(--primary-light-blue);
+    color: black;
 }
 
 .nav-item i {
