@@ -1,6 +1,7 @@
 const express = require('express');
-const { auth } = require('../firebase');
+const { auth, db } = require('../firebase');
 const { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } = require('firebase/auth');
+const { doc, setDoc } = require('firebase/firestore');
 const router = express.Router();
 
 // Middleware to check if user is authenticated
@@ -34,9 +35,17 @@ router.post('/signup', async (req, res) => {
   const { email, password } = req.body;
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    
+    // Add user to Firestore collection
+    await setDoc(doc(db, 'users', user.uid), {
+      email: user.email,
+      createdAt: new Date()
+    });
+
     res.status(201).json({
       message: 'User created successfully',
-      user: userCredential.user,
+      user: user,
     });
   } catch (error) {
     res.status(400).json({ error: error.message });
