@@ -13,8 +13,8 @@
                         <div id="domainCheckWrapper">
                             <span>syncset.xyz /</span>
                             <div class="domainInputWrapper">
-                                <input type="text" id="domainInput" name="domain" placeholder="your website name"
-                                    required>
+                                <input type="text" id="domainInput" name="domain" placeholder="your custom domain"
+                                    minlength="3" maxlength="40" pattern="[a-zA-Z0-9]+" required>
                                 <span id="domainStatus"></span>
                             </div>
                         </div>
@@ -29,6 +29,9 @@
                 document.getElementById('domainInput').addEventListener('input', async (event) => {
                     const domainInput = event.target;
                     const domainStatus = document.getElementById('domainStatus');
+
+                    // Force lowercase and remove non-alphanumeric characters
+                    domainInput.value = domainInput.value.toLowerCase().replace(/[^a-z0-9]/g, '');
                     const domainValue = domainInput.value.trim();
 
                     // Reset UI if input is empty
