@@ -117,7 +117,10 @@ header {
 
 #domainInput {
     width: 100%;
-    padding: 0.75rem 2.5rem 0.75rem 1rem;
+    padding-left: 1rem;
+    padding-right: 3rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
     border: 1px solid black;
     border-radius: 2rem;
     font-size: 1rem;
@@ -134,6 +137,5 @@ header {
     align-items: center;
     justify-content: center;
     background-color: var(--primary-light-blue);
-    padding: 0 0.5rem;
     z-index: 1;
 }

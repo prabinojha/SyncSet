@@ -33,7 +33,7 @@
 
                     // Reset UI if input is empty
                     if (!domainValue) {
-                        domainStatus.textContent = '';
+                        domainStatus.innerHTML = '';
                         domainInput.setCustomValidity('Domain name cannot be empty.');
                         return;
                     } else {
@@ -46,21 +46,19 @@
                         const { available } = await response.json();
 
                         if (available) {
-                            domainStatus.textContent = '✔️'; // Domain is available
-                            domainStatus.style.color = 'green';
+                            domainStatus.innerHTML = '<img src="/public/tick.png" alt="Available" style="height: 1.5rem;">';
+                            domainInput.setCustomValidity('');
                         } else {
-                            domainStatus.textContent = '❌'; // Domain is taken
-                            domainStatus.style.color = 'red';
+                            domainStatus.innerHTML = '<img src="/public/cross.png" alt="Taken" style="height: 1.5rem;">';
                             domainInput.setCustomValidity('Domain name is already taken.');
                         }
                     } catch (error) {
                         console.error("Error checking domain:", error);
-                        domainStatus.style.color = 'red';
+                        domainStatus.innerHTML = '<img src="/cross.png" alt="Error" style="height: 20px;">';
                         domainInput.setCustomValidity('Error checking domain availability.');
                     }
                 });
 
-                // Form submission
                 document.getElementById('signupForm').addEventListener('submit', async (event) => {
                     event.preventDefault();
                     const form = event.target;
