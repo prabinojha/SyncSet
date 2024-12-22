@@ -55,10 +55,10 @@ router.get('/signup', checkAuth, (req, res) => {
   res.render('signup');
 });
 
-router.get('/overview', (req, res) => {
+router.get('/dashboard', (req, res) => {
   const user = auth.currentUser;
   if (user) {
-    return res.render('overview', { user });
+    return res.render('dashboard', { user });
   }
   res.redirect('/login');
 });

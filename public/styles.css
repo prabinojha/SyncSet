@@ -17,11 +17,14 @@ body {
     margin: 0;
 }
 
+body main {
+    margin: 1rem 3%;
+}
+
 #logo {
     width: 12rem;
     height: auto;
     margin: 1rem 3%;
-
 }
 
 /* Error messages */
