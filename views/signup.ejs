@@ -13,7 +13,8 @@
                         <div id="domainCheckWrapper">
                             <span>syncset.com /</span>
                             <div class="domainInputWrapper">
-                                <input type="text" id="domainInput" name="domain" placeholder="your website name" required>
+                                <input type="text" id="domainInput" name="domain" placeholder="your website name"
+                                    required>
                                 <span id="domainStatus"></span>
                             </div>
                         </div>
@@ -30,30 +31,33 @@
                     const domainStatus = document.getElementById('domainStatus');
                     const domainValue = domainInput.value.trim();
 
-                    // Reset the UI if the input is empty
+                    // Reset UI if input is empty
                     if (!domainValue) {
                         domainStatus.textContent = '';
                         domainInput.setCustomValidity('Domain name cannot be empty.');
                         return;
                     } else {
-                        domainInput.setCustomValidity(''); // Clear any previous validation messages
+                        domainInput.setCustomValidity('');
                     }
 
-                    // Make a request to the server to check domain availability
+                    // Check domain availability
                     try {
                         const response = await fetch(`/check-domain?domain=${encodeURIComponent(domainValue)}`);
                         const { available } = await response.json();
 
                         if (available) {
-                            domainStatus.textContent = '✔️'; // Tick
+                            domainStatus.textContent = '✔️'; // Domain is available
                             domainStatus.style.color = 'green';
                         } else {
-                            domainStatus.textContent = '❌'; // Cross
+                            domainStatus.textContent = '❌'; // Domain is taken
                             domainStatus.style.color = 'red';
                             domainInput.setCustomValidity('Domain name is already taken.');
                         }
                     } catch (error) {
-                        console.error('Error checking domain:', error);
+                        console.error("Error checking domain:", error);
+                        domainStatus.textContent = '❌';
+                        domainStatus.style.color = 'red';
+                        domainInput.setCustomValidity('Error checking domain availability.');
                     }
                 });
 

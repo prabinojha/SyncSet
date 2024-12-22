@@ -13,29 +13,40 @@ function checkAuth(req, res, next) {
   next();
 }
 
+async function checkDomainAvailability(domainValue) {
+  try {
+    const docRef = doc(db, "domains", domainValue);
+    const docSnap = await getDoc(docRef);
+
+    // Check if the document exists
+    if (docSnap.exists()) {
+      return { available: false }; // Domain is taken
+    } else {
+      return { available: true }; // Domain is available
+    }
+  } catch (error) {
+    console.error("Error checking domain:", error);
+    throw error; // Re-throw error to handle it elsewhere
+  }
+}
+
 // GET Requests
 router.get('/check-domain', async (req, res) => {
   const { domain } = req.query;
 
   if (!domain) {
-    return res.status(400).json({ available: false, error: 'Domain is required' });
+    return res.status(400).json({ error: 'Domain name is required' });
   }
 
   try {
-    const docRef = doc(db, 'domains', domain); // Assuming your domains are stored in a Firestore collection
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-      res.json({ available: false }); // Domain exists
-    } else {
-      res.json({ available: true }); // Domain is available
-    }
+    // Use the existing checkDomainAvailability helper function
+    const result = await checkDomainAvailability(domain);
+    res.json(result);
   } catch (error) {
     console.error('Error checking domain:', error);
-    res.status(500).json({ available: false, error: 'Internal server error' });
+    res.status(500).json({ error: 'Failed to check domain' });
   }
 });
-
 
 router.get('/login', checkAuth, (req, res) => {
   res.render('login');
@@ -55,7 +66,18 @@ router.get('/overview', (req, res) => {
 
 // POST Requests
 router.post('/signup', async (req, res) => {
-  const { email, password, subdomain } = req.body;
+  const { email, password, domain: subdomain } = req.body;
+  
+  // Add validation
+  if (!email || !password || !subdomain) {
+    return res.status(400).json({ error: 'Email, password, and subdomain are required' });
+  }
+
+  // Validate that inputs are strings
+  if (typeof email !== 'string' || typeof password !== 'string' || typeof subdomain !== 'string') {
+    return res.status(400).json({ error: 'Invalid input types' });
+  }
+
   try {
     // Check if subdomain exists
     const domainDoc = doc(db, 'domains', subdomain);
@@ -85,8 +107,7 @@ router.post('/signup', async (req, res) => {
       user: user,
     });
   } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
+    res.status(400).json({ error: error.message });  }
 });
 
 router.post('/login', async (req, res) => {
