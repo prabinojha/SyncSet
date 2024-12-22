@@ -1,3 +1,25 @@
 <header>
-    <img id="logo" src="/public/logo.png" alt="SyncSet Logo">
+    <div class="hamburger-menu">
+        <i class="fas fa-bars"></i>
+    </div>
+    <img src="/public/logo.png" alt="Logo" id="logo">
 </header>
+<div class="overlay"></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const hamburger = document.querySelector('.hamburger-menu');
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.overlay');
+
+        hamburger.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        });
+
+        overlay.addEventListener('click', function() {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+    });
+</script>
