@@ -1,7 +1,7 @@
 const express = require('express');
 const { auth, db } = require('../firebase');
 const { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } = require('firebase/auth');
-const { doc, setDoc } = require('firebase/firestore');
+const { doc, setDoc, getDoc } = require('firebase/firestore');
 const router = express.Router();
 
 // Middleware to check if user is authenticated
@@ -14,6 +14,29 @@ function checkAuth(req, res, next) {
 }
 
 // GET Requests
+router.get('/check-domain', async (req, res) => {
+  const { domain } = req.query;
+
+  if (!domain) {
+    return res.status(400).json({ available: false, error: 'Domain is required' });
+  }
+
+  try {
+    const docRef = doc(db, 'domains', domain); // Assuming your domains are stored in a Firestore collection
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      res.json({ available: false }); // Domain exists
+    } else {
+      res.json({ available: true }); // Domain is available
+    }
+  } catch (error) {
+    console.error('Error checking domain:', error);
+    res.status(500).json({ available: false, error: 'Internal server error' });
+  }
+});
+
+
 router.get('/login', checkAuth, (req, res) => {
   res.render('login');
 });
@@ -32,15 +55,29 @@ router.get('/overview', (req, res) => {
 
 // POST Requests
 router.post('/signup', async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, subdomain } = req.body;
   try {
+    // Check if subdomain exists
+    const domainDoc = doc(db, 'domains', subdomain);
+    const domainSnap = await getDoc(domainDoc);
+
+    if (domainSnap.exists()) {
+      return res.status(400).json({ error: 'Subdomain already taken.' });
+    }
+
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
-    
+
     // Add user to Firestore collection
     await setDoc(doc(db, 'users', user.uid), {
       email: user.email,
-      createdAt: new Date()
+      createdAt: new Date(),
+      subdomain,
+    });
+
+    // Add subdomain to Firestore
+    await setDoc(domainDoc, {
+      uid: user.uid,
     });
 
     res.status(201).json({

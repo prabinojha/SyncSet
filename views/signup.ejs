@@ -10,6 +10,13 @@
                     <form id="signupForm">
                         <input type="email" name="email" placeholder="name@example.com" required>
                         <input type="password" name="password" placeholder="password" required>
+                        <div id="domainCheckWrapper">
+                            <span>syncset.com /</span>
+                            <div class="domainInputWrapper">
+                                <input type="text" id="domainInput" name="domain" placeholder="your website name" required>
+                                <span id="domainStatus"></span>
+                            </div>
+                        </div>
                         <button type="submit">Sign Up</button>
                     </form>
                     <p class="errorP" id="message"></p>
@@ -17,6 +24,40 @@
                 </div>
             </main>
             <script>
+                // Domain availability check
+                document.getElementById('domainInput').addEventListener('input', async (event) => {
+                    const domainInput = event.target;
+                    const domainStatus = document.getElementById('domainStatus');
+                    const domainValue = domainInput.value.trim();
+
+                    // Reset the UI if the input is empty
+                    if (!domainValue) {
+                        domainStatus.textContent = '';
+                        domainInput.setCustomValidity('Domain name cannot be empty.');
+                        return;
+                    } else {
+                        domainInput.setCustomValidity(''); // Clear any previous validation messages
+                    }
+
+                    // Make a request to the server to check domain availability
+                    try {
+                        const response = await fetch(`/check-domain?domain=${encodeURIComponent(domainValue)}`);
+                        const { available } = await response.json();
+
+                        if (available) {
+                            domainStatus.textContent = '✔️'; // Tick
+                            domainStatus.style.color = 'green';
+                        } else {
+                            domainStatus.textContent = '❌'; // Cross
+                            domainStatus.style.color = 'red';
+                            domainInput.setCustomValidity('Domain name is already taken.');
+                        }
+                    } catch (error) {
+                        console.error('Error checking domain:', error);
+                    }
+                });
+
+                // Form submission
                 document.getElementById('signupForm').addEventListener('submit', async (event) => {
                     event.preventDefault();
                     const form = event.target;

@@ -56,7 +56,7 @@ header {
 .onboardingFormDiv button {
     width: calc(100% - 2rem);
     margin: 0.5rem 0;
-    border-radius: 25px;
+    border-radius: 2rem;
     font-size: 1rem;
     box-sizing: border-box;
     font-family: var(--primary-font);
@@ -88,4 +88,45 @@ header {
 
 .onboardingFormDiv a:hover {
     text-decoration: underline;
+}
+
+/* Domain check onboarding */
+
+#domainCheckWrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 8px;
+}
+
+#domainCheckWrapper span {
+    font-weight: 600;
+}
+
+.domainInputWrapper {
+    position: relative;
+    flex: 1;
+}
+
+#domainInput {
+    width: 100%;
+    padding: 0.75rem;
+    padding-left: 1rem;
+    border: 1px solid #000000;
+    border-radius: 9999px;
+    font-size: 1rem;
+    outline: none;
+    transition: all 1s ease;
+    background-color: var(--primary-light-blue);
+    font-family: var(--primary-font);
+}
+
+#domainStatus {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
