@@ -13,20 +13,20 @@ function checkAuth(req, res, next) {
   next();
 }
 
+// Function to check if a domain upon onboarding is available
 async function checkDomainAvailability(domainValue) {
   try {
     const docRef = doc(db, "domains", domainValue);
     const docSnap = await getDoc(docRef);
 
-    // Check if the document exists
     if (docSnap.exists()) {
-      return { available: false }; // Domain is taken
+      return { available: false };
     } else {
-      return { available: true }; // Domain is available
+      return { available: true };
     }
   } catch (error) {
     console.error("Error checking domain:", error);
-    throw error; // Re-throw error to handle it elsewhere
+    throw error;
   }
 }
 
@@ -39,7 +39,6 @@ router.get('/check-domain', async (req, res) => {
   }
 
   try {
-    // Use the existing checkDomainAvailability helper function
     const result = await checkDomainAvailability(domain);
     res.json(result);
   } catch (error) {
@@ -68,18 +67,7 @@ router.get('/overview', (req, res) => {
 router.post('/signup', async (req, res) => {
   const { email, password, domain: subdomain } = req.body;
   
-  // Add validation
-  if (!email || !password || !subdomain) {
-    return res.status(400).json({ error: 'Email, password, and subdomain are required' });
-  }
-
-  // Validate that inputs are strings
-  if (typeof email !== 'string' || typeof password !== 'string' || typeof subdomain !== 'string') {
-    return res.status(400).json({ error: 'Invalid input types' });
-  }
-
   try {
-    // Check if subdomain exists
     const domainDoc = doc(db, 'domains', subdomain);
     const domainSnap = await getDoc(domainDoc);
 
@@ -90,14 +78,12 @@ router.post('/signup', async (req, res) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    // Add user to Firestore collection
     await setDoc(doc(db, 'users', user.uid), {
       email: user.email,
       createdAt: new Date(),
       subdomain,
     });
 
-    // Add subdomain to Firestore
     await setDoc(domainDoc, {
       uid: user.uid,
     });

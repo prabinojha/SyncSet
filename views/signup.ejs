@@ -55,7 +55,6 @@
                         }
                     } catch (error) {
                         console.error("Error checking domain:", error);
-                        domainStatus.textContent = '❌';
                         domainStatus.style.color = 'red';
                         domainInput.setCustomValidity('Error checking domain availability.');
                     }
