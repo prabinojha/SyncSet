@@ -55,24 +55,25 @@ header {
 .onboardingFormDiv input[type="password"],
 .onboardingFormDiv button {
     width: calc(100% - 2rem);
-    padding: 1rem;
     margin: 0.5rem 0;
     border-radius: 25px;
     font-size: 1rem;
     box-sizing: border-box;
+    font-family: var(--primary-font);
 }
 
 .onboardingFormDiv input[type="email"],
 .onboardingFormDiv input[type="password"] {
     border: 1px solid black;
+    padding: 1rem;
 }
 
 .onboardingFormDiv button {
     background-color: var(--primary-purple);
+    padding: 0.75rem;
     color: white;
     border: none;
     cursor: pointer;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
     font-family: var(--primary-font);
 }
 
