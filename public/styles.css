@@ -58,6 +58,7 @@ header {
     font-size: 1rem;
     box-sizing: border-box;
     font-family: var(--primary-font);
+    outline: none;
 }
 
 .onboardingFormDiv input[type="email"],
@@ -116,14 +117,13 @@ header {
 
 #domainInput {
     width: 100%;
-    padding: 0.75rem 1rem;
+    padding: 0.75rem 2.5rem 0.75rem 1rem;
     border: 1px solid black;
     border-radius: 2rem;
     font-size: 1rem;
     background-color: var(--primary-light-blue);
     outline: none;
     font-family: var(--primary-font);
-    height: 3rem;
     box-sizing: border-box;
 }
 
@@ -133,4 +133,7 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: var(--primary-light-blue);
+    padding: 0 0.5rem;
+    z-index: 1;
 }
