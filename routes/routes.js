@@ -55,12 +55,23 @@ router.get('/signup', checkAuth, (req, res) => {
   res.render('signup');
 });
 
-router.get('/dashboard', (req, res) => {
+router.get('/dashboard/:section?', (req, res) => {
   const user = auth.currentUser;
-  if (user) {
-    return res.render('dashboard', { user });
+  if (!user) {
+    return res.redirect('/login');
   }
-  res.redirect('/login');
+
+  const section = req.params.section || 'overview';
+  const validSections = ['overview', 'calendar', 'analytics', 'services'];
+  
+  if (!validSections.includes(section)) {
+    return res.redirect('/dashboard/overview');
+  }
+
+  res.render('dashboard', { 
+    user,
+    active: section
+  });
 });
 
 // POST Requests
