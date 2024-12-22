@@ -33,7 +33,7 @@
 
                 const result = await response.json();
                 if (response.ok) {
-                    window.location.href = '/overview';
+                    window.location.href = '/dashboard';
                 } else {
                     document.getElementById('message').textContent = result.error;
                 }
