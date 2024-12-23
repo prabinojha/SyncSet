@@ -78,6 +78,38 @@ router.get('/dashboard/:section?', (req, res) => {
   });
 });
 
+// Route for accessing urls eg. syncset.xyz/website
+// first check if the subdomain is in the database
+// if it is, redirect to the website
+// if it is not, redirect to the 404 page
+router.get('/:subdomain', async (req, res) => {
+  const { subdomain } = req.params;
+  const domainDoc = doc(db, 'domains', subdomain);
+  const domainSnap = await getDoc(domainDoc);
+  
+  if (domainSnap.exists()) {
+    // Get the user ID from the domain document
+    const userId = domainSnap.data().uid;
+    
+    // Fetch the user document to get the email
+    const userDoc = doc(db, 'users', userId);
+    const userSnap = await getDoc(userDoc);
+    
+    if (userSnap.exists()) {
+      // Render a new view for the subdomain page with the user's email
+      res.render('subdomain', {
+        subdomain,
+        email: userSnap.data().email
+      });
+    } else {
+      res.status(404).render('404');
+    }
+  } else {
+    res.status(404).render('404');
+  }
+});
+
+
 // POST Requests
 router.post('/signup', async (req, res) => {
   const { email, password, domain: subdomain } = req.body;
