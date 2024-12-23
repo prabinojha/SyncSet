@@ -1,7 +1,11 @@
 /* Default styles */
 :root {
-    --primary-light-blue: #ebf8ff;
     --primary-purple: #9766f9;
+    --primary-light-purple: #ddc0fb;
+    --primary-blue: #30abf7;
+    --primary-light-blue: #ebf8ff;
+    --primary-dark-blue: #002c45;
+    --light-grey: #e6e6e6;
     --primary-font: 'Poppins', sans-serif;
     --border-radius: 0.5rem;
     --header-height: 70px;
@@ -214,13 +218,13 @@ header {
 }
 
 .nav-item:hover {
-    background-color: #ececec;
-    color: #333;
+    background-color: var(--light-grey);
+    color: #666;
 }
 
 .nav-item.active {
-    background-color: #ececec;
-    color: #333;
+    background-color: var(--primary-dark-blue);
+    color: white;
 }
 
 /* Mobile Responsive */
@@ -266,4 +270,11 @@ header {
     .overlay.active {
         display: block;
     }
+}
+
+/* Dashboard Content */
+
+.dashboardTitle {
+    font-size: 2rem;
+    color: var(--primary-dark-blue);
 }
