@@ -55,6 +55,10 @@ router.get('/signup', checkAuth, (req, res) => {
   res.render('signup');
 });
 
+router.get('/', (req, res) => {
+  res.redirect('/dashboard');
+});
+
 router.get('/dashboard/:section?', (req, res) => {
   const user = auth.currentUser;
   if (!user) {
@@ -128,6 +132,10 @@ router.post('/logout', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+});
+
+router.get('*', (req, res) => {
+  res.status(404).render('404');
 });
 
 module.exports = router;

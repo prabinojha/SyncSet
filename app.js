@@ -13,4 +13,8 @@ app.set('view engine', 'ejs');
 
 app.use(routes);
 
+app.use(function (error, req, res, next) {
+    res.status(500).render('500');
+  });
+
 app.listen(3000);

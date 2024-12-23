@@ -24,16 +24,29 @@ body {
     margin: 0;
 }
 
+#anchorLogo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    margin: 1rem 2%;
+}
+
 #logo {
     width: 10rem;
     height: auto;
-    margin: 1rem 2%;
+    cursor: pointer;
 }
 
 /* Error messages */
 
 .errorP {
     color: red;
+}
+
+.errorHandlerMain {
+    padding: 2rem;
+    text-align: center;
+    margin: calc(var(--header-height) + 1rem) auto;
 }
 
 /* Header style */
