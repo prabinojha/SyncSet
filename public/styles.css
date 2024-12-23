@@ -5,7 +5,7 @@
     --primary-blue: #30abf7;
     --primary-light-blue: #ebf8ff;
     --primary-dark-blue: #002c45;
-    --light-grey: #e6e6e6;
+    --light-grey: #e1e0e0;
     --primary-font: 'Poppins', sans-serif;
     --border-radius: 0.5rem;
     --header-height: 70px;
@@ -41,7 +41,7 @@ body {
 header {
     background-color: white;
     height: var(--header-height);
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--light-grey);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -183,7 +183,7 @@ header {
     top: var(--header-height);
     overflow-y: auto;
     z-index: 1000;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--light-grey);
     box-sizing: border-box;
 }
 
@@ -223,8 +223,8 @@ header {
 }
 
 .nav-item.active {
-    background-color: var(--primary-dark-blue);
-    color: white;
+    background-color: var(--light-grey);
+    color: var(--primary-dark-blue);
 }
 
 /* Mobile Responsive */
