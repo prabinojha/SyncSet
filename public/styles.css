@@ -5,6 +5,7 @@
     --primary-font: 'Poppins', sans-serif;
     --border-radius: 0.5rem;
     --header-height: 70px;
+    --sidebar-width: 250px;
 }
 
 /* Main styles */
@@ -17,10 +18,6 @@ body {
     font-family: 'Poppins', sans-serif;
     background-color: white;
     margin: 0;
-}
-
-body main {
-    margin: 1rem 3%;
 }
 
 #logo {
@@ -46,6 +43,10 @@ header {
     justify-content: space-between;
     padding: 0;
     background-color: var(--primary-light-blue);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
 }
 
 .hamburger-menu {
@@ -61,7 +62,7 @@ header {
     padding: 2rem;
     text-align: center;
     max-width: 30rem;
-    margin: 0 auto;
+    margin: calc(var(--header-height) + 1rem) auto;
 }
 
 .onboardingFormDiv h1 {
@@ -164,10 +165,12 @@ header {
 .dashboard-container {
     display: flex;
     min-height: calc(100vh - var(--header-height));
+    margin-top: var(--header-height);
+    position: relative;
 }
 
 .sidebar {
-    width: 250px;
+    width: var(--sidebar-width);
     background-color: white;
     padding: 1rem 1rem;
     height: calc(100vh - var(--header-height));
@@ -177,13 +180,19 @@ header {
     overflow-y: auto;
     z-index: 1000;
     border: 1px solid #e0e0e0;
+    box-sizing: border-box;
 }
 
-.main-content {
-    margin-left: 400px;
+.dashboard-main {
+    flex: 1;
+    margin-left: var(--sidebar-width);
     padding: 1rem;
-    width: calc(100% - 250px);
+    box-sizing: border-box;
+    width: calc(100% - var(--sidebar-width));
     min-height: calc(100vh - var(--header-height));
+    background-color: white;
+    position: relative;
+    z-index: 1;
 }
 
 .nav-item {
@@ -233,7 +242,7 @@ header {
         z-index: 1001;
     }
 
-    .main-content {
+    .dashboard-main {
         margin-left: 0;
         width: 100%;
         padding: 1rem;
