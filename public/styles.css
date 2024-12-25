@@ -462,9 +462,11 @@ header {
 /* Dashboard Content */
 .overview-container {
     display: flex;
-    height: calc(100vh - var(--header-height));
+    height: calc(100vh - var(--header-height) - 2rem);
     width: 100%;
     gap: 1rem;
+    padding: 1rem;
+    box-sizing: border-box;
 }
 
 .overview-section,
@@ -476,14 +478,19 @@ header {
     border: 1px solid var(--light-grey);
     display: flex;
     flex-direction: column;
-    height: 100%;
+}
+
+.overview-section h1,
+.preview-section h1 {
+    margin: 0;
+    margin-bottom: 1rem;
 }
 
 .overview-content,
 .preview-content {
     flex: 1;
     overflow-y: auto;
-    margin-top: 1rem;
+    height: calc(100% - 3rem);
 }
 
 .preview-content {
@@ -504,12 +511,12 @@ header {
 @media (max-width: 768px) {
     .overview-container {
         flex-direction: column;
-        height: auto;
+        height: calc(100vh - var(--header-height) - 2rem);
     }
 
     .overview-section,
     .preview-section {
-        height: calc((100vh - var(--header-height)) / 2);
+        height: calc(50% - 0.5rem);
     }
 }
 
