@@ -459,23 +459,20 @@ header {
     margin: 2rem auto;
 }
 
-/* Dashboard Content */
+/* Overview Content */
 .overview-container {
     display: flex;
     height: calc(100vh - var(--header-height) - 2rem);
     width: 100%;
     gap: 1rem;
-    padding: 1rem;
     box-sizing: border-box;
 }
 
 .overview-section,
 .preview-section {
     flex: 1;
-    padding: 1rem;
     background-color: white;
     border-radius: var(--border-radius);
-    border: 1px solid var(--light-grey);
     display: flex;
     flex-direction: column;
 }
@@ -484,6 +481,10 @@ header {
 .preview-section h1 {
     margin: 0;
     margin-bottom: 1rem;
+}
+
+.preview-section {
+    text-align: center;
 }
 
 .overview-content,
@@ -495,14 +496,14 @@ header {
 
 .preview-content {
     position: relative;
-    background-color: var(--light-grey);
     border-radius: var(--border-radius);
+    box-shadow: 0 0 15px var(--light-grey);
 }
 
 #previewFrame {
     width: 100%;
     height: 100%;
-    border: none;
+    border: 1px solid var(--light-grey);
     border-radius: var(--border-radius);
     background-color: white;
 }
@@ -517,6 +518,10 @@ header {
     .overview-section,
     .preview-section {
         height: calc(50% - 0.5rem);
+    }
+
+    .preview-section h1 {
+        display: none;
     }
 }
 
