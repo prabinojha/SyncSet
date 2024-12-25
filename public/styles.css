@@ -73,6 +73,7 @@ header {
     margin-left: auto;
     padding: 0 2rem;
 }
+
 #publishButton {
     background-color: white;
     color: var(--primary-purple);
@@ -123,6 +124,121 @@ header {
         rgba(var(--primary-purple), 0.8)
     );
     background-color: white;
+}
+
+.header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 0 1rem;
+}
+
+.icon-button {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: var(--primary-purple);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.icon-button:hover {
+    background-color: var(--primary-light-purple);
+}
+
+.share-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+
+.share-overlay.active {
+    display: flex;
+}
+
+.share-modal {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    width: 90%;
+    max-width: 500px;
+    margin: 0 2rem;
+}
+
+.share-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.share-header h3 {
+    margin: 0;
+    color: var(--primary-dark-blue);
+}
+
+.close-share {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+}
+
+.url-container {
+    display: flex;
+    gap: 0.5rem;
+}
+
+#shareUrl {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid var(--primary-dark-blue);
+    border-radius: var(--border-radius);
+    font-family: var(--primary-font);
+    background-color: var(--primary-light-blue);
+    outline: none;
+}
+
+#copyButton {
+    background-color: var(--primary-purple);
+    color: white;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#copyButton:hover {
+    background-color: var(--primary-dark-blue);
+}
+
+/* Update mobile styles */
+@media (max-width: 768px) {
+    .header-buttons {
+        margin-right: 0;
+        gap: 0.5rem;
+    }
+    
+    .share-modal {
+        width: 90%;
+        padding: 1.5rem;
+    }
 }
 
 /* Onboarding styles */

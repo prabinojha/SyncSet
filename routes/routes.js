@@ -88,6 +88,25 @@ router.get('/dashboard/:section?', async (req, res) => {
   }
 });
 
+router.get('/get-share-url', async (req, res) => {
+  const user = auth.currentUser;
+  if (!user) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  try {
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    const subdomain = userDoc.data().subdomain;
+    
+    res.json({ 
+      subdomain,
+      fullUrl: `${req.protocol}://${req.get('host')}/${subdomain}`
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to get share URL' });
+  }
+});
+
 // Route for accessing urls eg. syncset.xyz/website
 router.get('/:subdomain', async (req, res) => {
   const { subdomain } = req.params;
@@ -115,7 +134,6 @@ router.get('/:subdomain', async (req, res) => {
     res.status(404).render('404');
   }
 });
-
 
 // POST Requests
 router.post('/signup', async (req, res) => {
