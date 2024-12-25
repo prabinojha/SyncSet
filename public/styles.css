@@ -114,7 +114,7 @@ header {
 }
 
 #publishButton:hover {
-    transform: scale(1.05);
+    transform: scale(1.02);
     box-shadow: 0 0 5px var(--primary-purple);
     border-color: var(--primary-purple);
     background: linear-gradient(
