@@ -89,9 +89,6 @@ router.get('/dashboard/:section?', async (req, res) => {
 });
 
 // Route for accessing urls eg. syncset.xyz/website
-// first check if the subdomain is in the database
-// if it is, redirect to the website
-// if it is not, redirect to the 404 page
 router.get('/:subdomain', async (req, res) => {
   const { subdomain } = req.params;
   const domainDoc = doc(db, 'domains', subdomain);

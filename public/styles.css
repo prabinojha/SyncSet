@@ -7,7 +7,7 @@
     --primary-dark-blue: #002c45;
     --light-grey: #e1e0e0;
     --primary-font: 'Poppins', sans-serif;
-    --border-radius: 0.5rem;
+    --border-radius: 8px;
     --header-height: 70px;
     --sidebar-width: 250px;
 }
@@ -72,6 +72,57 @@ header {
     cursor: pointer;
     margin-left: auto;
     padding: 0 2rem;
+}
+#publishButton {
+    background-color: white;
+    color: var(--primary-purple);
+    border: 1px solid var(--primary-purple);
+    cursor: pointer;
+    font-family: var(--primary-font);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    margin-right: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+#publishButton::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(255, 255, 255, 0.503),
+        transparent
+    );
+    transform: rotate(45deg);
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    0% {
+        transform: translateX(-100%) rotate(45deg);
+    }
+    100% {
+        transform: translateX(100%) rotate(45deg);
+    }
+}
+
+#publishButton:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 5px var(--primary-purple);
+    border-color: var(--primary-purple);
+    background: linear-gradient(
+        45deg,
+        var(--primary-purple),
+        rgba(var(--primary-purple), 0.8)
+    );
+    background-color: white;
 }
 
 /* Onboarding styles */
