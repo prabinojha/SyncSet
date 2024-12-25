@@ -3,7 +3,7 @@
     --primary-purple: #9766f9;
     --primary-light-purple: #ddc0fb;
     --primary-blue: #30abf7;
-    --primary-light-blue: #ebf8ff;
+    --primary-light-blue: #d5f0fc;
     --primary-dark-blue: #002c45;
     --light-grey: #e1e0e0;
     --primary-font: 'Poppins', sans-serif;
@@ -129,28 +129,28 @@ header {
 .header-buttons {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.5rem;
     margin: 0 1rem;
 }
 
-.icon-button {
-    background: none;
-    border: none;
-    font-size: 1.2rem;
-    color: var(--primary-purple);
+.share-button {
+    background-color: white;
+    color: var(--primary-dark-blue);
+    border: 1px solid var(--primary-dark-blue);
     cursor: pointer;
-    padding: 0.5rem;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
+    font-family: var(--primary-font);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 0.5rem;
+    position: relative;
+    overflow: hidden;
     transition: all 0.3s ease;
 }
 
-.icon-button:hover {
-    background-color: var(--primary-light-purple);
+.share-button:hover {
+    background-color: rgb(241, 241, 241);
 }
 
 .share-overlay {
@@ -232,7 +232,7 @@ header {
 @media (max-width: 768px) {
     .header-buttons {
         margin-right: 0;
-        gap: 0.5rem;
+        gap: 0.1rem;
     }
     
     .share-modal {
@@ -457,4 +457,8 @@ header {
 .dashboardTitle {
     font-size: 2rem;
     color: var(--primary-dark-blue);
+}
+
+.icon-button {
+    display: none;
 }

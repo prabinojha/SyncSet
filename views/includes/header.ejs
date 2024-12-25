@@ -7,8 +7,9 @@
     </a>
     <% if (locals.user && locals.domainData) { %>
         <div class="header-buttons">
-            <button id="shareButton" class="icon-button">
+            <button id="shareButton" class="share-button">
                 <i class="fas fa-share-alt"></i>
+                Share
             </button>
             <button id="publishButton" class="<%= domainData.published ? 'unpublish' : 'publish' %>">
                 <%= domainData.published ? 'Unpublish' : 'Publish' %>
