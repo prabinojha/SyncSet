@@ -113,15 +113,20 @@ router.get('/get-share-url', async (req, res) => {
 router.get('/:subdomain', async (req, res) => {
   const { subdomain } = req.params;
   const isPreview = req.query.preview === 'true';
+  const currentUser = auth.currentUser;
+  
   const domainDoc = doc(db, 'domains', subdomain);
   const domainSnap = await getDoc(domainDoc);
   
   if (domainSnap.exists()) {
-    if (!domainSnap.data().published && !isPreview) {
+    const domainData = domainSnap.data();
+    
+    if (!domainData.published && 
+        (!isPreview || !currentUser || domainData.uid !== currentUser.uid)) {
       return res.render('unpublished');
     }
 
-    const userId = domainSnap.data().uid;
+    const userId = domainData.uid;
     const userDoc = doc(db, 'users', userId);
     const userSnap = await getDoc(userDoc);
     
