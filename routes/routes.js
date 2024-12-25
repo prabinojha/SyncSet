@@ -69,6 +69,7 @@ router.get('/dashboard/:section?', async (req, res) => {
     const userDoc = await getDoc(doc(db, 'users', user.uid));
     const subdomain = userDoc.data().subdomain;
     const domainDoc = await getDoc(doc(db, 'domains', subdomain));
+    const userSubdomain = userDoc.data().subdomain;
 
     const section = req.params.section || 'overview';
     const validSections = ['overview', 'calendar', 'analytics', 'services'];
@@ -80,7 +81,8 @@ router.get('/dashboard/:section?', async (req, res) => {
     res.render('dashboard', { 
       user,
       active: section,
-      domainData: domainDoc.data()
+      domainData: domainDoc.data(),
+      userSubdomain: userSubdomain
     });
   } catch (error) {
     console.error('Error fetching domain data:', error);

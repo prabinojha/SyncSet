@@ -460,8 +460,57 @@ header {
 }
 
 /* Dashboard Content */
+.overview-container {
+    display: flex;
+    height: calc(100vh - var(--header-height));
+    width: 100%;
+    gap: 1rem;
+}
 
+.overview-section,
+.preview-section {
+    flex: 1;
+    padding: 1rem;
+    background-color: white;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--light-grey);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
 
+.overview-content,
+.preview-content {
+    flex: 1;
+    overflow-y: auto;
+    margin-top: 1rem;
+}
 
+.preview-content {
+    position: relative;
+    background-color: var(--light-grey);
+    border-radius: var(--border-radius);
+}
+
+#previewFrame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: var(--border-radius);
+    background-color: white;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+    .overview-container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .overview-section,
+    .preview-section {
+        height: calc((100vh - var(--header-height)) / 2);
+    }
+}
 
 /* Subdomain styles */
