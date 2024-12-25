@@ -3,7 +3,7 @@
     --primary-purple: #9766f9;
     --primary-light-purple: #ddc0fb;
     --primary-blue: #30abf7;
-    --primary-light-blue: #d5f0fc;
+    --primary-light-blue: #e1f5ff;
     --primary-dark-blue: #002c45;
     --light-grey: #e1e0e0;
     --primary-font: 'Poppins', sans-serif;
@@ -450,6 +450,13 @@ header {
     .overlay.active {
         display: block;
     }
+}
+
+.unpublishedContainer {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin: 2rem auto;
 }
 
 /* Dashboard Content */
