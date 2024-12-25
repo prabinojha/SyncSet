@@ -59,23 +59,33 @@ router.get('/', (req, res) => {
   res.redirect('/dashboard');
 });
 
-router.get('/dashboard/:section?', (req, res) => {
+router.get('/dashboard/:section?', async (req, res) => {
   const user = auth.currentUser;
   if (!user) {
     return res.redirect('/login');
   }
 
-  const section = req.params.section || 'overview';
-  const validSections = ['overview', 'calendar', 'analytics', 'services'];
-  
-  if (!validSections.includes(section)) {
-    return res.redirect('/dashboard/overview');
-  }
+  try {
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    const subdomain = userDoc.data().subdomain;
+    const domainDoc = await getDoc(doc(db, 'domains', subdomain));
 
-  res.render('dashboard', { 
-    user,
-    active: section
-  });
+    const section = req.params.section || 'overview';
+    const validSections = ['overview', 'calendar', 'analytics', 'services'];
+    
+    if (!validSections.includes(section)) {
+      return res.redirect('/dashboard/overview');
+    }
+
+    res.render('dashboard', { 
+      user,
+      active: section,
+      domainData: domainDoc.data()
+    });
+  } catch (error) {
+    console.error('Error fetching domain data:', error);
+    res.status(500).render('error');
+  }
 });
 
 // Route for accessing urls eg. syncset.xyz/website
@@ -88,15 +98,15 @@ router.get('/:subdomain', async (req, res) => {
   const domainSnap = await getDoc(domainDoc);
   
   if (domainSnap.exists()) {
-    // Get the user ID from the domain document
+    if (!domainSnap.data().published) {
+      return res.render('unpublished');
+    }
+
     const userId = domainSnap.data().uid;
-    
-    // Fetch the user document to get the email
     const userDoc = doc(db, 'users', userId);
     const userSnap = await getDoc(userDoc);
     
     if (userSnap.exists()) {
-      // Render a new view for the subdomain page with the user's email
       res.render('subdomain', {
         subdomain,
         email: userSnap.data().email
@@ -133,6 +143,7 @@ router.post('/signup', async (req, res) => {
 
     await setDoc(domainDoc, {
       uid: user.uid,
+      published: false
     });
 
     res.status(201).json({
@@ -161,6 +172,34 @@ router.post('/logout', async (req, res) => {
   try {
     await signOut(auth);
     res.redirect('/login');
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post('/toggle-publish', async (req, res) => {
+  const user = auth.currentUser;
+  if (!user) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  try {
+    // Get user's domain
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    const subdomain = userDoc.data().subdomain;
+    
+    // Get domain document
+    const domainDoc = doc(db, 'domains', subdomain);
+    const domainSnap = await getDoc(domainDoc);
+    
+    // Toggle published status
+    const newPublishedStatus = !domainSnap.data().published;
+    await setDoc(domainDoc, { 
+      ...domainSnap.data(),
+      published: newPublishedStatus 
+    });
+
+    res.json({ published: newPublishedStatus });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

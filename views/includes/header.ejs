@@ -5,6 +5,11 @@
     <a id="anchorLogo" href="/dashboard">
         <img src="/public/logo.png" alt="Logo" id="logo">
     </a>
+    <% if (locals.user && locals.domainData) { %>
+        <button id="publishButton" class="<%= domainData.published ? 'unpublish' : 'publish' %>">
+            <%= domainData.published ? 'Unpublish' : 'Publish' %>
+        </button>
+    <% } %>
 </header>
 <div class="overlay"></div>
 
@@ -24,4 +29,22 @@
             overlay.classList.remove('active');
         });
     });
+
+    // Add publish button functionality
+    const publishButton = document.getElementById('publishButton');
+    if (publishButton) {
+        publishButton.addEventListener('click', async function() {
+            const response = await fetch('/toggle-publish', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                publishButton.textContent = data.published ? 'Unpublish' : 'Publish';
+                publishButton.className = data.published ? 'unpublish' : 'publish';
+            }
+        });
+    }
 </script>
