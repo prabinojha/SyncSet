@@ -112,11 +112,12 @@ router.get('/get-share-url', async (req, res) => {
 // Route for accessing urls eg. syncset.xyz/website
 router.get('/:subdomain', async (req, res) => {
   const { subdomain } = req.params;
+  const isPreview = req.query.preview === 'true';
   const domainDoc = doc(db, 'domains', subdomain);
   const domainSnap = await getDoc(domainDoc);
   
   if (domainSnap.exists()) {
-    if (!domainSnap.data().published) {
+    if (!domainSnap.data().published && !isPreview) {
       return res.render('unpublished');
     }
 
