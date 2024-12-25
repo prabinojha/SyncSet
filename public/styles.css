@@ -461,11 +461,7 @@ header {
 
 /* Dashboard Content */
 
-.dashboardTitle {
-    font-size: 2rem;
-    color: var(--primary-dark-blue);
-}
 
-.icon-button {
-    display: none;
-}
+
+
+/* Subdomain styles */
