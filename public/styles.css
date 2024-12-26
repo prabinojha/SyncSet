@@ -529,7 +529,7 @@ header {
    ====================== */
 
 .overview-save-button {
-    background-color: var(--primary-purple);
+    background-color: var(--primary-dark-blue);
     color: white;
     border: none;
     padding: 0.5rem 1rem;
@@ -542,7 +542,7 @@ header {
 }
 
 .overview-save-button:hover {
-    background-color: var(--primary-dark-blue);
+    background-color: var(--primary-purple);
 }
 
 /* ======================
@@ -673,7 +673,6 @@ header {
     }
 
     .content-section {
-        width: 100%;
         max-width: calc(100% - 2rem);
     }
 
