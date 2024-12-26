@@ -1,6 +1,152 @@
-<div>
+<div class="services-section">
     <h1>Services</h1>
-    <div class="services-container">
-        <!-- Add your services content here -->
+    
+    <div class="services-grid">
+        <div id="servicesList" class="services-list">
+            <!-- Services will be dynamically inserted here -->
+        </div>
+
+        <div class="service-form-container">
+            <h2>Create a new service</h2>
+            <p>Will be visible to visitors on your page</p>
+            
+            <form id="newServiceForm" class="service-form">
+                <input type="text" id="serviceTitle" placeholder="Enter service title" required>
+                <textarea id="serviceDescription" placeholder="Description" required></textarea>
+                <input type="text" id="serviceLocation" placeholder="Location" required>
+                
+                <div class="service-details">
+                    <input type="text" id="serviceCost" placeholder="Cost" required>
+                    <input type="text" id="serviceDuration" placeholder="Duration" required>
+                </div>
+
+                <div class="time-selection">
+                    <p>Pick the time that you will be available between</p>
+                    <div class="time-range">
+                        <input type="time" id="startTime" value="09:00" required>
+                        <input type="time" id="endTime" value="21:00" required>
+                    </div>
+                </div>
+
+                <div class="breaks-section">
+                    <p>Add any breaks</p>
+                    <div class="break-inputs">
+                        <input type="time" id="breakTime" placeholder="Time">
+                        <input type="number" id="breakLength" placeholder="Length (minutes)">
+                        <button type="button" id="addBreak" class="add-break-btn">Add</button>
+                    </div>
+                    <div id="breaksList" class="breaks-list">
+                        <!-- Breaks will be listed here -->
+                    </div>
+                </div>
+
+                <div class="form-buttons">
+                    <button type="button" id="cancelService" class="cancel-btn">Cancel</button>
+                    <button type="submit" class="create-btn">Create new service</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div> 
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const serviceForm = document.getElementById('newServiceForm');
+    const servicesList = document.getElementById('servicesList');
+    const breaks = [];
+
+    // Load existing services
+    loadServices();
+
+    // Add break handler
+    document.getElementById('addBreak').addEventListener('click', () => {
+        const time = document.getElementById('breakTime').value;
+        const length = document.getElementById('breakLength').value;
+        
+        if (time && length) {
+            breaks.push({ time, length });
+            updateBreaksList();
+            document.getElementById('breakTime').value = '';
+            document.getElementById('breakLength').value = '';
+        }
+    });
+
+    // Form submission
+    serviceForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const serviceData = {
+            title: document.getElementById('serviceTitle').value,
+            description: document.getElementById('serviceDescription').value,
+            location: document.getElementById('serviceLocation').value,
+            cost: document.getElementById('serviceCost').value,
+            duration: document.getElementById('serviceDuration').value,
+            availability: {
+                startTime: document.getElementById('startTime').value,
+                endTime: document.getElementById('endTime').value,
+                breaks: breaks.slice()
+            }
+        };
+
+        try {
+            const response = await fetch('/api/services', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(serviceData)
+            });
+
+            if (response.ok) {
+                serviceForm.reset();
+                breaks.length = 0;
+                updateBreaksList();
+                loadServices();
+            } else {
+                throw new Error('Failed to create service');
+            }
+        } catch (error) {
+            console.error('Error creating service:', error);
+            alert('Failed to create service. Please try again.');
+        }
+    });
+
+    function updateBreaksList() {
+        const breaksList = document.getElementById('breaksList');
+        breaksList.innerHTML = breaks.map((break_, index) => `
+            <div class="break-item">
+                ${break_.time} - ${break_.length} minutes
+                <button onclick="removeBreak(${index})">Remove</button>
+            </div>
+        `).join('');
+    }
+
+    async function loadServices() {
+        try {
+            const response = await fetch('/api/services');
+            const services = await response.json();
+            
+            servicesList.innerHTML = services.map(service => `
+                <div class="service-card">
+                    <div class="service-info">
+                        <h3>${service.title}</h3>
+                        <p>${service.cost} - ${service.duration}</p>
+                    </div>
+                    <div class="service-actions">
+                        <button class="share-btn">Share</button>
+                        <button class="edit-btn">Edit</button>
+                        <button class="delete-btn">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        } catch (error) {
+            console.error('Error loading services:', error);
+        }
+    }
+
+    window.removeBreak = (index) => {
+        breaks.splice(index, 1);
+        updateBreaksList();
+    };
+});
+</script> 

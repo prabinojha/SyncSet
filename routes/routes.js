@@ -1,7 +1,7 @@
 const express = require('express');
 const { auth, db } = require('../firebase');
 const { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } = require('firebase/auth');
-const { doc, setDoc, getDoc, updateDoc } = require('firebase/firestore');
+const { doc, setDoc, getDoc, updateDoc, collection, addDoc, query, where, getDocs } = require('firebase/firestore');
 const router = express.Router();
 
 // Middleware to check if user is authenticated
@@ -115,26 +115,62 @@ router.get('/:subdomain', async (req, res) => {
   const isPreview = req.query.preview === 'true';
   const currentUser = auth.currentUser;
   
-  const domainDoc = doc(db, 'domains', subdomain);
-  const domainSnap = await getDoc(domainDoc);
-  
-  if (domainSnap.exists()) {
-    const domainData = domainSnap.data();
+  try {
+    const domainDoc = doc(db, 'domains', subdomain);
+    const domainSnap = await getDoc(domainDoc);
     
-    if (!domainData.published && 
-        (!isPreview || !currentUser || domainData.uid !== currentUser.uid)) {
-      return res.render('unpublished');
+    if (domainSnap.exists()) {
+      const domainData = domainSnap.data();
+      
+      if (!domainData.published && 
+          (!isPreview || !currentUser || domainData.uid !== currentUser.uid)) {
+        return res.render('unpublished');
+      }
+
+      // Fetch services
+      const servicesRef = collection(db, 'users', domainData.uid, 'services');
+      const servicesSnap = await getDocs(servicesRef);
+      const services = [];
+      servicesSnap.forEach(doc => {
+        services.push({ id: doc.id, ...doc.data() });
+      });
+
+      res.render('subdomain', {
+        subdomain,
+        title: domainData.title || `Welcome to ${subdomain}`,
+        description: domainData.description || 'No description available',
+        domainData: domainData,
+        services: services
+      });
+    } else {
+      res.status(404).render('404');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).render('error');
+  }
+});
+
+// Get services for current user
+router.get('/api/services', async (req, res) => {
+    const user = auth.currentUser;
+    if (!user) {
+        return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    res.render('subdomain', {
-      subdomain,
-      title: domainData.title || `Welcome to ${subdomain}`,
-      description: domainData.description || 'No description available',
-      domainData: domainData
-    });
-  } else {
-    res.status(404).render('404');
-  }
+    try {
+        const servicesRef = collection(db, 'users', user.uid, 'services');
+        const servicesSnap = await getDocs(servicesRef);
+        const services = [];
+        
+        servicesSnap.forEach(doc => {
+            services.push({ id: doc.id, ...doc.data() });
+        });
+
+        res.json(services);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // POST Requests
@@ -245,6 +281,27 @@ router.post('/save-changes', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+// Create new service
+router.post('/api/services', async (req, res) => {
+    const user = auth.currentUser;
+    if (!user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    try {
+        const servicesRef = collection(db, 'users', user.uid, 'services');
+        const docRef = await addDoc(servicesRef, {
+            ...req.body,
+            createdAt: new Date()
+        });
+
+        res.status(201).json({ id: docRef.id });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 
 router.get('*', (req, res) => {
   res.status(404).render('404');
