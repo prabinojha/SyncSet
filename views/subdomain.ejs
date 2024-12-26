@@ -1,23 +1,20 @@
 <!DOCTYPE html>
 <html>
-<%- include('includes/head', {title: `${subdomain} - Syncset`}) %>
+<%- include('includes/head', {title: title}) %>
 <body>
     <div id="content">
-        <h1 id="siteTitle">Welcome to <%= subdomain %></h1>
-        <p id="siteDescription">This website is owned by: <%= email %></p>
+        <h1 id="siteTitle"><%= title %></h1>
+        <p id="siteDescription"><%= description %></p>
     </div>
 
     <script>
-    // Listen for messages from parent window
     window.addEventListener('message', (event) => {
         if (event.data.type === 'updatePreview') {
             const { title, description, theme } = event.data.data;
             
-            // Update content
             if (title) document.getElementById('siteTitle').textContent = title;
             if (description) document.getElementById('siteDescription').textContent = description;
             
-            // Update theme
             document.body.className = theme === 'dark' ? 'dark-theme' : 'light-theme';
         }
     });

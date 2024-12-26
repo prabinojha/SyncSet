@@ -1,7 +1,7 @@
 const express = require('express');
 const { auth, db } = require('../firebase');
 const { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } = require('firebase/auth');
-const { doc, setDoc, getDoc } = require('firebase/firestore');
+const { doc, setDoc, getDoc, updateDoc } = require('firebase/firestore');
 const router = express.Router();
 
 // Middleware to check if user is authenticated
@@ -126,18 +126,11 @@ router.get('/:subdomain', async (req, res) => {
       return res.render('unpublished');
     }
 
-    const userId = domainData.uid;
-    const userDoc = doc(db, 'users', userId);
-    const userSnap = await getDoc(userDoc);
-    
-    if (userSnap.exists()) {
-      res.render('subdomain', {
-        subdomain,
-        email: userSnap.data().email
-      });
-    } else {
-      res.status(404).render('404');
-    }
+    res.render('subdomain', {
+      subdomain,
+      title: domainData.title || `Welcome to ${subdomain}`,
+      description: domainData.description || 'No description available',
+    });
   } else {
     res.status(404).render('404');
   }
@@ -223,6 +216,29 @@ router.post('/toggle-publish', async (req, res) => {
     });
 
     res.json({ published: newPublishedStatus });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Add a new route to handle saving changes
+router.post('/save-changes', async (req, res) => {
+  const user = auth.currentUser;
+  if (!user) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  try {
+    const { title, description } = req.body;
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    const subdomain = userDoc.data().subdomain;
+    
+    await updateDoc(doc(db, 'domains', subdomain), {
+      title,
+      description
+    });
+
+    res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

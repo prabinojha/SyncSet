@@ -5,12 +5,12 @@
             <form id="overviewForm">
                 <div class="form-group">
                     <label for="title">Title</label>
-                    <input type="text" id="title" name="title" placeholder="Enter your website title">
+                    <input type="text" id="title" name="title" placeholder="Enter your website title" value="<%= domainData.title || '' %>">
                 </div>
                 
                 <div class="form-group">
                     <label for="description">Description</label>
-                    <textarea id="description" name="description" placeholder="Enter your website description"></textarea>
+                    <textarea id="description" name="description" placeholder="Enter your website description"><%= domainData.description || '' %></textarea>
                 </div>
 
                 <div class="form-group">
@@ -24,6 +24,10 @@
                         </div>
                     </div>
                 </div>
+
+                <button type="button" id="saveChanges" class="save-button" style="display: none;">
+                    Save Changes
+                </button>
             </form>
         </div>
     </section>
@@ -39,7 +43,29 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('overviewForm');
     const previewFrame = document.getElementById('previewFrame');
+    const saveButton = document.getElementById('saveChanges');
     let selectedTheme = 'light';
+    let hasUnsavedChanges = false;
+
+    // Store initial values
+    const initialValues = {
+        title: document.getElementById('title').value,
+        description: document.getElementById('description').value
+    };
+
+    // Function to check if there are unsaved changes
+    function checkUnsavedChanges() {
+        const currentValues = {
+            title: document.getElementById('title').value,
+            description: document.getElementById('description').value
+        };
+
+        hasUnsavedChanges = 
+            currentValues.title !== initialValues.title || 
+            currentValues.description !== initialValues.description;
+
+        saveButton.style.display = hasUnsavedChanges ? 'block' : 'none';
+    }
 
     // Function to update preview
     function updatePreview() {
@@ -49,30 +75,53 @@ document.addEventListener('DOMContentLoaded', () => {
             theme: selectedTheme
         };
 
-        // Get the iframe's window object
         const frameWindow = previewFrame.contentWindow;
-        
-        // Post message to iframe with new data
         frameWindow.postMessage({
             type: 'updatePreview',
             data: formData
         }, '*');
+
+        checkUnsavedChanges();
     }
 
     // Listen for input changes
     form.addEventListener('input', updatePreview);
 
+    // Save changes handler
+    saveButton.addEventListener('click', async () => {
+        try {
+            const response = await fetch('/save-changes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title: document.getElementById('title').value,
+                    description: document.getElementById('description').value
+                })
+            });
+
+            if (response.ok) {
+                // Update initial values after successful save
+                initialValues.title = document.getElementById('title').value;
+                initialValues.description = document.getElementById('description').value;
+                hasUnsavedChanges = false;
+                saveButton.style.display = 'none';
+            } else {
+                throw new Error('Failed to save changes');
+            }
+        } catch (error) {
+            console.error('Error saving changes:', error);
+            alert('Failed to save changes. Please try again.');
+        }
+    });
+
     // Theme selection
     document.querySelectorAll('.theme-option').forEach(option => {
         option.addEventListener('click', (e) => {
-            // Remove active class from all options
             document.querySelectorAll('.theme-option').forEach(opt => 
                 opt.classList.remove('active'));
-            
-            // Add active class to selected option
             e.currentTarget.classList.add('active');
-            
-            // Update selected theme
             selectedTheme = e.currentTarget.dataset.theme;
             updatePreview();
         });
