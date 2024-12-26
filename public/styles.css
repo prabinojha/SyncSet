@@ -1,4 +1,3 @@
-/* Default styles */
 :root {
     --primary-purple: #9766f9;
     --primary-light-purple: #ddc0fb;
@@ -12,7 +11,10 @@
     --sidebar-width: 250px;
 }
 
-/* Main styles */
+/* ======================
+   Main Styles
+   ====================== */
+
 * {
     margin: 0;
     padding: 0;
@@ -37,7 +39,9 @@ body {
     cursor: pointer;
 }
 
-/* Error messages */
+/* ======================
+   Error Messages
+   ====================== */
 
 .errorP {
     color: red;
@@ -49,7 +53,9 @@ body {
     margin: calc(var(--header-height) + 1rem) auto;
 }
 
-/* Header style */
+/* ======================
+   Header Styles
+   ====================== */
 
 header {
     background-color: white;
@@ -219,7 +225,10 @@ header {
     background-color: var(--primary-dark-blue);
 }
 
-/* Onboarding styles */
+/* ======================
+   Onboarding Styles
+   ====================== */
+
 .onboardingFormDiv {
     padding: 2rem;
     text-align: center;
@@ -272,7 +281,9 @@ header {
     text-decoration: underline;
 }
 
-/* Domain check onboarding */
+/* ======================
+   Dashboard Onboarding Styles
+   ====================== */
 
 #domainCheckWrapper {
     display: flex;
@@ -323,13 +334,32 @@ header {
     z-index: 1;
 }
 
-/* Dashboard Layout */
+/* ======================
+   Dashboard Layout
+   ====================== */
+
 .dashboard-container {
     display: flex;
     min-height: calc(100vh - var(--header-height));
     margin-top: var(--header-height);
     position: relative;
 }
+
+.dashboard-main {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    padding: 1rem;
+    box-sizing: border-box;
+    width: calc(100% - var(--sidebar-width));
+    min-height: calc(100vh - var(--header-height));
+    background-color: white;
+    position: relative;
+    z-index: 1;
+}
+
+/* ======================
+   Sidebar
+   ====================== */
 
 .sidebar {
     width: var(--sidebar-width);
@@ -343,18 +373,6 @@ header {
     z-index: 1000;
     border: 1px solid var(--light-grey);
     box-sizing: border-box;
-}
-
-.dashboard-main {
-    flex: 1;
-    margin-left: var(--sidebar-width);
-    padding: 1rem;
-    box-sizing: border-box;
-    width: calc(100% - var(--sidebar-width));
-    min-height: calc(100vh - var(--header-height));
-    background-color: white;
-    position: relative;
-    z-index: 1;
 }
 
 .nav-item {
@@ -392,7 +410,10 @@ header {
     margin: 2rem auto;
 }
 
-/* Overview Content */
+/* ======================
+   Overview Section
+   ====================== */
+
 .overview-container {
     display: flex;
     width: 100%;
@@ -411,7 +432,8 @@ header {
 .overview-section h1 {
     margin-bottom: 1rem;
 }
-/* Overview Form Styles */
+
+/* Form Elements */
 .overview-form-group {
     margin-bottom: 1.5rem;
 }
@@ -432,6 +454,10 @@ header {
     font-size: 1rem;
     box-sizing: border-box;
 }
+
+/* ======================
+   Theme Options
+   ====================== */
 
 .theme-options {
     display: flex;
@@ -465,7 +491,9 @@ header {
     margin-bottom: 8px;
     border-radius: 4px;
 }
-
+/* ======================
+   Theme Variants
+   ====================== */
 .light-theme {
     background-color: white;
     color: var(--primary-dark-blue);
@@ -496,7 +524,10 @@ header {
     width: 90%;
 }
 
-/* Save button styles */
+/* ======================
+   Save Buttons
+   ====================== */
+
 .overview-save-button {
     background-color: var(--primary-purple);
     color: white;
@@ -514,7 +545,10 @@ header {
     background-color: var(--primary-dark-blue);
 }
 
-/* Subdomain styles */
+/* ======================
+   Subdomain Styles
+   ====================== */
+
 #subdomain-container {
     padding: 2rem;
     text-align: center;
@@ -547,7 +581,10 @@ header {
     color: white;
 }
 
-/* Subdomain page styles */
+/* ======================
+   Subdomain Page Layout
+   ====================== */
+
 .subdomain-container {
     min-height: 100vh;
     padding: 2rem;
@@ -602,20 +639,10 @@ header {
     font-size: 0.9rem;
 }
 
-/* Theme-specific styles */
-.dark-theme {
-    background-color: var(--primary-dark-blue);
-    color: white;
-}
-
-.light-theme {
-    background-color: white;
-    color: var(--primary-dark-blue);
-}
-
 /* ======================
    Preview Section
    ====================== */
+
 .preview-section {
     flex: 1;
     display: flex;
@@ -639,7 +666,7 @@ header {
     border-radius: var(--border-radius);
     background-color: white;
 }
-/* Mobile responsive styles */
+
 @media (max-width: 768px) {
     #previewFrame {
         height: 100vh;
