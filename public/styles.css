@@ -395,7 +395,6 @@ header {
 /* Overview Content */
 .overview-container {
     display: flex;
-    height: calc(100vh - var(--header-height));
     width: 100%;
     gap: 1rem;
     box-sizing: border-box;
@@ -409,38 +408,9 @@ header {
     flex-direction: column;
 }
 
-.overview-section h1,
-.preview-section h1 {
+.overview-section h1 {
     margin-bottom: 1rem;
 }
-
-.preview-section h1 {
-    text-align: center;
-}
-
-.preview-section {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.preview-content {
-    flex: 1;
-    position: relative;
-    border-radius: var(--border-radius);
-    border: 1px solid var(--light-grey);
-    overflow: auto;
-}
-
-#previewFrame {
-    width: 100%;
-    min-height: 100%;
-    height: 120vh;
-    border: none;
-    border-radius: var(--border-radius);
-    background-color: white;
-}
-
 /* Overview Form Styles */
 .overview-form-group {
     margin-bottom: 1.5rem;
@@ -526,7 +496,6 @@ header {
     width: 90%;
 }
 
-
 /* Save button styles */
 .overview-save-button {
     background-color: var(--primary-purple);
@@ -587,7 +556,6 @@ header {
     align-items: center;
     text-align: center;
     position: relative;
-    padding-bottom: 7rem;
 }
 
 .content-section {
@@ -620,7 +588,7 @@ header {
     font-size: 1rem;
     cursor: pointer;
     width: 600px;
-    max-width: calc(100% - 4rem);
+    max-width: calc(100% - 3rem);
     z-index: 100;
     font-family: var(--primary-font);
 }
@@ -645,19 +613,6 @@ header {
     color: var(--primary-dark-blue);
 }
 
-/* Preview iframe adjustments */
-#previewFrame {
-    width: 100%;
-    height: 100vh;
-    border: none;
-    border-radius: var(--border-radius);
-}
-
-.preview-content {
-    height: 100vh;
-    overflow: hidden;
-}
-
 /* ======================
    Preview Section
    ====================== */
@@ -665,7 +620,7 @@ header {
     flex: 1;
     display: flex;
     flex-direction: column;
-    height: calc(100vh - var(--header-height));
+    height: calc(100vh - var(--header-height) - 2rem);
 }
 
 .preview-content {
@@ -673,31 +628,21 @@ header {
     position: relative;
     border-radius: var(--border-radius);
     border: 1px solid var(--light-grey);
-    overflow: auto;
     background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 #previewFrame {
     width: 100%;
     height: 100%;
-    min-height: 100%;
     border: none;
     border-radius: var(--border-radius);
     background-color: white;
 }
 /* Mobile responsive styles */
 @media (max-width: 768px) {
-    .preview-section {
-        height: 80vh;
-    }
-
-    .preview-content {
-        height: 100%;
-    }
-
     #previewFrame {
-        height: 120vh;
-        min-height: 100vh;
+        height: 100vh;
     }
 
     .content-section {
@@ -708,15 +653,6 @@ header {
     .overview-container {
         flex-direction: column;
         height: auto;
-    }
-
-    .overview-section,
-    .preview-section {
-        min-height: 50vh;
-    }
-
-    .preview-section h1 {
-        text-align: left;
     }
 
     .hamburger-menu {
