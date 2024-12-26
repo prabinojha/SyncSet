@@ -2,7 +2,29 @@
     <section class="overview-section">
         <h1>Overview</h1>
         <div class="overview-content">
-            <!-- Add your overview content here -->
+            <form id="overviewForm">
+                <div class="form-group">
+                    <label for="title">Title</label>
+                    <input type="text" id="title" name="title" placeholder="Enter your website title">
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" placeholder="Enter your website description"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Theme</label>
+                    <div class="theme-options">
+                        <div class="theme-option" data-theme="light">
+                            <div class="theme-preview light-theme"></div>
+                        </div>
+                        <div class="theme-option" data-theme="dark">
+                            <div class="theme-preview dark-theme"></div>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </section>
     <section class="preview-section">
@@ -11,4 +33,49 @@
             <iframe id="previewFrame" src="/<%= userSubdomain %>?preview=true" title="Website Preview"></iframe>
         </div>
     </section>
-</div> 
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('overviewForm');
+    const previewFrame = document.getElementById('previewFrame');
+    let selectedTheme = 'light';
+
+    // Function to update preview
+    function updatePreview() {
+        const formData = {
+            title: document.getElementById('title').value,
+            description: document.getElementById('description').value,
+            theme: selectedTheme
+        };
+
+        // Get the iframe's window object
+        const frameWindow = previewFrame.contentWindow;
+        
+        // Post message to iframe with new data
+        frameWindow.postMessage({
+            type: 'updatePreview',
+            data: formData
+        }, '*');
+    }
+
+    // Listen for input changes
+    form.addEventListener('input', updatePreview);
+
+    // Theme selection
+    document.querySelectorAll('.theme-option').forEach(option => {
+        option.addEventListener('click', (e) => {
+            // Remove active class from all options
+            document.querySelectorAll('.theme-option').forEach(opt => 
+                opt.classList.remove('active'));
+            
+            // Add active class to selected option
+            e.currentTarget.classList.add('active');
+            
+            // Update selected theme
+            selectedTheme = e.currentTarget.dataset.theme;
+            updatePreview();
+        });
+    });
+});
+</script> 
