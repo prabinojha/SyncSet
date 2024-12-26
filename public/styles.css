@@ -537,19 +537,19 @@ header {
 }
 
 /* Overview Form Styles */
-.form-group {
+.overview-form-group {
     margin-bottom: 1.5rem;
 }
 
-.form-group label {
+.overview-form-group label {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 500;
     color: var(--primary-dark-blue);
 }
 
-.form-group input,
-.form-group textarea {
+.overview-form-group input,
+.overview-form-group textarea {
     width: 100%;
     padding: 0.75rem;
     border: 1px solid var(--light-grey);
@@ -558,7 +558,7 @@ header {
     font-size: 1rem;
 }
 
-.form-group textarea {
+.overview-form-group textarea {
     min-height: 100px;
     resize: vertical;
 }
@@ -570,18 +570,13 @@ header {
 
 .theme-option {
     cursor: pointer;
-    padding: 0.5rem;
     border: 2px solid transparent;
     border-radius: var(--border-radius);
     transition: all 0.3s ease;
 }
 
-.theme-option:hover {
-    transform: translateY(-2px);
-}
-
 .theme-option.active {
-    border-color: var(--primary-purple);
+    transform: scale(1.05);
 }
 
 .theme-preview {
@@ -632,7 +627,7 @@ header {
 /* Subdomain styles */
 
 /* Save button styles */
-.save-button {
+.overview-save-button {
     background-color: var(--primary-purple);
     color: white;
     border: none;
@@ -645,7 +640,6 @@ header {
     transition: all 0.3s ease;
 }
 
-.save-button:hover {
+.overview-save-button:hover {
     background-color: var(--primary-dark-blue);
-    transform: translateY(-2px);
 }
