@@ -5,22 +5,24 @@
             <form id="overviewForm">
                 <div class="overview-form-group">
                     <label for="title">Title</label>
-                    <input maxlength="50" type="text" id="title" name="title" placeholder="Enter your website title" value="<%= domainData.title || '' %>">
-                </div>
-                
-                <div class="overview-form-group">
-                    <label for="description">Description</label>
-                    <input maxlength="100" type="text" id="description" name="description" placeholder="Enter your website description" value="<%= domainData.description || '' %>">
+                    <input maxlength="50" type="text" id="title" name="title" placeholder="Enter your website title"
+                        value="<%= domainData.title || '' %>">
                 </div>
 
                 <div class="overview-form-group">
-                    <label>Theme</label>
+                    <label for="description">Description</label>
+                    <input maxlength="100" type="text" id="description" name="description"
+                        placeholder="Enter your website description" value="<%= domainData.description || '' %>">
+                </div>
+
+                <div class="overview-form-group">
                     <div class="theme-options">
-                        <div class="theme-option <%= domainData.theme === 'light' ? 'active' : '' %>" data-theme="light">
-                            <div class="theme-preview light-theme"></div>
+                        <div class="theme-option <%= domainData.theme === 'light' ? 'active' : '' %>"
+                            data-theme="light" id="light">
+                            Light
                         </div>
-                        <div class="theme-option <%= domainData.theme === 'dark' ? 'active' : '' %>" data-theme="dark">
-                            <div class="theme-preview dark-theme"></div>
+                        <div class="theme-option <%= domainData.theme === 'dark' ? 'active' : '' %>" data-theme="dark" id="dark">
+                            Dark
                         </div>
                     </div>
                 </div>
@@ -39,96 +41,96 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('overviewForm');
-    const previewFrame = document.getElementById('previewFrame');
-    const saveButton = document.getElementById('saveChanges');
-    let selectedTheme = '<%= domainData.theme || "light" %>';
-    let hasUnsavedChanges = false;
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('overviewForm');
+        const previewFrame = document.getElementById('previewFrame');
+        const saveButton = document.getElementById('saveChanges');
+        let selectedTheme = '<%= domainData.theme || "light" %>';
+        let hasUnsavedChanges = false;
 
-    // Store initial values
-    const initialValues = {
-        title: document.getElementById('title').value,
-        description: document.getElementById('description').value,
-        theme: selectedTheme
-    };
-
-    // Function to check if there are unsaved changes
-    function checkUnsavedChanges() {
-        const currentValues = {
+        // Store initial values
+        const initialValues = {
             title: document.getElementById('title').value,
             description: document.getElementById('description').value,
             theme: selectedTheme
         };
 
-        hasUnsavedChanges = 
-            currentValues.title !== initialValues.title || 
-            currentValues.description !== initialValues.description ||
-            currentValues.theme !== initialValues.theme;
+        // Function to check if there are unsaved changes
+        function checkUnsavedChanges() {
+            const currentValues = {
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                theme: selectedTheme
+            };
 
-        saveButton.style.display = hasUnsavedChanges ? 'block' : 'none';
-    }
+            hasUnsavedChanges =
+                currentValues.title !== initialValues.title ||
+                currentValues.description !== initialValues.description ||
+                currentValues.theme !== initialValues.theme;
 
-    // Function to update preview
-    function updatePreview() {
-        const formData = {
-            title: document.getElementById('title').value,
-            description: document.getElementById('description').value,
-            theme: selectedTheme
-        };
-
-        const frameWindow = previewFrame.contentWindow;
-        frameWindow.postMessage({
-            type: 'updatePreview',
-            data: formData
-        }, '*');
-
-        checkUnsavedChanges();
-    }
-
-    // Listen for input changes
-    form.addEventListener('input', updatePreview);
-
-    // Save changes handler
-    saveButton.addEventListener('click', async () => {
-        try {
-            const response = await fetch('/save-changes', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    title: document.getElementById('title').value,
-                    description: document.getElementById('description').value,
-                    theme: selectedTheme
-                })
-            });
-
-            if (response.ok) {
-                // Update initial values after successful save
-                initialValues.title = document.getElementById('title').value;
-                initialValues.description = document.getElementById('description').value;
-                initialValues.theme = selectedTheme;
-                hasUnsavedChanges = false;
-                saveButton.style.display = 'none';
-            } else {
-                throw new Error('Failed to save changes');
-            }
-        } catch (error) {
-            console.error('Error saving changes:', error);
-            alert('Failed to save changes. Please try again.');
+            saveButton.style.display = hasUnsavedChanges ? 'block' : 'none';
         }
-    });
 
-    // Theme selection
-    document.querySelectorAll('.theme-option').forEach(option => {
-        option.addEventListener('click', (e) => {
-            document.querySelectorAll('.theme-option').forEach(opt => 
-                opt.classList.remove('active'));
-            e.currentTarget.classList.add('active');
-            selectedTheme = e.currentTarget.dataset.theme;
-            updatePreview();
+        // Function to update preview
+        function updatePreview() {
+            const formData = {
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                theme: selectedTheme
+            };
+
+            const frameWindow = previewFrame.contentWindow;
+            frameWindow.postMessage({
+                type: 'updatePreview',
+                data: formData
+            }, '*');
+
+            checkUnsavedChanges();
+        }
+
+        // Listen for input changes
+        form.addEventListener('input', updatePreview);
+
+        // Save changes handler
+        saveButton.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/save-changes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        title: document.getElementById('title').value,
+                        description: document.getElementById('description').value,
+                        theme: selectedTheme
+                    })
+                });
+
+                if (response.ok) {
+                    // Update initial values after successful save
+                    initialValues.title = document.getElementById('title').value;
+                    initialValues.description = document.getElementById('description').value;
+                    initialValues.theme = selectedTheme;
+                    hasUnsavedChanges = false;
+                    saveButton.style.display = 'none';
+                } else {
+                    throw new Error('Failed to save changes');
+                }
+            } catch (error) {
+                console.error('Error saving changes:', error);
+                alert('Failed to save changes. Please try again.');
+            }
+        });
+
+        // Theme selection
+        document.querySelectorAll('.theme-option').forEach(option => {
+            option.addEventListener('click', (e) => {
+                document.querySelectorAll('.theme-option').forEach(opt =>
+                    opt.classList.remove('active'));
+                e.currentTarget.classList.add('active');
+                selectedTheme = e.currentTarget.dataset.theme;
+                updatePreview();
+            });
         });
     });
-});
-</script> 
+</script>

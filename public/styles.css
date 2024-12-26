@@ -469,28 +469,24 @@ header {
     border: 2px solid transparent;
     border-radius: var(--border-radius);
     transition: all 0.3s ease;
+    padding: 0.5rem 1rem;
 }
 
 .theme-option.active {
-    transform: scaleY(1.05);
+    transform: scale(1.05);
 }
 
-.theme-preview {
-    width: 110px;
-    height: 150px;
-    border-radius: var(--border-radius);
-    border: 1px solid var(--light-grey);
-    padding: 8px;
+#light {
+    background-color: white;
+    color: var(--primary-dark-blue);
+    border: 1px solid var(--primary-dark-blue);
 }
 
-.theme-preview::before,
-.theme-preview::after {
-    content: '';
-    display: block;
-    height: 8px;
-    margin-bottom: 8px;
-    border-radius: 4px;
+#dark {
+    background-color: var(--primary-dark-blue);
+    color: var(--primary-light-blue);
 }
+
 /* ======================
    Theme Variants
    ====================== */
