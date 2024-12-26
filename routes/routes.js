@@ -130,6 +130,7 @@ router.get('/:subdomain', async (req, res) => {
       subdomain,
       title: domainData.title || `Welcome to ${subdomain}`,
       description: domainData.description || 'No description available',
+      domainData: domainData
     });
   } else {
     res.status(404).render('404');
@@ -229,13 +230,14 @@ router.post('/save-changes', async (req, res) => {
   }
 
   try {
-    const { title, description } = req.body;
+    const { title, description, theme } = req.body;
     const userDoc = await getDoc(doc(db, 'users', user.uid));
     const subdomain = userDoc.data().subdomain;
     
     await updateDoc(doc(db, 'domains', subdomain), {
       title,
-      description
+      description,
+      theme
     });
 
     res.json({ success: true });

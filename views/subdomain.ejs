@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <%- include('includes/head', {title: title}) %>
-<body>
+<body class="<%= domainData && domainData.theme === 'dark' ? 'dark-theme' : 'light-theme' %>">
     <div id="content">
         <h1 id="siteTitle"><%= title %></h1>
         <p id="siteDescription"><%= description %></p>

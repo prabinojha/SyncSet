@@ -16,10 +16,10 @@
                 <div class="form-group">
                     <label>Theme</label>
                     <div class="theme-options">
-                        <div class="theme-option" data-theme="light">
+                        <div class="theme-option <%= domainData.theme === 'light' ? 'active' : '' %>" data-theme="light">
                             <div class="theme-preview light-theme"></div>
                         </div>
-                        <div class="theme-option" data-theme="dark">
+                        <div class="theme-option <%= domainData.theme === 'dark' ? 'active' : '' %>" data-theme="dark">
                             <div class="theme-preview dark-theme"></div>
                         </div>
                     </div>
@@ -44,25 +44,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('overviewForm');
     const previewFrame = document.getElementById('previewFrame');
     const saveButton = document.getElementById('saveChanges');
-    let selectedTheme = 'light';
+    let selectedTheme = '<%= domainData.theme || "light" %>';
     let hasUnsavedChanges = false;
 
     // Store initial values
     const initialValues = {
         title: document.getElementById('title').value,
-        description: document.getElementById('description').value
+        description: document.getElementById('description').value,
+        theme: selectedTheme
     };
 
     // Function to check if there are unsaved changes
     function checkUnsavedChanges() {
         const currentValues = {
             title: document.getElementById('title').value,
-            description: document.getElementById('description').value
+            description: document.getElementById('description').value,
+            theme: selectedTheme
         };
 
         hasUnsavedChanges = 
             currentValues.title !== initialValues.title || 
-            currentValues.description !== initialValues.description;
+            currentValues.description !== initialValues.description ||
+            currentValues.theme !== initialValues.theme;
 
         saveButton.style.display = hasUnsavedChanges ? 'block' : 'none';
     }
@@ -97,7 +100,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({
                     title: document.getElementById('title').value,
-                    description: document.getElementById('description').value
+                    description: document.getElementById('description').value,
+                    theme: selectedTheme
                 })
             });
 
@@ -105,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Update initial values after successful save
                 initialValues.title = document.getElementById('title').value;
                 initialValues.description = document.getElementById('description').value;
+                initialValues.theme = selectedTheme;
                 hasUnsavedChanges = false;
                 saveButton.style.display = 'none';
             } else {
