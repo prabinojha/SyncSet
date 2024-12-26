@@ -1,16 +1,16 @@
 <div class="overview-container">
     <section class="overview-section">
-        <h1>Overview</h1>
         <div class="overview-content">
+            <h1>Overview</h1>
             <form id="overviewForm">
                 <div class="overview-form-group">
                     <label for="title">Title</label>
-                    <input type="text" id="title" name="title" placeholder="Enter your website title" value="<%= domainData.title || '' %>">
+                    <input maxlength="50" type="text" id="title" name="title" placeholder="Enter your website title" value="<%= domainData.title || '' %>">
                 </div>
                 
                 <div class="overview-form-group">
                     <label for="description">Description</label>
-                    <textarea id="description" name="description" placeholder="Enter your website description"><%= domainData.description || '' %></textarea>
+                    <input maxlength="100" type="text" id="description" name="description" placeholder="Enter your website description" value="<%= domainData.description || '' %>">
                 </div>
 
                 <div class="overview-form-group">
