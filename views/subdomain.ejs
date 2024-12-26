@@ -2,9 +2,14 @@
 <html>
 <%- include('includes/head', {title: title}) %>
 <body class="<%= domainData && domainData.theme === 'dark' ? 'dark-theme' : 'light-theme' %>">
-    <div id="subdomain-container">
-        <h1 id="subdomainTitle"><%= title %></h1>
-        <p id="subdomainDescription"><%= description %></p>
+    <div class="subdomain-container">
+        <div class="content-section">
+            <h1 id="subdomainTitle"><%= title %></h1>
+            <p id="subdomainDescription"><%= description %></p>
+        </div>
+        
+        <button class="cta-button">Check back soon</button>
+        <div class="powered-by">powered by syncset.xyz</div>
     </div>
 
     <script>
