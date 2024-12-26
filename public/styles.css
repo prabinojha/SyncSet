@@ -631,8 +631,18 @@ header {
     bottom: 1rem;
     left: 50%;
     transform: translateX(-50%);
-    opacity: 0.8;
     font-size: 0.9rem;
+    background: linear-gradient(
+        to right,
+        white,
+        rgba(255, 255, 255, 0.444),
+        white
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% auto;
+    animation: gradientFlow 3s linear infinite;
 }
 
 /* ======================
@@ -736,5 +746,11 @@ header {
     }
     100% {
         transform: translateX(100%) rotate(45deg);
+    }
+}
+
+@keyframes gradientFlow {
+    to {
+        background-position: 200% center;
     }
 }
