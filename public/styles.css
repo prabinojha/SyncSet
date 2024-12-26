@@ -632,6 +632,27 @@ header {
     left: 50%;
     transform: translateX(-50%);
     font-size: 0.9rem;
+    background-size: 200% auto;
+    animation: gradientFlow 3s linear infinite;
+}
+
+/* Light theme version */
+.light-theme .powered-by {
+    background: linear-gradient(
+        to right,
+        var(--primary-blue),
+        var(--primary-purple),
+        var(--primary-blue)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% auto;
+    animation: gradientFlow 3s linear infinite;
+}
+
+/* Dark theme version (original styling) */
+.dark-theme .powered-by {
     background: linear-gradient(
         to right,
         white,
