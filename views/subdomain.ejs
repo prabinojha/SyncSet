@@ -2,9 +2,9 @@
 <html>
 <%- include('includes/head', {title: title}) %>
 <body class="<%= domainData && domainData.theme === 'dark' ? 'dark-theme' : 'light-theme' %>">
-    <div id="content">
-        <h1 id="siteTitle"><%= title %></h1>
-        <p id="siteDescription"><%= description %></p>
+    <div id="subdomain-container">
+        <h1 id="subdomainTitle"><%= title %></h1>
+        <p id="subdomainDescription"><%= description %></p>
     </div>
 
     <script>
@@ -12,8 +12,8 @@
         if (event.data.type === 'updatePreview') {
             const { title, description, theme } = event.data.data;
             
-            if (title) document.getElementById('siteTitle').textContent = title;
-            if (description) document.getElementById('siteDescription').textContent = description;
+            if (title) document.getElementById('subdomainTitle').textContent = title;
+            if (description) document.getElementById('subdomainDescription').textContent = description;
             
             document.body.className = theme === 'dark' ? 'dark-theme' : 'light-theme';
         }
