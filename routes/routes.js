@@ -8,7 +8,7 @@ const router = express.Router();
 function checkAuth(req, res, next) {
   const user = auth.currentUser;
   if (user) {
-    return res.redirect('/overview');
+    return res.redirect('/dashboard/overview');
   }
   next();
 }

@@ -5,13 +5,13 @@
             <form id="overviewForm">
                 <div class="overview-form-group">
                     <label for="title">Title</label>
-                    <input maxlength="50" type="text" id="title" name="title" placeholder="Enter your website title"
+                    <input required maxlength="50" type="text" id="title" name="title" placeholder="Enter your website title"
                         value="<%= domainData.title || '' %>">
                 </div>
 
                 <div class="overview-form-group">
                     <label for="description">Description</label>
-                    <input maxlength="100" type="text" id="description" name="description"
+                    <input required maxlength="100" type="text" id="description" name="description"
                         placeholder="Enter your website description" value="<%= domainData.description || '' %>">
                 </div>
 
