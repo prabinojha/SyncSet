@@ -13,7 +13,7 @@
             <p style="margin-bottom: 1rem;">Will be visible to all users on your booking page</p>
             <form id="newServiceForm" class="service-form">
                 <input maxLength="40" type="text" id="serviceTitle" placeholder="Title" required>
-                <textarea maxLength="100" id="serviceDescription" placeholder="Description" required></textarea>
+                <textarea maxLength="100" id="serviceCreationDescription" placeholder="Description" required></textarea>
                 <input type="text" id="serviceLocation" placeholder="Location (optional)">
                 
                 <div class="service-details">
@@ -108,18 +108,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 servicesList.innerHTML = services.map(service => `
                     <div class="service-card" data-service-id="${service.id}">
                         <div class="service-info">
-                            <h3>${service.title}</h3>
-                            <p class="service-description">${service.description}</p>
-                            ${service.location ? `<p class="service-location">Location: ${service.location}</p>` : ''}
-                            <div class="service-details">
-                                <p>Cost: $${service.cost}</p>
-                                <p>Duration: ${service.duration}mins</p>
+                            <div class="service-header">
+                                <h3>${service.title}</h3>
+                                <p class="service-meta">
+                                    $${service.cost} | ${service.duration}mins${service.location ? ` | ${service.location}` : ''}
+                                </p>
                             </div>
-                            <p class="service-availability">Availablity: ${service.availability.startTime} to ${service.availability.endTime}</p>
+                            <p class="service-description">${service.description}</p>
                         </div>
-                        <div class="service-actions">
-                            <button class="delete-btn" onclick="deleteService('${service.id}')">Delete</button>
-                        </div>
+                        <button class="delete-btn" onclick="deleteService('${service.id}')">Delete</button>
                     </div>
                 `).join('');
             }

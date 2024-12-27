@@ -761,37 +761,40 @@ header {
     align-items: center;
 }
 
-.service-info h3 {
-    color: var(--primary-dark-blue);
+.service-header {
     margin-bottom: 0.5rem;
 }
 
-.service-info p {
-    color: #666;
+.service-header h3 {
+    color: var(--primary-dark-blue);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
 }
 
-.service-actions {
-    display: flex;
-    gap: 0.5rem;
+.service-meta {
+    color: var(--primary-blue);
+    font-size: 0.875rem;
 }
 
-.delete-btn {
-    padding: 0.5rem 1rem;
-    border-radius: var(--border-radius);
-    border: none;
-    cursor: pointer;
-    font-family: var(--primary-font);
+.service-description {
+    color: var(--primary-dark-blue);
 }
 
 .delete-btn {
     background: var(--primary-purple);
     color: white;
-    transition: all 0.3s ease;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    align-self: center;
 }
 
 .delete-btn:hover {
     background: var(--primary-dark-blue);
-    color: white;
 }
 
 .service-form-container {
@@ -821,11 +824,13 @@ header {
     margin-bottom: 0.75rem;
     box-sizing: border-box;
     border: 1px solid var(--primary-dark-blue);
+    outline: none;
 }
 
-#serviceDescription {
+#serviceCreationDescription {
     overflow-x: hidden;
     resize: vertical;
+    outline: none;
 }
 
 .time-selection {
@@ -922,11 +927,6 @@ header {
     justify-content: space-between;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
-}
-
-.service-description {
-    color: #666;
-    margin-bottom: 1rem;
 }
 
 .services-list {
