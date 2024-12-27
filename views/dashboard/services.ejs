@@ -93,18 +93,23 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch('/api/services');
             const services = await response.json();
             
-            servicesList.innerHTML = services.map(service => `
-                <div class="service-card">
-                    <div class="service-info">
-                        <h3>${service.title}</h3>
-                        <p>${service.cost} - ${service.duration}</p>
+            // Hide services list if empty
+            servicesList.style.display = services.length === 0 ? 'none' : 'flex';
+            
+            if (services.length > 0) {
+                servicesList.innerHTML = services.map(service => `
+                    <div class="service-card">
+                        <div class="service-info">
+                            <h3>${service.title}</h3>
+                            <p>${service.cost} - ${service.duration}</p>
+                        </div>
+                        <div class="service-actions">
+                            <button class="edit-btn">Edit</button>
+                            <button class="delete-btn">Delete</button>
+                        </div>
                     </div>
-                    <div class="service-actions">
-                        <button class="edit-btn">Edit</button>
-                        <button class="delete-btn">Delete</button>
-                    </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
         } catch (error) {
             console.error('Error loading services:', error);
         }

@@ -758,6 +758,7 @@ header {
     border: 1px solid var(--primary-dark-blue);
     padding: 2rem;
     border-radius: var(--border-radius);
+    max-width: 600px;
 }
 
 .service-form-container h2 {
