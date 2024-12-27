@@ -632,7 +632,6 @@ header {
     animation: gradientFlow 3s linear infinite;
 }
 
-/* Light theme version */
 .light-theme .powered-by {
     background: linear-gradient(to right,
             var(--primary-blue),
@@ -645,7 +644,6 @@ header {
     animation: gradientFlow 3s linear infinite;
 }
 
-/* Dark theme version (original styling) */
 .dark-theme .powered-by {
     background: linear-gradient(to right,
             white,
@@ -670,16 +668,52 @@ header {
     z-index: 100;
 }
 
-/* Light theme version */
 .light-theme .subdomain-footer {
     background-color: white;
     box-shadow: 0 -4rem 3rem -1rem white;
 }
 
-/* Dark theme version */
 .dark-theme .subdomain-footer {
     background-color: var(--primary-dark-blue);
     box-shadow: 0 -4rem 3rem -1rem var(--primary-dark-blue);
+}
+
+/* ======================
+   Subdomain Services Styles
+   ====================== */
+
+.subdomain-services-grid {
+    margin-bottom: 100px;
+}
+
+.subdomain-service-item {
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    width: 100%;
+}
+
+.light-theme .subdomain-service-item {
+    background: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--light-grey);
+}
+
+.dark-theme .subdomain-service-item {
+    background: white;
+    color: var(--primary-dark-blue);
+    box-shadow: 0 4px 6px rgba(255, 255, 255, 0.3);
+}
+
+.subdomain-service-item h2 {
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.subdomain-service-location {
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
 }
 
 /* ======================
@@ -711,7 +745,7 @@ header {
 }
 
 /* ======================
-   Services Styles
+   Dashboard Services Styles
    ====================== */
 
 .services-grid {
@@ -880,27 +914,6 @@ header {
     gap: 1rem;
 }
 
-
-/* ======================
-   Subdomain Services Styles
-   ====================== */
-
-.subdomain-service-item {
-    background: white;
-    padding: 2rem;
-    border-radius: var(--border-radius);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-bottom: 1rem;
-}
-
-.subdomain-service-item h2 {
-    margin-bottom: 1rem;
-}
-
-.subdomain-service-location {
-    color: #666;
-    font-size: 0.9rem;
-}
 
 /* ======================
    Media Queries and Keyframe Animations
