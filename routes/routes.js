@@ -1,7 +1,7 @@
 const express = require('express');
 const { auth, db } = require('../firebase');
 const { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } = require('firebase/auth');
-const { doc, setDoc, getDoc, updateDoc, collection, addDoc, query, where, getDocs } = require('firebase/firestore');
+const { doc, setDoc, getDoc, updateDoc, collection, addDoc, query, where, getDocs, deleteDoc } = require('firebase/firestore');
 const router = express.Router();
 
 // Middleware to check if user is authenticated
@@ -302,6 +302,21 @@ router.post('/api/services', async (req, res) => {
     }
 });
 
+router.delete('/api/services/:id', async (req, res) => {
+    const user = auth.currentUser;
+    if (!user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    try {
+        const { id } = req.params;
+        const serviceRef = doc(db, 'users', user.uid, 'services', id);
+        await deleteDoc(serviceRef);
+        res.status(200).json({ message: 'Service deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
 router.get('*', (req, res) => {
   res.status(404).render('404');
