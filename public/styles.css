@@ -781,6 +781,10 @@ header {
     box-sizing: border-box;
     border: 1px solid var(--primary-dark-blue);
 }
+#serviceDescription {
+    overflow-x: hidden;
+    resize: vertical;
+}
 
 .service-details {
     display: grid;
@@ -834,7 +838,6 @@ header {
     color: white;
 }
 
-
 .service-details {
     display: flex;
     justify-content: space-between;
@@ -874,6 +877,10 @@ header {
     color: #666;
     font-size: 0.9rem;
 }
+
+/* ======================
+   Media Queries and Keyframe Animations
+   ====================== */
 
 @media (max-width: 768px) {
     #previewFrame {
