@@ -8,17 +8,17 @@
             <p id="subdomainDescription"><%= description %></p>
         </div>
         
-        <div class="services-grid">
+        <div class="subdomain-services-grid">
             <% if (services && services.length > 0) { %>
                 <% services.forEach(service => { %>
-                    <div class="service-item">
+                    <div class="subdomain-service-item">
                         <h2><%= service.title %></h2>
-                        <p class="service-description"><%= service.description %></p>
-                        <div class="service-details">
-                            <span class="service-cost"><%= service.cost %></span>
-                            <span class="service-duration"><%= service.duration %></span>
+                        <p class="subdomain-service-description"><%= service.description %></p>
+                        <div class="subdomain-service-details">
+                            <span class="subdomain-service-cost"><%= service.cost %></span>
+                            <span class="subdomain-service-duration"><%= service.duration %></span>
                         </div>
-                        <p class="service-location"><%= service.location %></p>
+                        <p class="subdomain-service-location"><%= service.location %></p>
                     </div>
                 <% }); %>
             <% } %>
