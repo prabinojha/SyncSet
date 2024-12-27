@@ -694,6 +694,191 @@ header {
     background-color: white;
 }
 
+/* ======================
+   Services Styles
+   ====================== */
+
+.services-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.services-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.service-card {
+    background: var(--primary-light-blue);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.service-info h3 {
+    color: var(--primary-dark-blue);
+    margin-bottom: 0.5rem;
+}
+
+.service-info p {
+    color: #666;
+}
+
+.service-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.edit-btn, .delete-btn {
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    border: none;
+    cursor: pointer;
+    font-family: var(--primary-font);
+}
+
+.edit-btn {
+    background: white;
+    color: var(--primary-dark-blue);
+    border: 1px solid var(--primary-dark-blue);
+    transition: all 0.3s ease;
+}
+
+.edit-btn:hover {
+    background: var(--primary-dark-blue);
+    color: white;
+}
+
+.delete-btn {
+    background: var(--primary-purple);
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.delete-btn:hover {
+    background: var(--primary-dark-blue);
+    color: white;
+}
+
+.service-form-container {
+    background: var(--primary-light-blue);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+}
+
+.service-form-container h2 {
+    margin-bottom: 0.5rem;
+    color: var(--primary-dark-blue);
+}
+
+.service-form-container p {
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+.service-form input,
+.service-form textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid transparent;
+    border-radius: var(--border-radius);
+    font-family: var(--primary-font);
+    margin-bottom: 1rem;
+    box-sizing: border-box;
+}
+
+.service-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.time-selection p {
+    margin-bottom: 0.5rem;
+}
+
+.time-range {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.time-range input {
+    background: var(--primary-dark-blue);
+    color: white;
+    text-align: center;
+    cursor: pointer;
+}
+
+.form-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.cancel-btn,
+.create-btn {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: var(--border-radius);
+    border: none;
+    cursor: pointer;
+    font-family: var(--primary-font);
+    font-size: 1rem;
+}
+
+.cancel-btn {
+    background: white;
+    color: var(--primary-dark-blue);
+}
+
+.create-btn {
+    background: var(--primary-purple);
+    color: white;
+}
+
+/* Service display on subdomain page */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.service-item {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.service-item h2 {
+    margin-bottom: 1rem;
+}
+
+.service-description {
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.service-details {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.service-location {
+    color: #666;
+    font-size: 0.9rem;
+}
+
 @media (max-width: 768px) {
     #previewFrame {
         height: 100vh;
@@ -759,6 +944,10 @@ header {
         width: 90%;
         padding: 1.5rem;
     }
+
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 @keyframes shine {
@@ -773,136 +962,5 @@ header {
 @keyframes gradientFlow {
     to {
         background-position: 200% center;
-    }
-}
-
-/* ======================
-   Services Styles
-   ====================== */
-
-.services-section {
-    padding: 2rem;
-}
-
-.services-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    margin-top: 2rem;
-}
-
-.services-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.service-card {
-    background: white;
-    border: 1px solid var(--light-grey);
-    border-radius: var(--border-radius);
-    padding: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.service-form-container {
-    background: var(--primary-light-blue);
-    padding: 2rem;
-    border-radius: var(--border-radius);
-}
-
-.service-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.service-form input,
-.service-form textarea {
-    padding: 0.75rem;
-    border: 1px solid var(--light-grey);
-    border-radius: var(--border-radius);
-    font-family: var(--primary-font);
-}
-
-.service-details {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-}
-
-.time-selection {
-    margin: 1rem 0;
-}
-
-.time-range {
-    display: flex;
-    gap: 1rem;
-}
-
-.form-buttons {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.cancel-btn {
-    background: white;
-    border: 1px solid var(--light-grey);
-}
-
-.create-btn {
-    background: var(--primary-purple);
-    color: white;
-}
-
-.cancel-btn,
-.create-btn {
-    padding: 0.75rem 1.5rem;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    font-family: var(--primary-font);
-}
-
-/* Service display on subdomain page */
-.services-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    margin: 2rem 0;
-}
-
-.service-item {
-    background: white;
-    padding: 2rem;
-    border-radius: var(--border-radius);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.service-item h2 {
-    margin-bottom: 1rem;
-}
-
-.service-description {
-    color: #666;
-    margin-bottom: 1rem;
-}
-
-.service-details {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-}
-
-.service-location {
-    color: #666;
-    font-size: 0.9rem;
-}
-
-@media (max-width: 768px) {
-    .services-grid {
-        grid-template-columns: 1fr;
     }
 }

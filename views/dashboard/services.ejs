@@ -41,10 +41,15 @@
 document.addEventListener('DOMContentLoaded', () => {
     const serviceForm = document.getElementById('newServiceForm');
     const servicesList = document.getElementById('servicesList');
-    const breaks = [];
+    const cancelButton = document.getElementById('cancelService');
 
     // Load existing services
     loadServices();
+
+    // Cancel button handler
+    cancelButton.addEventListener('click', () => {
+        serviceForm.reset();
+    });
 
     // Form submission
     serviceForm.addEventListener('submit', async (e) => {
@@ -58,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
             duration: document.getElementById('serviceDuration').value,
             availability: {
                 startTime: document.getElementById('startTime').value,
-                endTime: document.getElementById('endTime').value,
+                endTime: document.getElementById('endTime').value
             }
         };
 
@@ -95,7 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p>${service.cost} - ${service.duration}</p>
                     </div>
                     <div class="service-actions">
-                        <button class="share-btn">Share</button>
                         <button class="edit-btn">Edit</button>
                         <button class="delete-btn">Delete</button>
                     </div>
