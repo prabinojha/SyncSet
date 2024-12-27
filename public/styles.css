@@ -658,6 +658,30 @@ header {
     animation: gradientFlow 3s linear infinite;
 }
 
+.subdomain-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 100;
+}
+
+/* Light theme version */
+.light-theme .subdomain-footer {
+    background-color: white;
+    box-shadow: 0 -4rem 3rem -1rem white;
+}
+
+/* Dark theme version */
+.dark-theme .subdomain-footer {
+    background-color: var(--primary-dark-blue);
+    box-shadow: 0 -4rem 3rem -1rem var(--primary-dark-blue);
+}
+
 /* ======================
    Preview Section
    ====================== */
