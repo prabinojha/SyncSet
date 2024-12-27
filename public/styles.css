@@ -775,25 +775,12 @@ header {
     gap: 0.5rem;
 }
 
-.edit-btn,
 .delete-btn {
     padding: 0.5rem 1rem;
     border-radius: var(--border-radius);
     border: none;
     cursor: pointer;
     font-family: var(--primary-font);
-}
-
-.edit-btn {
-    background: white;
-    color: var(--primary-dark-blue);
-    border: 1px solid var(--primary-dark-blue);
-    transition: all 0.3s ease;
-}
-
-.edit-btn:hover {
-    background: var(--primary-dark-blue);
-    color: white;
 }
 
 .delete-btn {
