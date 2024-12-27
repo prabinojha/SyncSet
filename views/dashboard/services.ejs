@@ -1,5 +1,7 @@
 <div class="services-section">
-    <h2>Services</h2>
+    <div id="servicesHeader" style="display: none;">
+        <h2>Services</h2>
+    </div>
     
     <div class="services-grid">
         <div id="servicesList" class="services-list">
@@ -45,6 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const serviceForm = document.getElementById('newServiceForm');
     const servicesList = document.getElementById('servicesList');
     const cancelButton = document.getElementById('cancelService');
+    const servicesHeader = document.getElementById('servicesHeader');
 
     // Load existing services
     loadServices();
@@ -96,10 +99,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch('/api/services');
             const services = await response.json();
             
-            // Hide services list if empty
-            servicesList.style.display = services.length === 0 ? 'none' : 'flex';
+            // Hide services list and header if empty
+            const hasServices = services.length > 0;
+            servicesList.style.display = hasServices ? 'flex' : 'none';
+            servicesHeader.style.display = hasServices ? 'block' : 'none';
             
-            if (services.length > 0) {
+            if (hasServices) {
                 servicesList.innerHTML = services.map(service => `
                     <div class="service-card" data-service-id="${service.id}">
                         <div class="service-info">
@@ -123,7 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Move deleteService inside the DOMContentLoaded scope
     window.deleteService = async function(serviceId) {
         if (!confirm('Are you sure you want to delete this service?')) {
             return;
@@ -135,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.ok) {
-                loadServices(); // Reload the services list
+                loadServices();
             } else {
                 throw new Error('Failed to delete service');
             }
