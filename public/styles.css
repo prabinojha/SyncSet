@@ -841,22 +841,55 @@ header {
     resize: vertical;
 }
 
+.time-selection {
+    margin-bottom: 1rem;
+}
+
 .time-selection p {
-    margin-bottom: 0.5rem;
+    color: #666;
+    margin-bottom: 1rem;
+    font-size: 1rem;
 }
 
 .time-range {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
-    margin-bottom: 1rem;
 }
 
-.time-range input {
-    background: var(--primary-dark-blue);
+.time-input-container {
+    position: relative;
+    width: 100%;
+}
+
+.time-input-container input[type="time"] {
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--primary-dark-blue);
     color: white;
-    text-align: center;
+    border: none;
+    border-radius: var(--border-radius);
+    font-family: var(--primary-font);
+    font-size: 1rem;
     cursor: pointer;
+    text-align: center;
+    outline: none;
+}
+
+.time-input-container input[type="time"]::-webkit-calendar-picker-indicator {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    right: 1rem;
+    filter: invert(1);
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+.time-input-container input[type="time"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+    transform: scale(1.1);
 }
 
 .services-form-buttons {

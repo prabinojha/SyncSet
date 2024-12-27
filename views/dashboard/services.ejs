@@ -7,22 +7,27 @@
         </div>
 
         <div class="service-form-container">
-            <h2 style="margin-bottom: 1rem;">Create a new service</h2>            
+            <h2>Create a new service</h2>
+            <p style="margin-bottom: 1rem;">Will be visible to all users on your booking page</p>
             <form id="newServiceForm" class="service-form">
-                <input type="text" id="serviceTitle" placeholder="Enter service title" required>
-                <textarea id="serviceDescription" placeholder="Description" required></textarea>
-                <input type="text" id="serviceLocation" placeholder="Location">
+                <input maxLength="40" type="text" id="serviceTitle" placeholder="Title" required>
+                <textarea maxLength="100" id="serviceDescription" placeholder="Description" required></textarea>
+                <input type="text" id="serviceLocation" placeholder="Location (optional)">
                 
                 <div class="service-details">
-                    <input type="text" id="serviceCost" placeholder="Cost" required>
-                    <input type="text" id="serviceDuration" placeholder="Duration" required>
+                    <input type="number" id="serviceCost" placeholder="Cost ($AUD)" required>
+                    <input type="number" id="serviceDuration" placeholder="Duration (mins)" required>
                 </div>
 
                 <div class="time-selection">
-                    <p>Select your availability for this service:</p>
+                    <p>Pick the time that you will be available between</p>
                     <div class="time-range">
-                        <input type="time" id="startTime" value="09:00" required>
-                        <input type="time" id="endTime" value="21:00" required>
+                        <div class="time-input-container">
+                            <input type="time" id="startTime" value="09:00" required>
+                        </div>
+                        <div class="time-input-container">
+                            <input type="time" id="endTime" value="21:00" required>
+                        </div>
                     </div>
                 </div>
 
