@@ -58,14 +58,13 @@ body {
    ====================== */
 
 header {
-    background-color: white;
+    background-color: var(--primary-light-blue);
     height: var(--header-height);
     border-bottom: 1px solid var(--light-grey);
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0;
-    background-color: var(--primary-light-blue);
     position: fixed;
     width: 100%;
     top: 0;
@@ -429,7 +428,6 @@ header {
     margin-bottom: 1rem;
 }
 
-/* Form Elements */
 .overview-form-group {
     margin-bottom: 1.5rem;
 }
@@ -669,6 +667,7 @@ header {
     background-color: white;
     box-shadow: 0 -8px 24px 16px white;
 }
+
 .dark-theme .subdomain-footer {
     background-color: var(--primary-dark-blue);
     box-shadow: 0 -8px 24px 16px var(--primary-dark-blue);
@@ -842,12 +841,6 @@ header {
     resize: vertical;
 }
 
-.service-details {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-}
-
 .time-selection p {
     margin-bottom: 0.5rem;
 }
@@ -907,7 +900,8 @@ header {
 .service-details {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 1rem;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
 }
 
 .service-description {
@@ -915,13 +909,11 @@ header {
     margin-bottom: 1rem;
 }
 
-
 .services-list {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
-
 
 /* ======================
    Media Queries and Keyframe Animations
