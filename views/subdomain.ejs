@@ -1,45 +1,62 @@
 <!DOCTYPE html>
 <html>
 <%- include('includes/head', {title: title}) %>
-<body class="<%= domainData && domainData.theme === 'dark' ? 'dark-theme' : 'light-theme' %>">
-    <div class="subdomain-container">
-        <div class="content-section">
-            <h1 id="subdomainTitle"><%= title %></h1>
-            <p id="subdomainDescription"><%= description %></p>
-        </div>
-        
-        <div class="subdomain-services-grid">
-            <% if (services && services.length > 0) { %>
-                <% services.forEach(service => { %>
-                    <div class="subdomain-service-item">
-                        <h2><%= service.title %></h2>
-                        <p class="subdomain-service-description"><%= service.description %></p>
-                        <div class="subdomain-service-details">
-                            <span class="subdomain-service-cost"><%= service.cost %></span>
-                            <span class="subdomain-service-duration"><%= service.duration %></span>
-                        </div>
-                        <p class="subdomain-service-location"><%= service.location %></p>
-                    </div>
-                <% }); %>
-            <% } %>
-        </div>
-        <div class="subdomain-footer">
-            <button class="cta-button">Check back soon</button>
-            <div class="powered-by">powered by syncset.xyz</div>
-        </div>
-    </div>
 
-    <script>
-    window.addEventListener('message', (event) => {
-        if (event.data.type === 'updatePreview') {
-            const { title, description, theme } = event.data.data;
-            
-            if (title) document.getElementById('subdomainTitle').textContent = title;
-            if (description) document.getElementById('subdomainDescription').textContent = description;
-            
-            document.body.className = theme === 'dark' ? 'dark-theme' : 'light-theme';
-        }
-    });
-    </script>
-</body>
-</html> 
+    <body class="<%= domainData && domainData.theme === 'dark' ? 'dark-theme' : 'light-theme' %>">
+        <div class="subdomain-container">
+            <div class="content-section">
+                <h1 id="subdomainTitle">
+                    <%= title %>
+                </h1>
+                <p id="subdomainDescription">
+                    <%= description %>
+                </p>
+
+                <div class="subdomain-services-grid">
+                    <% if (services && services.length> 0) { %>
+                        <% services.forEach(service=> { %>
+                            <div class="subdomain-service-item">
+                                <h2>
+                                    <%= service.title %>
+                                </h2>
+                                <p class="subdomain-service-description">
+                                    <%= service.description %>
+                                </p>
+                                <div class="subdomain-service-details">
+                                    <span class="subdomain-service-cost">
+                                        <%= service.cost %>
+                                    </span>
+                                    <span class="subdomain-service-duration">
+                                        <%= service.duration %>
+                                    </span>
+                                </div>
+                                <p class="subdomain-service-location">
+                                    <%= service.location %>
+                                </p>
+                            </div>
+                            <% }); %>
+                                <% } %>
+                </div>
+                <div class="subdomain-footer">
+                    <button class="cta-button">Check back soon</button>
+                    <div class="powered-by">powered by syncset.xyz</div>
+                </div>
+            </div>
+
+        </div>
+
+        <script>
+            window.addEventListener('message', (event) => {
+                if (event.data.type === 'updatePreview') {
+                    const { title, description, theme } = event.data.data;
+
+                    if (title) document.getElementById('subdomainTitle').textContent = title;
+                    if (description) document.getElementById('subdomainDescription').textContent = description;
+
+                    document.body.className = theme === 'dark' ? 'dark-theme' : 'light-theme';
+                }
+            });
+        </script>
+    </body>
+
+</html>
