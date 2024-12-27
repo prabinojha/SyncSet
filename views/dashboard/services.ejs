@@ -28,18 +28,6 @@
                     </div>
                 </div>
 
-                <div class="breaks-section">
-                    <p>Add any breaks</p>
-                    <div class="break-inputs">
-                        <input type="time" id="breakTime" placeholder="Time">
-                        <input type="number" id="breakLength" placeholder="Length (minutes)">
-                        <button type="button" id="addBreak" class="add-break-btn">Add</button>
-                    </div>
-                    <div id="breaksList" class="breaks-list">
-                        <!-- Breaks will be listed here -->
-                    </div>
-                </div>
-
                 <div class="form-buttons">
                     <button type="button" id="cancelService" class="cancel-btn">Cancel</button>
                     <button type="submit" class="create-btn">Create new service</button>
@@ -58,19 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load existing services
     loadServices();
 
-    // Add break handler
-    document.getElementById('addBreak').addEventListener('click', () => {
-        const time = document.getElementById('breakTime').value;
-        const length = document.getElementById('breakLength').value;
-        
-        if (time && length) {
-            breaks.push({ time, length });
-            updateBreaksList();
-            document.getElementById('breakTime').value = '';
-            document.getElementById('breakLength').value = '';
-        }
-    });
-
     // Form submission
     serviceForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -84,7 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
             availability: {
                 startTime: document.getElementById('startTime').value,
                 endTime: document.getElementById('endTime').value,
-                breaks: breaks.slice()
             }
         };
 
@@ -99,8 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.ok) {
                 serviceForm.reset();
-                breaks.length = 0;
-                updateBreaksList();
                 loadServices();
             } else {
                 throw new Error('Failed to create service');
@@ -110,16 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Failed to create service. Please try again.');
         }
     });
-
-    function updateBreaksList() {
-        const breaksList = document.getElementById('breaksList');
-        breaksList.innerHTML = breaks.map((break_, index) => `
-            <div class="break-item">
-                ${break_.time} - ${break_.length} minutes
-                <button onclick="removeBreak(${index})">Remove</button>
-            </div>
-        `).join('');
-    }
 
     async function loadServices() {
         try {
@@ -143,10 +105,5 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error loading services:', error);
         }
     }
-
-    window.removeBreak = (index) => {
-        breaks.splice(index, 1);
-        updateBreaksList();
-    };
 });
 </script> 

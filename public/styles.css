@@ -842,30 +842,6 @@ header {
     gap: 1rem;
 }
 
-.breaks-section {
-    margin: 1rem 0;
-}
-
-.break-inputs {
-    display: flex;
-    gap: 0.5rem;
-    margin: 0.5rem 0;
-}
-
-.breaks-list {
-    margin-top: 0.5rem;
-}
-
-.break-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.5rem;
-    background: white;
-    border-radius: var(--border-radius);
-    margin: 0.25rem 0;
-}
-
 .form-buttons {
     display: flex;
     gap: 1rem;
