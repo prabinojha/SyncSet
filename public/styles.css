@@ -836,6 +836,7 @@ header {
     box-sizing: border-box;
     border: 1px solid var(--primary-dark-blue);
 }
+
 #serviceDescription {
     overflow-x: hidden;
     resize: vertical;
@@ -880,6 +881,7 @@ header {
     cursor: pointer;
     font-family: var(--primary-font);
     font-size: 1rem;
+    transition: all 0.3s ease;
 }
 
 .services-cancel-btn {
@@ -891,6 +893,15 @@ header {
 .services-create-btn {
     background: var(--primary-purple);
     color: white;
+}
+
+.services-cancel-btn:hover {
+    background: rgb(242, 242, 242);
+    color: var(--primary-dark-blue);
+}
+
+.services-create-btn:hover {
+    transform: scale(1.05);
 }
 
 .service-details {
