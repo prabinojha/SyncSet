@@ -128,14 +128,23 @@
                     for (let day = 1; day <= lastDay.getDate(); day++) {
                         const dayElement = this.createDayElement(day);
                         const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-
-                        dayElement.dataset.date = dateString;
-                        dayElement.addEventListener('click', () => this.selectDate(dateString));
+                        
+                        // Check if date is in the past
+                        const currentDate = new Date(dateString);
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        
+                        if (currentDate < today) {
+                            dayElement.classList.add('disabled');
+                        } else {
+                            dayElement.dataset.date = dateString;
+                            dayElement.addEventListener('click', () => this.selectDate(dateString));
+                        }
 
                         if (this.isToday(year, month, day)) {
                             dayElement.classList.add('today');
                         }
-
+                        
                         daysGrid.appendChild(dayElement);
                     }
                 },
@@ -155,6 +164,15 @@
                 },
 
                 selectDate(dateString) {
+                    // Check if date is in the past
+                    const selectedDate = new Date(dateString);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
+
+                    if (selectedDate < today) {
+                        return; // Don't allow selection of past dates
+                    }
+
                     this.selectedDate = dateString;
                     document.querySelectorAll('.subdomain-day').forEach(day => {
                         day.classList.remove('selected');
@@ -245,6 +263,31 @@
             // Initialize calendar when DOM is loaded
             document.addEventListener('DOMContentLoaded', () => {
                 calendar.init();
+            });
+
+            // Fix the booking button click handler
+            document.querySelector('.subdomain-cta-button').addEventListener('click', () => {
+                const selectedSlot = document.querySelector('.time-slot.selected');
+                const selectedDay = document.querySelector('.subdomain-day.selected');
+                const selectedService = selectedSlot.closest('.subdomain-service-item');
+                const service = services.find(s => s.id === selectedService.dataset.serviceId);
+
+                // Store booking details in session storage
+                const bookingDetails = {
+                    date: selectedDay.dataset.date,
+                    time: selectedSlot.dataset.time,
+                    serviceId: service.id,
+                    serviceName: service.title,
+                    cost: service.cost,
+                    duration: service.duration
+                };
+                sessionStorage.setItem('pendingBooking', JSON.stringify(bookingDetails));
+
+                // Get the current subdomain from the URL
+                const subdomain = window.location.pathname.split('/')[1];
+                
+                // Redirect to booking confirmation page with proper path
+                window.location.href = `/${subdomain}/confirm-booking`;
             });
         </script>
     </body>

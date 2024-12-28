@@ -361,34 +361,72 @@ router.post('/api/bookings/:id/complete', async (req, res) => {
 
 // Create new booking
 router.post('/api/bookings', async (req, res) => {
-    const { date, time, serviceId } = req.body;
-    
+    const {
+        serviceId,
+        date,
+        time,
+        clientName,
+        clientEmail,
+        clientPhone,
+        notes,
+        serviceName,
+        cost,
+        duration
+    } = req.body;
+
     try {
-        // Check if slot is already booked
-        const bookingsRef = collection(db, 'bookings');
-        const q = query(bookingsRef, 
-            where('date', '==', date),
-            where('time', '==', time),
-            where('serviceId', '==', serviceId)
-        );
-        
-        const existingBooking = await getDocs(q);
-        if (!existingBooking.empty) {
-            return res.status(400).json({ error: 'Time slot already booked' });
+        // Get the subdomain from the referer URL
+        const referer = req.headers.referer;
+        const subdomain = referer.split('/')[3]; // This gets the subdomain from the URL
+
+        // Get the domain document to find the owner's UID
+        const domainDoc = await getDoc(doc(db, 'domains', subdomain));
+        if (!domainDoc.exists()) {
+            throw new Error('Domain not found');
         }
-        
-        // Create new booking
-        const booking = await addDoc(bookingsRef, {
+        const ownerUid = domainDoc.data().uid;
+
+        // Create the booking in the owner's bookings collection
+        const bookingRef = collection(db, 'users', ownerUid, 'bookings');
+        await addDoc(bookingRef, {
+            serviceId,
+            serviceName,
             date,
             time,
-            serviceId,
-            createdAt: new Date(),
-            status: 'pending'
+            clientName,
+            clientEmail,
+            clientPhone,
+            notes,
+            cost,
+            duration,
+            status: 'pending',
+            createdAt: new Date()
         });
-        
-        res.status(201).json({ id: booking.id });
+
+        res.status(201).json({ success: true });
     } catch (error) {
+        console.error('Error creating booking:', error);
         res.status(500).json({ error: error.message });
+    }
+});
+
+// Confirmation page route
+router.get('/:subdomain/confirm-booking', async (req, res) => {
+    const { subdomain } = req.params;
+    
+    try {
+        const domainDoc = await getDoc(doc(db, 'domains', subdomain));
+        
+        if (domainDoc.exists()) {
+            res.render('confirm-booking', {
+                theme: domainDoc.data().theme || 'light'
+            });
+        } else {
+            res.status(404).render('404');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).render('error');
     }
 });
 
