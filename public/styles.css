@@ -759,97 +759,9 @@ header {
 }
 
 /* ======================
-   Media Queries and Keyframe Animations
+   Calendar Styles
    ====================== */
 
-@media (max-width: 768px) {
-    #previewFrame {
-        height: 100vh;
-    }
-
-    .content-section {
-        max-width: calc(100% - 2rem);
-    }
-
-    .overview-container {
-        flex-direction: column;
-        height: auto;
-    }
-
-    .hamburger-menu {
-        display: block;
-        order: 2;
-    }
-
-    #anchorLogo {
-        display: none;
-    }
-
-    .sidebar {
-        top: 0;
-        height: 100vh;
-        transform: translateX(-100%);
-        transition: transform 0.5s ease;
-        z-index: 1001;
-    }
-
-    .dashboard-main {
-        margin-left: 0;
-        width: 100%;
-        padding: 1rem;
-    }
-
-    .sidebar.active {
-        transform: translateX(0);
-    }
-
-    .overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 999;
-    }
-
-    .overlay.active {
-        display: block;
-    }
-
-    .header-buttons {
-        margin-right: 0;
-        gap: 0.1rem;
-    }
-
-    .share-modal {
-        width: 90%;
-        padding: 1.5rem;
-    }
-
-    .services-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@keyframes shine {
-    0% {
-        transform: translateX(-100%) rotate(45deg);
-    }
-
-    100% {
-        transform: translateX(100%) rotate(45deg);
-    }
-}
-
-@keyframes gradientFlow {
-    to {
-        background-position: 200% center;
-    }
-}
-
-/* Calendar Styles */
 .calendar-section {
     padding: 1rem;
 }
@@ -1012,10 +924,99 @@ header {
     text-align: center;
     color: #666;
     padding: 1rem;
+
 }
+/* ======================
+   Media Queries and Keyframe Animations
+   ====================== */
 
 @media (max-width: 768px) {
+    #previewFrame {
+        height: 100vh;
+    }
+
+    .content-section {
+        max-width: calc(100% - 2rem);
+    }
+
+    .overview-container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .hamburger-menu {
+        display: block;
+        order: 2;
+    }
+
+    #anchorLogo {
+        display: none;
+    }
+
+    .sidebar {
+        top: 0;
+        height: 100vh;
+        transform: translateX(-100%);
+        transition: transform 0.5s ease;
+        z-index: 1001;
+    }
+
+    .dashboard-main {
+        margin-left: 0;
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+
+    .overlay.active {
+        display: block;
+    }
+
+    .header-buttons {
+        margin-right: 0;
+        gap: 0.1rem;
+    }
+
+    .share-modal {
+        width: 90%;
+        padding: 1.5rem;
+    }
+
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+
     .calendar-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+@keyframes shine {
+    0% {
+        transform: translateX(-100%) rotate(45deg);
+    }
+
+    100% {
+        transform: translateX(100%) rotate(45deg);
+    }
+}
+
+@keyframes gradientFlow {
+    to {
+        background-position: 200% center;
     }
 }
