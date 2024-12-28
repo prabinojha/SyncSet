@@ -184,9 +184,28 @@ body {
 }
 
 .subdomain-day.selected {
-    background-color: var(--primary-dark-blue) !important;
+    background-color: var(--primary-purple) !important;
     color: white !important;
     font-weight: bold;
+}
+
+.subdomain-day.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.subdomain-day.disabled.dark-theme {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+}
+
+.subdomain-day.disabled.light-theme {
+    background-color: var(--light-grey) !important;
+    color: var(--primary-dark-blue) !important;
+}
+
+.subdomain-day.disabled:hover {
+    transform: none;
 }
 
 /* Theme Variants */

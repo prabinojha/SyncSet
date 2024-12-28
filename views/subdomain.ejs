@@ -137,25 +137,32 @@
                         div.textContent = content;
                         
                         if (content !== '') {
-                            div.addEventListener('click', () => {
-                                const previousSelected = document.querySelector('.subdomain-day.selected');
-                                if (previousSelected) {
-                                    previousSelected.classList.remove('selected');
-                                }
-                                
-                                div.classList.add('selected');
-                                
-                                this.selectedDate = new Date(
-                                    this.currentDate.getFullYear(),
-                                    this.currentDate.getMonth(),
-                                    content
-                                );
-                                
-                                window.parent.postMessage({
-                                    type: 'dateSelected',
-                                    date: this.selectedDate.toISOString()
-                                }, '*');
-                            });
+                            const currentDate = new Date();
+                            const dayDate = new Date(
+                                this.currentDate.getFullYear(),
+                                this.currentDate.getMonth(),
+                                content
+                            );
+                            
+                            if (dayDate < new Date(currentDate.setHours(0, 0, 0, 0))) {
+                                div.classList.add('disabled');
+                            } else {
+                                div.addEventListener('click', () => {
+                                    const previousSelected = document.querySelector('.subdomain-day.selected');
+                                    if (previousSelected) {
+                                        previousSelected.classList.remove('selected');
+                                    }
+                                    
+                                    div.classList.add('selected');
+                                    
+                                    this.selectedDate = dayDate;
+                                    
+                                    window.parent.postMessage({
+                                        type: 'dateSelected',
+                                        date: this.selectedDate.toISOString()
+                                    }, '*');
+                                });
+                            }
                         }
                         return div;
                     },
