@@ -29,6 +29,7 @@ body {
     align-items: center;
     text-align: center;
     position: relative;
+    margin-bottom: 100px;
 }
 
 .subdomain-content-section {
@@ -101,9 +102,7 @@ body {
 }
 
 /* Calendar Styles */
-.subdomain-calendar-section {
-    padding: 1rem 0;
-}
+
 
 .subdomain-calendar-grid {
     display: flex;
@@ -114,7 +113,7 @@ body {
 
 .subdomain-calendar-container {
     width: 100%;
-    max-width: 400px;
+    max-width: 600px;
     background: white;
     border-radius: 8px;
     padding: 1rem;
@@ -154,7 +153,7 @@ body {
 .subdomain-days {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
+    gap: 8px;
 }
 
 .subdomain-day {
@@ -165,7 +164,7 @@ body {
     border-radius: 8px;
     font-size: 0.9rem;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 .subdomain-day:empty {
@@ -313,6 +312,12 @@ body {
     .subdomain-content-section {
         width: 100%;
         padding: 0 1rem;
+    }
+
+    .subdomain-days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 4px;
     }
 }
 
