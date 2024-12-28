@@ -190,18 +190,8 @@ body {
 }
 
 .subdomain-day.disabled {
-    opacity: 0.5;
+    opacity: 1;
     cursor: not-allowed;
-}
-
-.subdomain-day.disabled.dark-theme {
-    background-color: rgba(255, 255, 255, 0.1) !important;
-    color: white !important;
-}
-
-.subdomain-day.disabled.light-theme {
-    background-color: var(--light-grey) !important;
-    color: var(--primary-dark-blue) !important;
 }
 
 .subdomain-day.disabled:hover {

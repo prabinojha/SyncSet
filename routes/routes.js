@@ -259,7 +259,6 @@ router.post('/toggle-publish', async (req, res) => {
   }
 });
 
-// Add a new route to handle saving changes
 router.post('/save-changes', async (req, res) => {
   const user = auth.currentUser;
   if (!user) {
@@ -314,51 +313,6 @@ router.delete('/api/services/:id', async (req, res) => {
         const serviceRef = doc(db, 'users', user.uid, 'services', id);
         await deleteDoc(serviceRef);
         res.status(200).json({ message: 'Service deleted successfully' });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// Get bookings for a specific date
-router.get('/api/bookings/:date', async (req, res) => {
-    const user = auth.currentUser;
-    if (!user) {
-        return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    try {
-        const { date } = req.params;
-        const bookingsRef = collection(db, 'users', user.uid, 'bookings');
-        const q = query(bookingsRef, where('date', '==', date));
-        const bookingsSnap = await getDocs(q);
-        
-        const bookings = [];
-        bookingsSnap.forEach(doc => {
-            bookings.push({ id: doc.id, ...doc.data() });
-        });
-
-        res.json(bookings);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// Mark booking as complete
-router.post('/api/bookings/:id/complete', async (req, res) => {
-    const user = auth.currentUser;
-    if (!user) {
-        return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    try {
-        const { id } = req.params;
-        const bookingRef = doc(db, 'users', user.uid, 'bookings', id);
-        await updateDoc(bookingRef, {
-            status: 'completed',
-            completedAt: new Date()
-        });
-
-        res.json({ success: true });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
