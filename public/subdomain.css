@@ -1,0 +1,222 @@
+:root {
+    --primary-purple: #9766f9;
+    --primary-light-purple: #ddc0fb;
+    --primary-blue: #30abf7;
+    --primary-light-blue: #e1f5ff;
+    --primary-dark-blue: #002c45;
+    --light-grey: #e1e0e0;
+    --primary-font: 'Poppins', sans-serif;
+    --border-radius: 8px;
+}
+
+/* Base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--primary-font);
+}
+
+/* Subdomain Page Layout */
+.subdomain-container {
+    min-height: 100vh;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+
+.content-section {
+    width: 600px;
+    margin: 0 auto;
+}
+
+#subdomainTitle {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+#subdomainDescription {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin-bottom: 3rem;
+    opacity: 0.9;
+}
+
+/* Calendar Styles */
+.calendar-section {
+    margin: 2rem auto;
+    max-width: 400px;
+}
+
+.calendar-container {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.calendar-nav-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    color: #333;
+}
+
+#currentMonth {
+    font-size: 1.2rem;
+    margin: 0;
+    font-weight: 500;
+}
+
+.weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 0.5rem;
+}
+
+.weekday {
+    text-align: center;
+    font-weight: 500;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+}
+
+.day:empty {
+    background: none;
+    border: none;
+}
+
+.day.today {
+    background: var(--primary-blue);
+    color: white;
+}
+
+/* Footer Styles */
+.subdomain-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    padding-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    z-index: 100;
+    margin: 0;
+}
+
+.cta-button {
+    background-color: var(--primary-blue);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 999px;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    width: min(600px, calc(100% - 4rem));
+    margin: 0 auto;
+    font-family: var(--primary-font);
+}
+
+.powered-by {
+    position: relative;
+    font-size: 0.9rem;
+    background-size: 200% auto;
+    animation: gradientFlow 3s linear infinite;
+    margin-top: 5px;
+}
+
+/* Theme Variants */
+.light-theme {
+    background-color: white;
+    color: var(--primary-dark-blue);
+}
+
+.dark-theme {
+    background-color: var(--primary-dark-blue);
+    color: white;
+}
+
+.light-theme .powered-by {
+    background: linear-gradient(to right,
+            var(--primary-blue),
+            var(--primary-purple),
+            var(--primary-blue));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.dark-theme .powered-by {
+    background: linear-gradient(to right,
+            white,
+            rgba(255, 255, 255, 0.444),
+            white);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.light-theme .subdomain-footer {
+    background-color: white;
+    box-shadow: 0 -8px 24px 16px white;
+}
+
+.dark-theme .subdomain-footer {
+    background-color: var(--primary-dark-blue);
+    box-shadow: 0 -8px 24px 16px var(--primary-dark-blue);
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    .content-section {
+        width: 100%;
+        padding: 0 1rem;
+    }
+    
+    .calendar-section {
+        width: 100%;
+    }
+}
+
+@keyframes gradientFlow {
+    to {
+        background-position: 200% center;
+    }
+} 

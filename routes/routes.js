@@ -124,7 +124,7 @@ router.get('/:subdomain', async (req, res) => {
       
       if (!domainData.published && 
           (!isPreview || !currentUser || domainData.uid !== currentUser.uid)) {
-        return res.render('unpublished');
+        return res.render('unpublished', { isSubdomain: true });
       }
 
       // Fetch services
@@ -140,14 +140,15 @@ router.get('/:subdomain', async (req, res) => {
         title: domainData.title || `Welcome to ${subdomain}`,
         description: domainData.description || 'No description available',
         domainData: domainData,
-        services: services
+        services: services,
+        isSubdomain: true
       });
     } else {
-      res.status(404).render('404');
+      res.status(404).render('404', { isSubdomain: true });
     }
   } catch (error) {
     console.error('Error:', error);
-    res.status(500).render('error');
+    res.status(500).render('error', { isSubdomain: true });
   }
 });
 
