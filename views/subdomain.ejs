@@ -31,7 +31,7 @@
                 <div class="subdomain-services-grid">
                     <% if (services && services.length> 0) { %>
                         <% services.forEach(service=> { %>
-                            <div class="subdomain-service-item">
+                            <div class="subdomain-service-item" data-service-id="<%= service.id %>">
                                 <h2>
                                     <%= service.title %>
                                 </h2>
@@ -49,18 +49,26 @@
                                 <p class="subdomain-service-location">
                                     <%= service.location %>
                                 </p>
+
+                                <!-- Add time slots container -->
+                                <div class="service-time-slots" style="display: none;">
+                                    <div class="time-slots-grid"></div>
+                                </div>
                             </div>
-                        <% }); %>
-                    <% } %>
+                            <% }); %>
+                                <% } %>
                 </div>
                 <div class="subdomain-footer">
-                    <button class="subdomain-cta-button">Check back soon</button>
+                    <button class="subdomain-cta-button" disabled>Select a date and time</button>
                     <div class="subdomain-powered-by">powered by syncset.xyz</div>
                 </div>
             </div>
         </div>
 
         <script>
+            // Add this at the top to make services data available to our JS
+            const services = JSON.parse('<%- JSON.stringify(services) %>');
+
             window.addEventListener('message', (event) => {
                 if (event.data.type === 'updatePreview') {
                     const { title, description, theme } = event.data.data;
@@ -72,111 +80,173 @@
                 }
             });
 
-            document.addEventListener('DOMContentLoaded', () => {
-                const calendar = {
-                    currentDate: new Date(),
-                    selectedDate: null,
-                    
-                    init() {
-                        this.setupCalendarControls();
+            // Calendar initialization
+            const calendar = {
+                currentDate: new Date(),
+                selectedDate: null,
+
+                init() {
+                    this.setupCalendarControls();
+                    this.renderCalendar();
+                },
+
+                setupCalendarControls() {
+                    document.getElementById('subdomain-prevMonth').addEventListener('click', () => {
+                        this.currentDate.setMonth(this.currentDate.getMonth() - 1);
                         this.renderCalendar();
-                    },
+                    });
 
-                    setupCalendarControls() {
-                        document.getElementById('subdomain-prevMonth').addEventListener('click', () => {
-                            this.currentDate.setMonth(this.currentDate.getMonth() - 1);
-                            this.renderCalendar();
-                        });
+                    document.getElementById('subdomain-nextMonth').addEventListener('click', () => {
+                        this.currentDate.setMonth(this.currentDate.getMonth() + 1);
+                        this.renderCalendar();
+                    });
+                },
 
-                        document.getElementById('subdomain-nextMonth').addEventListener('click', () => {
-                            this.currentDate.setMonth(this.currentDate.getMonth() + 1);
-                            this.renderCalendar();
-                        });
-                    },
+                renderCalendar() {
+                    const year = this.currentDate.getFullYear();
+                    const month = this.currentDate.getMonth();
 
-                    renderCalendar() {
-                        const year = this.currentDate.getFullYear();
-                        const month = this.currentDate.getMonth();
-                        
-                        const monthNames = ["January", "February", "March", "April", "May", "June",
-                                         "July", "August", "September", "October", "November", "December"];
-                        document.getElementById('subdomain-currentMonth').textContent = `${monthNames[month]} ${year}`;
+                    // Update month/year display
+                    const monthNames = ["January", "February", "March", "April", "May", "June",
+                        "July", "August", "September", "October", "November", "December"];
+                    document.getElementById('subdomain-currentMonth').textContent = `${monthNames[month]} ${year}`;
 
-                        const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-                        document.querySelector('.subdomain-weekdays').innerHTML = weekdays.map(day => 
-                            `<div class="subdomain-weekday">${day}</div>`
-                        ).join('');
+                    // Clear previous calendar
+                    const daysGrid = document.querySelector('.subdomain-days');
+                    daysGrid.innerHTML = '';
 
-                        const firstDay = new Date(year, month, 1);
-                        const lastDay = new Date(year, month + 1, 0);
-                        const daysGrid = document.querySelector('.subdomain-days');
-                        daysGrid.innerHTML = '';
+                    // Calculate first day of month and last day
+                    const firstDay = new Date(year, month, 1);
+                    const lastDay = new Date(year, month + 1, 0);
 
-                        for (let i = 0; i < firstDay.getDay(); i++) {
-                            daysGrid.appendChild(this.createDayElement(''));
-                        }
-
-                        for (let day = 1; day <= lastDay.getDate(); day++) {
-                            const dayElement = this.createDayElement(day);
-                            if (this.isToday(year, month, day)) {
-                                dayElement.classList.add('today');
-                            }
-                            if (this.selectedDate && 
-                                this.selectedDate.getFullYear() === year && 
-                                this.selectedDate.getMonth() === month && 
-                                this.selectedDate.getDate() === day) {
-                                dayElement.classList.add('selected');
-                            }
-                            daysGrid.appendChild(dayElement);
-                        }
-                    },
-
-                    createDayElement(content) {
-                        const div = document.createElement('div');
-                        div.className = 'subdomain-day';
-                        div.textContent = content;
-                        
-                        if (content !== '') {
-                            const currentDate = new Date();
-                            const dayDate = new Date(
-                                this.currentDate.getFullYear(),
-                                this.currentDate.getMonth(),
-                                content
-                            );
-                            
-                            if (dayDate < new Date(currentDate.setHours(0, 0, 0, 0))) {
-                                div.classList.add('disabled');
-                            } else {
-                                div.addEventListener('click', () => {
-                                    const previousSelected = document.querySelector('.subdomain-day.selected');
-                                    if (previousSelected) {
-                                        previousSelected.classList.remove('selected');
-                                    }
-                                    
-                                    div.classList.add('selected');
-                                    
-                                    this.selectedDate = dayDate;
-                                    
-                                    window.parent.postMessage({
-                                        type: 'dateSelected',
-                                        date: this.selectedDate.toISOString()
-                                    }, '*');
-                                });
-                            }
-                        }
-                        return div;
-                    },
-
-                    isToday(year, month, day) {
-                        const today = new Date();
-                        return today.getFullYear() === year && 
-                               today.getMonth() === month && 
-                               today.getDate() === day;
+                    // Add empty cells for days before the first of the month
+                    for (let i = 0; i < firstDay.getDay(); i++) {
+                        daysGrid.appendChild(this.createDayElement(''));
                     }
-                };
 
+                    // Add the days of the month
+                    for (let day = 1; day <= lastDay.getDate(); day++) {
+                        const dayElement = this.createDayElement(day);
+                        const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+                        dayElement.dataset.date = dateString;
+                        dayElement.addEventListener('click', () => this.selectDate(dateString));
+
+                        if (this.isToday(year, month, day)) {
+                            dayElement.classList.add('today');
+                        }
+
+                        daysGrid.appendChild(dayElement);
+                    }
+                },
+
+                createDayElement(content) {
+                    const div = document.createElement('div');
+                    div.className = 'subdomain-day';
+                    div.textContent = content;
+                    return div;
+                },
+
+                isToday(year, month, day) {
+                    const today = new Date();
+                    return today.getFullYear() === year &&
+                        today.getMonth() === month &&
+                        today.getDate() === day;
+                },
+
+                selectDate(dateString) {
+                    this.selectedDate = dateString;
+                    document.querySelectorAll('.subdomain-day').forEach(day => {
+                        day.classList.remove('selected');
+                        if (day.dataset.date === dateString) {
+                            day.classList.add('selected');
+                        }
+                    });
+
+                    // Show time slots for each service
+                    document.querySelectorAll('.subdomain-service-item').forEach(serviceCard => {
+                        const serviceId = serviceCard.dataset.serviceId;
+                        const service = services.find(s => s.id === serviceId);
+                        const slotsContainer = serviceCard.querySelector('.service-time-slots');
+                        const slotsGrid = serviceCard.querySelector('.time-slots-grid');
+
+                        // Generate time slots based on service duration
+                        const timeSlots = generateTimeSlots(
+                            service.startTime || '09:00',
+                            service.endTime || '17:00',
+                            service.duration || 60
+                        );
+
+                        // Render time slots
+                        slotsGrid.innerHTML = timeSlots.map(slot => `
+                            <div class="time-slot" data-time="${slot.time}">
+                                ${formatTime(slot.time)}
+                            </div>
+                        `).join('');
+
+                        // Show the time slots container
+                        slotsContainer.style.display = 'block';
+
+                        // Add click handlers for time slots
+                        slotsGrid.querySelectorAll('.time-slot').forEach(slot => {
+                            slot.addEventListener('click', () => {
+                                document.querySelectorAll('.time-slot').forEach(s =>
+                                    s.classList.remove('selected'));
+                                slot.classList.add('selected');
+                                updateBookButton();
+                            });
+                        });
+                    });
+                }
+            };
+
+            // Helper functions remain the same
+            function generateTimeSlots(startTime, endTime, durationMinutes) {
+                const slots = [];
+                const start = new Date(`2000-01-01T${startTime}`);
+                const end = new Date(`2000-01-01T${endTime}`);
+
+                while (start < end) {
+                    const timeString = start.toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                    });
+
+                    slots.push({
+                        time: timeString,
+                        booked: false
+                    });
+
+                    start.setMinutes(start.getMinutes() + parseInt(durationMinutes));
+                }
+
+                return slots;
+            }
+
+            function formatTime(time) {
+                return time;
+            }
+
+            function updateBookButton() {
+                const selectedSlot = document.querySelector('.time-slot.selected');
+                const selectedDay = document.querySelector('.subdomain-day.selected');
+                const bookButton = document.querySelector('.subdomain-cta-button');
+
+                if (selectedSlot && selectedDay) {
+                    bookButton.removeAttribute('disabled');
+                    bookButton.textContent = 'Book Appointment';
+                } else {
+                    bookButton.setAttribute('disabled', '');
+                    bookButton.textContent = 'Select a date and time';
+                }
+            }
+
+            // Initialize calendar when DOM is loaded
+            document.addEventListener('DOMContentLoaded', () => {
                 calendar.init();
             });
         </script>
     </body>
+
 </html>

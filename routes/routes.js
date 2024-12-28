@@ -359,6 +359,38 @@ router.post('/api/bookings/:id/complete', async (req, res) => {
   }
 });
 
+// Create new booking
+router.post('/api/bookings', async (req, res) => {
+    const { date, time, serviceId } = req.body;
+    
+    try {
+        // Check if slot is already booked
+        const bookingsRef = collection(db, 'bookings');
+        const q = query(bookingsRef, 
+            where('date', '==', date),
+            where('time', '==', time),
+            where('serviceId', '==', serviceId)
+        );
+        
+        const existingBooking = await getDocs(q);
+        if (!existingBooking.empty) {
+            return res.status(400).json({ error: 'Time slot already booked' });
+        }
+        
+        // Create new booking
+        const booking = await addDoc(bookingsRef, {
+            date,
+            time,
+            serviceId,
+            createdAt: new Date(),
+            status: 'pending'
+        });
+        
+        res.status(201).json({ id: booking.id });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
 router.get('*', (req, res) => {
   res.status(404).render('404');

@@ -338,3 +338,51 @@ body {
         background-position: 200% center;
     }
 }
+
+.service-time-slots {
+    margin-top: 1rem;
+}
+
+.time-slots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.time-slot {
+    padding: 0.5rem;
+    text-align: center;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.light-theme .time-slot {
+    background: var(--primary-light-blue);
+    color: var(--primary-dark-blue);
+}
+
+.dark-theme .time-slot {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.time-slot:hover:not(.booked) {
+    transform: translateY(-2px);
+}
+
+.time-slot.selected {
+    background: var(--primary-blue);
+    color: white;
+}
+
+.time-slot.booked {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--light-grey);
+}
+
+.time-slot.booked:hover {
+    transform: none;
+}
