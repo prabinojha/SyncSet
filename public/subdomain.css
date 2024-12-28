@@ -31,79 +31,133 @@ body {
     position: relative;
 }
 
-.content-section {
+.subdomain-content-section {
     width: 600px;
     margin: 0 auto;
 }
 
-#subdomainTitle {
+#subdomain-title {
     font-size: 3rem;
     margin-bottom: 1rem;
 }
 
-#subdomainDescription {
+#subdomain-description {
     font-size: 1.2rem;
     line-height: 1.6;
     margin-bottom: 3rem;
     opacity: 0.9;
 }
 
-/* Calendar Styles */
-.calendar-section {
-    margin: 2rem auto;
-    max-width: 400px;
+/* Service Item Styles */
+.subdomain-service-item {
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border-radius: var(--border-radius);
+    transition: all 0.2s ease;
 }
 
-.calendar-container {
+.light-theme .subdomain-service-item {
     background: white;
-    border-radius: 12px;
-    padding: 1rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--light-grey);
+    color: var(--primary-dark-blue);
 }
 
-.calendar-header {
+.dark-theme .subdomain-service-item {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.subdomain-service-item:hover {
+    transform: translateY(-2px);
+}
+
+.light-theme .subdomain-service-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dark-theme .subdomain-service-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.subdomain-service-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.subdomain-service-description {
+    font-size: 1rem;
+    line-height: 1.5;
+    opacity: 0.9;
+}
+
+.light-theme .subdomain-service-description {
+    color: var(--primary-dark-blue);
+}
+
+.dark-theme .subdomain-service-description {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Calendar Styles */
+.subdomain-calendar-section {
+    padding: 1rem 0;
+}
+
+.subdomain-calendar-grid {
+    display: flex;
+    justify-content: center;
+    height: auto;
+    margin-bottom: 2rem;
+}
+
+.subdomain-calendar-container {
+    width: 100%;
+    max-width: 400px;
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.subdomain-calendar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
 }
 
-.calendar-nav-btn {
+.subdomain-calendar-nav-btn {
     background: none;
     border: none;
     font-size: 1.2rem;
     cursor: pointer;
     padding: 0.5rem 1rem;
-    color: #333;
+    border-radius: var(--border-radius);
+    transition: background-color 0.2s ease;
 }
 
-#currentMonth {
-    font-size: 1.2rem;
-    margin: 0;
-    font-weight: 500;
-}
-
-.weekdays {
+.subdomain-weekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 4px;
     margin-bottom: 0.5rem;
 }
 
-.weekday {
+.subdomain-weekday {
     text-align: center;
     font-weight: 500;
-    color: #333;
     font-size: 0.9rem;
 }
 
-.days {
+.subdomain-days {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 4px;
 }
 
-.day {
+.subdomain-day {
     aspect-ratio: 1;
     display: flex;
     align-items: center;
@@ -111,18 +165,76 @@ body {
     border-radius: 8px;
     font-size: 0.9rem;
     cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.subdomain-day:empty {
+    background: none !important;
+    border: none !important;
+    cursor: default;
+}
+
+.subdomain-day:not(:empty):hover {
+    transform: scale(1.05);
+}
+
+.subdomain-day.today {
+    background: var(--primary-blue) !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.subdomain-day.selected {
+    background-color: var(--primary-dark-blue) !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+/* Theme Variants */
+.light-theme .subdomain-calendar-nav-btn {
+    color: var(--primary-dark-blue);
+}
+
+.dark-theme .subdomain-calendar-nav-btn {
+    color: white;
+}
+
+.light-theme .subdomain-calendar-container {
+    background: white;
+    border: 1px solid var(--light-grey);
+}
+
+.dark-theme .subdomain-calendar-container {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.light-theme .subdomain-weekday {
+    color: var(--primary-dark-blue);
+}
+
+.dark-theme .subdomain-weekday {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.light-theme .subdomain-day {
     background: #f8f9fa;
     border: 1px solid #e9ecef;
+    color: var(--primary-dark-blue);
 }
 
-.day:empty {
-    background: none;
-    border: none;
-}
-
-.day.today {
-    background: var(--primary-blue);
+.dark-theme .subdomain-day {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     color: white;
+}
+
+.light-theme .subdomain-day:not(:empty):hover {
+    background: var(--primary-light-blue);
+}
+
+.dark-theme .subdomain-day:not(:empty):hover {
+    background: rgba(255, 255, 255, 0.2);
 }
 
 /* Footer Styles */
@@ -141,7 +253,7 @@ body {
     margin: 0;
 }
 
-.cta-button {
+.subdomain-cta-button {
     background-color: var(--primary-blue);
     color: white;
     padding: 1rem 2rem;
@@ -154,40 +266,33 @@ body {
     font-family: var(--primary-font);
 }
 
-.powered-by {
+.subdomain-powered-by {
     position: relative;
     font-size: 0.9rem;
     background-size: 200% auto;
-    animation: gradientFlow 3s linear infinite;
     margin-top: 5px;
 }
 
-/* Theme Variants */
-.light-theme {
-    background-color: white;
-    color: var(--primary-dark-blue);
-}
-
-.dark-theme {
-    background-color: var(--primary-dark-blue);
-    color: white;
-}
-
-.light-theme .powered-by {
+/* Theme Variants for Footer */
+.light-theme .subdomain-powered-by {
     background: linear-gradient(to right,
             var(--primary-blue),
             var(--primary-purple),
             var(--primary-blue));
+    background-size: 200% auto;
+    animation: gradientFlow 3s linear infinite;
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
-.dark-theme .powered-by {
+.dark-theme .subdomain-powered-by {
     background: linear-gradient(to right,
             white,
             rgba(255, 255, 255, 0.444),
             white);
+    background-size: 200% auto;
+    animation: gradientFlow 3s linear infinite;
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -205,18 +310,17 @@ body {
 
 /* Media Queries */
 @media (max-width: 768px) {
-    .content-section {
+    .subdomain-content-section {
         width: 100%;
         padding: 0 1rem;
-    }
-    
-    .calendar-section {
-        width: 100%;
     }
 }
 
 @keyframes gradientFlow {
+    from {
+        background-position: 0% center;
+    }
     to {
         background-position: 200% center;
     }
-} 
+}
