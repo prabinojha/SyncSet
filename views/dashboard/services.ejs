@@ -18,7 +18,7 @@
                 
                 <div class="service-details">
                     <input type="number" id="serviceCost" placeholder="Cost ($AUD)" required>
-                    <input type="number" id="serviceDuration" placeholder="Duration (mins)" required>
+                    <input type="number" id="serviceDuration" placeholder="Duration (mins)" step="30" min="30" max="180" required>
                 </div>
 
                 <div class="time-selection">
@@ -60,6 +60,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Form submission
     serviceForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+
+        const duration = parseInt(document.getElementById('serviceDuration').value);
+        
+        // Validate duration is in 15-minute increments
+        if (duration % 15 !== 0) {
+            alert('Duration must be in 30-minute increments');
+            return;
+        }
 
         const serviceData = {
             title: document.getElementById('serviceTitle').value,
