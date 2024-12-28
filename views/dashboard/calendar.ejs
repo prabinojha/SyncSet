@@ -1,6 +1,198 @@
-<div>
-    <h1>Calendar</h1>
-    <div class="calendar-container">
-        <!-- Add your calendar content here -->
+<div class="calendar-section">
+    <div class="calendar-grid">
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <button id="prevMonth" class="calendar-nav-btn">&lt;</button>
+                <h2 id="currentMonth">Month Year</h2>
+                <button id="nextMonth" class="calendar-nav-btn">&gt;</button>
+            </div>
+            <div class="calendar-body">
+                <div class="weekdays"></div>
+                <div class="days"></div>
+            </div>
+        </div>
+        
+        <div id="bookingsPanel" class="bookings-panel">
+            <h3 id="selectedDate">Select a date to view bookings</h3>
+            <div id="bookingsList" class="bookings-list">
+                <!-- Bookings will be dynamically inserted here -->
+            </div>
+        </div>
     </div>
-</div> 
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const calendar = {
+        currentDate: new Date(),
+        selectedDate: null,
+        
+        init() {
+            this.setupCalendarControls();
+            this.renderCalendar();
+            this.loadBookings();
+        },
+
+        setupCalendarControls() {
+            document.getElementById('prevMonth').addEventListener('click', () => {
+                this.currentDate.setMonth(this.currentDate.getMonth() - 1);
+                this.renderCalendar();
+            });
+
+            document.getElementById('nextMonth').addEventListener('click', () => {
+                this.currentDate.setMonth(this.currentDate.getMonth() + 1);
+                this.renderCalendar();
+            });
+        },
+
+        renderCalendar() {
+            const year = this.currentDate.getFullYear();
+            const month = this.currentDate.getMonth();
+            
+            // Update month/year display
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                              "July", "August", "September", "October", "November", "December"];
+            document.getElementById('currentMonth').textContent = `${monthNames[month]} ${year}`;
+
+            // Setup weekdays
+            const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            document.querySelector('.weekdays').innerHTML = weekdays.map(day => 
+                `<div class="weekday">${day}</div>`
+            ).join('');
+
+            // Calculate days
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysGrid = document.querySelector('.days');
+            daysGrid.innerHTML = '';
+
+            // Add empty cells for days before the first of the month
+            for (let i = 0; i < firstDay.getDay(); i++) {
+                daysGrid.appendChild(this.createDayElement(''));
+            }
+
+            // Add the days of the month
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const dayElement = this.createDayElement(day);
+                const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                
+                dayElement.dataset.date = dateString;
+                dayElement.addEventListener('click', () => this.selectDate(dateString));
+                
+                if (this.isToday(year, month, day)) {
+                    dayElement.classList.add('today');
+                }
+                
+                daysGrid.appendChild(dayElement);
+            }
+        },
+
+        createDayElement(content) {
+            const div = document.createElement('div');
+            div.className = 'day';
+            div.textContent = content;
+            return div;
+        },
+
+        isToday(year, month, day) {
+            const today = new Date();
+            return today.getFullYear() === year && 
+                   today.getMonth() === month && 
+                   today.getDate() === day;
+        },
+
+        async selectDate(dateString) {
+            this.selectedDate = dateString;
+            document.querySelectorAll('.day').forEach(day => {
+                day.classList.remove('selected');
+                if (day.dataset.date === dateString) {
+                    day.classList.add('selected');
+                }
+            });
+
+            // Update bookings panel
+            const formattedDate = new Date(dateString).toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('selectedDate').textContent = formattedDate;
+
+            // Load bookings for selected date
+            await this.loadBookings(dateString);
+        },
+
+        async loadBookings(date = null) {
+            const bookingsList = document.getElementById('bookingsList');
+            if (!date) {
+                bookingsList.innerHTML = '<p class="no-bookings">Select a date to view bookings</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/bookings/${date}`);
+                const bookings = await response.json();
+
+                if (bookings.length === 0) {
+                    bookingsList.innerHTML = '<p class="no-bookings">No bookings for this date</p>';
+                    return;
+                }
+
+                bookingsList.innerHTML = bookings.map(booking => `
+                    <div class="booking-card">
+                        <div class="booking-header">
+                            <h4>${booking.clientName} | ${booking.time}</h4>
+                        </div>
+                        <div class="booking-details">
+                            <div class="booking-service">
+                                <span>Service: ${booking.serviceName}</span>
+                                <span>Price: $${booking.price}</span>
+                            </div>
+                            <div class="booking-actions">
+                                <button onclick="messageClient('${booking.id}')" class="message-btn">Message Client</button>
+                                <button onclick="editBooking('${booking.id}')" class="edit-btn">Edit Details</button>
+                            </div>
+                            <button onclick="markComplete('${booking.id}')" class="complete-btn">Mark as complete</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading bookings:', error);
+                bookingsList.innerHTML = '<p class="error">Failed to load bookings</p>';
+            }
+        }
+    };
+
+    // Initialize calendar
+    calendar.init();
+
+    // Global functions for booking actions
+    window.messageClient = async (bookingId) => {
+        // Implement message client functionality
+        console.log('Message client:', bookingId);
+    };
+
+    window.editBooking = async (bookingId) => {
+        // Implement edit booking functionality
+        console.log('Edit booking:', bookingId);
+    };
+
+    window.markComplete = async (bookingId) => {
+        try {
+            const response = await fetch(`/api/bookings/${bookingId}/complete`, {
+                method: 'POST'
+            });
+
+            if (response.ok) {
+                calendar.loadBookings(calendar.selectedDate);
+            } else {
+                throw new Error('Failed to mark booking as complete');
+            }
+        } catch (error) {
+            console.error('Error marking booking complete:', error);
+            alert('Failed to mark booking as complete');
+        }
+    };
+});
+</script> 
