@@ -188,7 +188,7 @@
                         const bookings = await response.json();
 
                         // Create a timeline of all booked slots
-                        const bookedTimeline = createBookedTimeline(bookings);
+                        const bookedRanges = createBookedTimeline(bookings);
 
                         document.querySelectorAll('.subdomain-service-item').forEach(serviceCard => {
                             const serviceId = serviceCard.dataset.serviceId;
@@ -201,7 +201,7 @@
                                 service.availability?.startTime || '09:00',
                                 service.availability?.endTime || '17:00',
                                 service.duration || 60,
-                                bookedTimeline
+                                bookedRanges
                             );
 
                             // Render time slots
@@ -236,19 +236,19 @@
 
             // Helper function to create a timeline of booked slots
             function createBookedTimeline(bookings) {
-                const timeline = new Map();
+                const bookedRanges = [];
                 
                 bookings.forEach(booking => {
-                    const startTime = timeToMinutes(booking.time);
-                    const duration = parseInt(booking.duration);
+                    const startMinutes = timeToMinutes(booking.time);
+                    const endMinutes = startMinutes + parseInt(booking.duration);
                     
-                    // Mark all minutes within the booking duration as occupied
-                    for (let i = 0; i < duration; i++) {
-                        timeline.set(startTime + i, true);
-                    }
+                    bookedRanges.push({
+                        start: startMinutes,
+                        end: endMinutes
+                    });
                 });
                 
-                return timeline;
+                return bookedRanges;
             }
 
             // Convert time string to minutes since start of day
@@ -264,25 +264,25 @@
                 return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
             }
 
-            function generateTimeSlots(startTime, endTime, durationMinutes, bookedTimeline) {
+            function generateTimeSlots(startTime, endTime, durationMinutes, bookedRanges) {
                 const slots = [];
                 const startMinutes = timeToMinutes(startTime);
                 const endMinutes = timeToMinutes(endTime);
                 
                 for (let currentTime = startMinutes; currentTime < endMinutes; currentTime += parseInt(durationMinutes)) {
-                    const timeString = minutesToTime(currentTime);
+                    const slotEndTime = currentTime + parseInt(durationMinutes);
                     
-                    // Check if any minute within this slot's duration is booked
-                    let isBooked = false;
-                    for (let i = 0; i < parseInt(durationMinutes); i++) {
-                        if (bookedTimeline.has(currentTime + i)) {
-                            isBooked = true;
-                            break;
-                        }
-                    }
+                    // Check if this slot overlaps with any booked range
+                    const isBooked = bookedRanges.some(range => {
+                        // Check if either the start or end of this slot falls within a booked range
+                        // or if this slot completely encompasses a booked range
+                        return (currentTime >= range.start && currentTime < range.end) || 
+                               (slotEndTime > range.start && slotEndTime <= range.end) ||
+                               (currentTime <= range.start && slotEndTime >= range.end);
+                    });
                     
                     slots.push({
-                        time: timeString,
+                        time: minutesToTime(currentTime),
                         booked: isBooked
                     });
                 }
