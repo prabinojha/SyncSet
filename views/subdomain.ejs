@@ -66,7 +66,6 @@
         </div>
 
         <script>
-            // Add this at the top to make services data available to our JS
             const services = JSON.parse('<%- JSON.stringify(services) %>');
 
             window.addEventListener('message', (event) => {
@@ -80,7 +79,6 @@
                 }
             });
 
-            // Calendar initialization
             const calendar = {
                 currentDate: new Date(),
                 selectedDate: null,
@@ -106,30 +104,24 @@
                     const year = this.currentDate.getFullYear();
                     const month = this.currentDate.getMonth();
 
-                    // Update month/year display
                     const monthNames = ["January", "February", "March", "April", "May", "June",
                         "July", "August", "September", "October", "November", "December"];
                     document.getElementById('subdomain-currentMonth').textContent = `${monthNames[month]} ${year}`;
 
-                    // Clear previous calendar
                     const daysGrid = document.querySelector('.subdomain-days');
                     daysGrid.innerHTML = '';
 
-                    // Calculate first day of month and last day
                     const firstDay = new Date(year, month, 1);
                     const lastDay = new Date(year, month + 1, 0);
 
-                    // Add empty cells for days before the first of the month
                     for (let i = 0; i < firstDay.getDay(); i++) {
                         daysGrid.appendChild(this.createDayElement(''));
                     }
 
-                    // Add the days of the month
                     for (let day = 1; day <= lastDay.getDate(); day++) {
                         const dayElement = this.createDayElement(day);
                         const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                         
-                        // Check if date is in the past
                         const currentDate = new Date(dateString);
                         const today = new Date();
                         today.setHours(0, 0, 0, 0);
@@ -164,13 +156,12 @@
                 },
 
                 selectDate(dateString) {
-                    // Check if date is in the past
                     const selectedDate = new Date(dateString);
                     const today = new Date();
-                    today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
+                    today.setHours(0, 0, 0, 0);
 
                     if (selectedDate < today) {
-                        return; // Don't allow selection of past dates
+                        return;
                     }
 
                     this.selectedDate = dateString;
@@ -181,17 +172,16 @@
                         }
                     });
 
-                    // Show time slots for each service
                     document.querySelectorAll('.subdomain-service-item').forEach(serviceCard => {
                         const serviceId = serviceCard.dataset.serviceId;
                         const service = services.find(s => s.id === serviceId);
                         const slotsContainer = serviceCard.querySelector('.service-time-slots');
                         const slotsGrid = serviceCard.querySelector('.time-slots-grid');
 
-                        // Generate time slots based on service duration
+                        // Generate time slots based on service duration and availability
                         const timeSlots = generateTimeSlots(
-                            service.startTime || '09:00',
-                            service.endTime || '17:00',
+                            service.availability?.startTime || '09:00',
+                            service.availability?.endTime || '17:00', 
                             service.duration || 60
                         );
 
@@ -234,9 +224,9 @@
                             const serviceBookings = bookings.filter(b => b.serviceId === serviceId);
 
                             const timeSlots = generateTimeSlots(
-                                service.startTime || '09:00',
-                                service.endTime || '17:00',
-                                service.duration || 60,
+                                service.availability?.startTime,
+                                service.availability?.endTime,
+                                service.duration,
                                 serviceBookings
                             );
 
