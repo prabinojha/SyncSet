@@ -155,7 +155,7 @@
                         today.getDate() === day;
                 },
 
-                selectDate(dateString) {
+                selectDate: async function(dateString) {
                     const selectedDate = new Date(dateString);
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
@@ -172,47 +172,19 @@
                         }
                     });
 
-                    document.querySelectorAll('.subdomain-service-item').forEach(serviceCard => {
-                        const serviceId = serviceCard.dataset.serviceId;
-                        const service = services.find(s => s.id === serviceId);
-                        const slotsContainer = serviceCard.querySelector('.service-time-slots');
-                        const slotsGrid = serviceCard.querySelector('.time-slots-grid');
-
-                        // Generate time slots based on service duration and availability
-                        const timeSlots = generateTimeSlots(
-                            service.availability?.startTime || '09:00',
-                            service.availability?.endTime || '17:00', 
-                            service.duration || 60
-                        );
-
-                        // Render time slots
-                        slotsGrid.innerHTML = timeSlots.map(slot => `
-                            <div class="time-slot${slot.booked ? ' booked' : ''}" 
-                                 data-time="${slot.time}"
-                                 ${slot.booked ? 'disabled' : ''}>
-                                ${formatTime(slot.time)}
-                            </div>
-                        `).join('');
-
-                        // Show the time slots container
-                        slotsContainer.style.display = 'block';
-
-                        // Add click handlers for time slots
-                        slotsGrid.querySelectorAll('.time-slot').forEach(slot => {
-                            slot.addEventListener('click', () => {
-                                document.querySelectorAll('.time-slot').forEach(s =>
-                                    s.classList.remove('selected'));
-                                slot.classList.add('selected');
-                                updateBookButton();
-                            });
-                        });
-                    });
+                    // Fetch and update time slots with booking data
+                    await this.fetchAndUpdateTimeSlots(dateString);
                 },
 
-                async fetchAndUpdateTimeSlots(dateString) {
+                fetchAndUpdateTimeSlots: async function(dateString) {
                     try {
                         const subdomain = window.location.pathname.split('/')[1];
                         const response = await fetch(`/api/bookings/${subdomain}/${dateString}`);
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        
                         const bookings = await response.json();
 
                         document.querySelectorAll('.subdomain-service-item').forEach(serviceCard => {
@@ -221,54 +193,50 @@
                             const slotsContainer = serviceCard.querySelector('.service-time-slots');
                             const slotsGrid = serviceCard.querySelector('.time-slots-grid');
 
+                            // Filter bookings for this specific service
                             const serviceBookings = bookings.filter(b => b.serviceId === serviceId);
 
+                            // Generate time slots
                             const timeSlots = generateTimeSlots(
-                                service.availability?.startTime,
-                                service.availability?.endTime,
-                                service.duration,
+                                service.availability?.startTime || '09:00',
+                                service.availability?.endTime || '17:00',
+                                service.duration || 60,
                                 serviceBookings
                             );
 
-                            // Update the time slots rendering
+                            // Render time slots
                             slotsGrid.innerHTML = timeSlots.map(slot => `
                                 <div class="time-slot${slot.booked ? ' booked' : ''}" 
-                                     data-time="${slot.time}">
+                                     data-time="${slot.time}"
+                                     ${slot.booked ? 'disabled' : ''}>
                                     ${formatTime(slot.time)}
                                 </div>
                             `).join('');
 
                             slotsContainer.style.display = 'block';
 
-                            // Remove any existing event listeners
-                            const slotElements = slotsGrid.querySelectorAll('.time-slot');
-                            slotElements.forEach(slot => {
-                                slot.replaceWith(slot.cloneNode(true));
-                            });
-
-                            // Add new click handlers only to available slots
+                            // Add click handlers for time slots
                             slotsGrid.querySelectorAll('.time-slot:not(.booked)').forEach(slot => {
                                 slot.addEventListener('click', () => {
-                                    // Remove selected class from all slots across all services
                                     document.querySelectorAll('.time-slot').forEach(s => 
                                         s.classList.remove('selected'));
-                                    
-                                    // Add selected class only if the slot isn't booked
-                                    if (!slot.classList.contains('booked')) {
-                                        slot.classList.add('selected');
-                                        updateBookButton();
-                                    }
+                                    slot.classList.add('selected');
+                                    updateBookButton();
                                 });
                             });
                         });
                     } catch (error) {
                         console.error('Error fetching bookings:', error);
+                        // Add error handling UI if needed
+                        document.querySelectorAll('.service-time-slots').forEach(container => {
+                            container.style.display = 'none';
+                        });
                     }
                 }
             };
 
             // Helper functions remain the same
-            function generateTimeSlots(startTime, endTime, durationMinutes) {
+            function generateTimeSlots(startTime, endTime, durationMinutes, bookings = []) {
                 const slots = [];
                 const start = new Date(`2000-01-01T${startTime}`);
                 const end = new Date(`2000-01-01T${endTime}`);
@@ -280,9 +248,12 @@
                         hour12: false
                     });
 
+                    // Check if this time slot is booked
+                    const isBooked = bookings.some(booking => booking.time === timeString);
+
                     slots.push({
                         time: timeString,
-                        booked: false
+                        booked: isBooked
                     });
 
                     start.setMinutes(start.getMinutes() + parseInt(durationMinutes));

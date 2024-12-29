@@ -319,25 +319,32 @@ router.delete('/api/services/:id', async (req, res) => {
 });
 
 // Get bookings for a specific date
-router.get('/api/bookings/:date', async (req, res) => {
-  const user = auth.currentUser;
-  if (!user) {
-      return res.status(401).json({ error: 'Unauthorized' });
-  }
-  try {
-      const { date } = req.params;
-      const bookingsRef = collection(db, 'users', user.uid, 'bookings');
-      const q = query(bookingsRef, where('date', '==', date));
-      const bookingsSnap = await getDocs(q);
-      
-      const bookings = [];
-      bookingsSnap.forEach(doc => {
-          bookings.push({ id: doc.id, ...doc.data() });
-      });
-      res.json(bookings);
-  } catch (error) {
-      res.status(500).json({ error: error.message });
-  }
+router.get('/api/bookings/:subdomain/:date', async (req, res) => {
+    try {
+        const { subdomain, date } = req.params;
+        
+        // Get the domain document to find the owner's UID
+        const domainDoc = await getDoc(doc(db, 'domains', subdomain));
+        if (!domainDoc.exists()) {
+            return res.status(404).json({ error: 'Domain not found' });
+        }
+        const ownerUid = domainDoc.data().uid;
+
+        // Get bookings for this owner and date
+        const bookingsRef = collection(db, 'users', ownerUid, 'bookings');
+        const q = query(bookingsRef, where('date', '==', date));
+        const bookingsSnap = await getDocs(q);
+        
+        const bookings = [];
+        bookingsSnap.forEach(doc => {
+            bookings.push({ id: doc.id, ...doc.data() });
+        });
+
+        res.json(bookings);
+    } catch (error) {
+        console.error('Error fetching bookings:', error);
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // Mark booking as complete
