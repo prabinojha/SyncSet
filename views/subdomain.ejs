@@ -264,18 +264,17 @@
                 return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
             }
 
-            function generateTimeSlots(startTime, endTime, durationMinutes, bookedRanges) {
+            function generateTimeSlots(startTime, endTime, serviceDuration, bookedRanges) {
                 const slots = [];
                 const startMinutes = timeToMinutes(startTime);
                 const endMinutes = timeToMinutes(endTime);
+                const INTERVAL = 30; // Fixed 30-minute intervals
                 
-                for (let currentTime = startMinutes; currentTime < endMinutes; currentTime += parseInt(durationMinutes)) {
-                    const slotEndTime = currentTime + parseInt(durationMinutes);
+                for (let currentTime = startMinutes; currentTime < endMinutes; currentTime += INTERVAL) {
+                    const slotEndTime = currentTime + parseInt(serviceDuration);
                     
                     // Check if this slot overlaps with any booked range
                     const isBooked = bookedRanges.some(range => {
-                        // Check if either the start or end of this slot falls within a booked range
-                        // or if this slot completely encompasses a booked range
                         return (currentTime >= range.start && currentTime < range.end) || 
                                (slotEndTime > range.start && slotEndTime <= range.end) ||
                                (currentTime <= range.start && slotEndTime >= range.end);
