@@ -187,21 +187,21 @@
                         
                         const bookings = await response.json();
 
+                        // Create a timeline of all booked slots
+                        const bookedTimeline = createBookedTimeline(bookings);
+
                         document.querySelectorAll('.subdomain-service-item').forEach(serviceCard => {
                             const serviceId = serviceCard.dataset.serviceId;
                             const service = services.find(s => s.id === serviceId);
                             const slotsContainer = serviceCard.querySelector('.service-time-slots');
                             const slotsGrid = serviceCard.querySelector('.time-slots-grid');
 
-                            // Filter bookings for this specific service
-                            const serviceBookings = bookings.filter(b => b.serviceId === serviceId);
-
-                            // Generate time slots
+                            // Generate time slots considering all bookings
                             const timeSlots = generateTimeSlots(
                                 service.availability?.startTime || '09:00',
                                 service.availability?.endTime || '17:00',
                                 service.duration || 60,
-                                serviceBookings
+                                bookedTimeline
                             );
 
                             // Render time slots
@@ -227,7 +227,6 @@
                         });
                     } catch (error) {
                         console.error('Error fetching bookings:', error);
-                        // Add error handling UI if needed
                         document.querySelectorAll('.service-time-slots').forEach(container => {
                             container.style.display = 'none';
                         });
@@ -235,30 +234,59 @@
                 }
             };
 
-            // Helper functions remain the same
-            function generateTimeSlots(startTime, endTime, durationMinutes, bookings = []) {
+            // Helper function to create a timeline of booked slots
+            function createBookedTimeline(bookings) {
+                const timeline = new Map();
+                
+                bookings.forEach(booking => {
+                    const startTime = timeToMinutes(booking.time);
+                    const duration = parseInt(booking.duration);
+                    
+                    // Mark all minutes within the booking duration as occupied
+                    for (let i = 0; i < duration; i++) {
+                        timeline.set(startTime + i, true);
+                    }
+                });
+                
+                return timeline;
+            }
+
+            // Convert time string to minutes since start of day
+            function timeToMinutes(timeStr) {
+                const [hours, minutes] = timeStr.split(':').map(Number);
+                return hours * 60 + minutes;
+            }
+
+            // Convert minutes to time string
+            function minutesToTime(minutes) {
+                const hours = Math.floor(minutes / 60);
+                const mins = minutes % 60;
+                return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+            }
+
+            function generateTimeSlots(startTime, endTime, durationMinutes, bookedTimeline) {
                 const slots = [];
-                const start = new Date(`2000-01-01T${startTime}`);
-                const end = new Date(`2000-01-01T${endTime}`);
-
-                while (start < end) {
-                    const timeString = start.toLocaleTimeString('en-US', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: false
-                    });
-
-                    // Check if this time slot is booked
-                    const isBooked = bookings.some(booking => booking.time === timeString);
-
+                const startMinutes = timeToMinutes(startTime);
+                const endMinutes = timeToMinutes(endTime);
+                
+                for (let currentTime = startMinutes; currentTime < endMinutes; currentTime += parseInt(durationMinutes)) {
+                    const timeString = minutesToTime(currentTime);
+                    
+                    // Check if any minute within this slot's duration is booked
+                    let isBooked = false;
+                    for (let i = 0; i < parseInt(durationMinutes); i++) {
+                        if (bookedTimeline.has(currentTime + i)) {
+                            isBooked = true;
+                            break;
+                        }
+                    }
+                    
                     slots.push({
                         time: timeString,
                         booked: isBooked
                     });
-
-                    start.setMinutes(start.getMinutes() + parseInt(durationMinutes));
                 }
-
+                
                 return slots;
             }
 
