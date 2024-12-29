@@ -131,7 +131,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
-                const response = await fetch(`/api/bookings/${date}`);
+                // Get the user's subdomain from the domainData passed to the template
+                const subdomain = '<%= userSubdomain %>';
+                const response = await fetch(`/api/bookings/${subdomain}/${date}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const bookings = await response.json();
 
                 if (bookings.length === 0) {
