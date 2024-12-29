@@ -61,21 +61,14 @@ body {
     background: white;
     border: 1px solid var(--light-grey);
     color: var(--primary-dark-blue);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .dark-theme .subdomain-service-item {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
-}
-
-
-.light-theme .subdomain-service-item:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.dark-theme .subdomain-service-item:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
 }
 
 .subdomain-service-title {
