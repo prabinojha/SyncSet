@@ -270,11 +270,21 @@
                 const endMinutes = timeToMinutes(endTime);
                 const INTERVAL = 30; // Fixed 30-minute intervals
                 
+                // Get current time if it's today
+                const now = new Date();
+                const isToday = calendar.selectedDate === now.toISOString().split('T')[0];
+                const currentMinutes = isToday ? now.getHours() * 60 + now.getMinutes() : 0;
+                // Add 60 minutes (1 hour) buffer for today's bookings
+                const minimumBookingTime = isToday ? currentMinutes + 60 : 0;
+                
                 for (let currentTime = startMinutes; currentTime < endMinutes; currentTime += INTERVAL) {
                     const slotEndTime = currentTime + parseInt(serviceDuration);
                     
                     // Check if this slot would extend beyond the end time
                     const exceedsEndTime = slotEndTime > endMinutes;
+                    
+                    // Check if the slot is in the past (including 1-hour buffer)
+                    const isPastTime = isToday && currentTime < minimumBookingTime;
                     
                     // Check if this slot overlaps with any booked range
                     const isBooked = bookedRanges.some(range => {
@@ -285,7 +295,7 @@
                     
                     slots.push({
                         time: minutesToTime(currentTime),
-                        booked: isBooked || exceedsEndTime // Mark as booked if it exceeds end time
+                        booked: isBooked || exceedsEndTime || isPastTime // Mark as booked if it's past time or exceeds end time
                     });
                 }
                 
