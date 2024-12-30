@@ -83,6 +83,11 @@
                 init() {
                     this.setupCalendarControls();
                     this.renderCalendar();
+                    
+                    // Select current date on initialisation
+                    const today = new Date();
+                    const dateString = today.toISOString().split('T')[0];
+                    this.selectDate(dateString);
                 },
 
                 setupCalendarControls() {
