@@ -366,6 +366,9 @@
             }
 
             function showBookingConfirmation(bookingDetails) {
+                // Scroll to top of page
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
                 const container = document.querySelector('.subdomain-content-section');
 
                 // Replace content with booking form
