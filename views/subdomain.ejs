@@ -371,9 +371,12 @@
 
                 const container = document.querySelector('.subdomain-content-section');
                 
+                // Add class to the parent container to change the background margin bottom
+                document.querySelector('.subdomain-container').classList.add('booking-confirmation-view');
+                
                 container.innerHTML = `
                     <div class="booking-header">
-                        <h1>Confirm your booking</h1>
+                        <h2>Confirm your booking</h2>
                         <button class="return-button" onclick="window.location.reload()">Return</button>
                     </div>
                     
@@ -406,8 +409,8 @@
                     </div>
 
                     <div class="booking-form-section">
-                        <h2 style="text-align: left;">Your Details</h2>
                         <form class="booking-form" onsubmit="submitBooking(event)">
+                            <h3 style="text-align: left;">Your Details</h3>
                             <div class="form-grid">
                                 <div class="form-group">
                                     <input type="text" id="clientName" placeholder="Full Name" required>
