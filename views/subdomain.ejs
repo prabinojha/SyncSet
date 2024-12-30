@@ -32,21 +32,21 @@
                     <% if (services && services.length> 0) { %>
                         <% services.forEach(service=> { %>
                             <div class="subdomain-service-item" data-service-id="<%= service.id %>">
-                                <h2>
-                                    <%= service.title %>
-                                </h2>
+                                <div class="service-header">
+                                    <div class="service-title-section">
+                                        <h2><%= service.title %></h2>
+                                        <div class="subdomain-service-details">
+                                            $<%= service.cost %> | <%= service.duration %> minutes
+                                        </div>
+                                    </div>
+                                    <button class="description-toggle" onclick="toggleDescription(this)">
+                                        ↓
+                                    </button>
+                                </div>
                                 <p class="subdomain-service-description">
                                     <%= service.description %>
                                 </p>
-                                <div class="subdomain-service-details">
-                                    <span>
-                                        $<%= service.cost %> | <%= service.duration %> minutes
-                                    </span>
-                                </div>
-                                <p class="subdomain-service-location">
-                                    <%= service.location %>
-                                </p>
-
+                                
                                 <!-- Add time slots container -->
                                 <div class="service-time-slots" style="display: none;">
                                     <div class="time-slots-grid"></div>
@@ -352,6 +352,12 @@
                 // Redirect to booking confirmation page with proper path
                 window.location.href = `/${subdomain}/confirm-booking`;
             });
+
+            function toggleDescription(button) {
+                const description = button.parentElement.nextElementSibling;
+                description.classList.toggle('show');
+                button.textContent = description.classList.contains('show') ? '↑' : '↓';
+            }
         </script>
     </body>
 

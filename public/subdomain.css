@@ -72,30 +72,57 @@ body {
     box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
 }
 
+.service-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.service-title-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
 .subdomain-service-item h2 {
     font-size: 1.5rem;
     font-weight: 600;
-    margin-bottom: 0.75rem;
-    color: var(--primary-blue);
+    margin: 0;
+}
+
+.subdomain-service-details {
+    font-size: 1.1rem;
+    font-weight: 500;
+    opacity: 0.85;
+}
+
+.description-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
 }
 
 .subdomain-service-description {
     font-size: 1rem;
     line-height: 1.6;
-    margin-bottom: 1rem;
+    margin: 1rem 0;
     opacity: 0.85;
+    display: none;
+    padding-left: 1rem;
+    border-left: 2px solid var(--primary-light-blue);
 }
 
-.subdomain-service-details {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-}
-
-.subdomain-service-details span {
-    font-size: 1.1rem;
+.subdomain-service-description.show {
+    display: block;
 }
 
 .subdomain-service-location {
@@ -463,4 +490,21 @@ body {
 
 .confirm-booking-button:hover {
     opacity: 0.9;
+}
+
+/* Theme Variants */
+.light-theme .description-toggle {
+    color: var(--primary-blue);
+}
+
+.light-theme .description-toggle:hover {
+    background-color: var(--primary-light-blue);
+}
+
+.dark-theme .description-toggle {
+    color: var(--primary-light-blue);
+}
+
+.dark-theme .description-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
