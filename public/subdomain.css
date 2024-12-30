@@ -464,59 +464,57 @@ body {
 
 /* Booking Confirmation Styles */
 .booking-confirmation-container {
-    max-width: 600px;
-    margin: 2rem auto;
+    display: none; /* Hide by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding: 2rem;
 }
 
 .booking-confirmation-content {
-    background: var(--primary-light-blue);
+    width: 100%;
+    max-width: 600px;
     border-radius: var(--border-radius);
     padding: 2rem;
+    position: relative;
 }
 
-.booking-details {
-    margin: 2rem 0;
+.light-theme .booking-confirmation-content {
+    background: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.booking-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+.dark-theme .booking-confirmation-content {
+    background: var(--primary-dark-blue);
+    box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
 }
 
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.form-group label {
-    font-weight: 500;
-}
-
-.form-group input,
-.form-group textarea {
-    padding: 0.75rem;
-    border-radius: var(--border-radius);
-    border: 1px solid var(--light-grey);
-    font-family: var(--primary-font);
-}
-
-.confirm-booking-button {
-    background: var(--primary-blue);
-    color: white;
-    padding: 1rem;
+.close-confirmation {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
     border: none;
-    border-radius: var(--border-radius);
+    font-size: 1.5rem;
     cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    margin-top: 1rem;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
 }
 
-.confirm-booking-button:hover {
-    opacity: 0.9;
+.light-theme .close-confirmation {
+    color: var(--primary-dark-blue);
+}
+
+.dark-theme .close-confirmation {
+    color: white;
 }
 
 /* Theme Variants */
@@ -539,4 +537,62 @@ body {
 /* Theme Variants */
 .dark-theme .service-info-row {
     color: rgba(255, 255, 255, 0.7);
+}
+
+.booking-details {
+    margin: 2rem 0;
+    text-align: left;
+}
+
+.booking-details h2 {
+    margin: 1.5rem 0 1rem;
+    font-size: 1.2rem;
+}
+
+.booking-form {
+    text-align: left;
+    margin-top: 2rem;
+}
+
+.confirm-booking-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.confirm-booking-form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.confirm-booking-form-group input,
+.confirm-booking-form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--light-grey);
+    font-family: var(--primary-font);
+}
+
+.back-button {
+    background-color: var(--light-grey);
+    color: var(--primary-dark-blue);
+    padding: 1rem 2rem;
+    border-radius: 999px;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    font-family: var(--primary-font);
+}
+
+/* Theme variants for form elements */
+.dark-theme .confirm-booking-form-group input,
+.dark-theme .confirm-booking-form-group textarea {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.dark-theme .confirm-booking-form-group label {
+    color: var(--primary-light-blue);
 }

@@ -338,30 +338,123 @@
                 calendar.init();
             });
 
-            // Fix the booking button click handler
             document.querySelector('.subdomain-cta-button').addEventListener('click', () => {
                 const selectedSlot = document.querySelector('.time-slot.selected');
                 const selectedDay = document.querySelector('.subdomain-day.selected');
                 const selectedService = selectedSlot.closest('.subdomain-service-item');
                 const service = services.find(s => s.id === selectedService.dataset.serviceId);
 
-                // Store booking details in session storage
-                const bookingDetails = {
+                // Show booking confirmation page
+                showBookingConfirmation({
                     date: selectedDay.dataset.date,
                     time: selectedSlot.dataset.time,
                     serviceId: service.id,
                     serviceName: service.title,
                     cost: service.cost,
                     duration: service.duration
-                };
-                sessionStorage.setItem('pendingBooking', JSON.stringify(bookingDetails));
-
-                // Get the current subdomain from the URL
-                const subdomain = window.location.pathname.split('/')[1];
-
-                // Redirect to booking confirmation page with proper path
-                window.location.href = `/${subdomain}/confirm-booking`;
+                });
             });
+
+            function formatDate(dateString) {
+                const options = {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                };
+                return new Date(dateString).toLocaleDateString('en-US', options);
+            }
+
+            function showBookingConfirmation(bookingDetails) {
+                const container = document.querySelector('.subdomain-content-section');
+
+                // Replace content with booking form
+                container.innerHTML = `
+                    <h1>Confirm Your Booking</h1>
+                    
+                    <div class="booking-details">
+                        <div>
+                            <p><strong>Service:</strong> ${bookingDetails.serviceName}</p>
+                            <p><strong>Cost:</strong> $${bookingDetails.cost}</p>
+                            <p><strong>Duration:</strong> ${bookingDetails.duration} minutes</p>
+                        </div>
+                        
+                        <h2>Selected Date & Time</h2>
+                        <div>
+                            <p><strong>Date:</strong> ${formatDate(bookingDetails.date)}</p>
+                            <p><strong>Time:</strong> ${new Date(`2000-01-01T${bookingDetails.time}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })} to ${new Date(new Date(`2000-01-01T${bookingDetails.time}`).getTime() + bookingDetails.duration * 60000).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}</p>
+                        </div>
+                    </div>
+
+                    <form class="booking-form" onsubmit="submitBooking(event)">
+                        <div class="confirm-booking-form-group">
+                            <label for="clientName">Full Name</label>
+                            <input type="text" id="clientName" required>
+                        </div>
+                        <div class="confirm-booking-form-group">
+                            <label for="clientEmail">Email</label>
+                            <input type="email" id="clientEmail" required>
+                        </div>
+                        <div class="confirm-booking-form-group">
+                            <label for="clientPhone">Phone Number</label>
+                            <input type="tel" id="clientPhone" required>
+                        </div>
+                        <div class="confirm-booking-form-group">
+                            <label for="notes">Notes (optional)</label>
+                            <textarea id="notes"></textarea>
+                        </div>
+                        <button type="submit" class="confirm-booking-button">Confirm Booking</button>
+                        <button type="button" class="back-button" onclick="window.location.reload()">Back</button>
+                    </form>
+                `;
+
+                // Store booking details in the form
+                const form = container.querySelector('.booking-form');
+                form.dataset.bookingDetails = JSON.stringify(bookingDetails);
+
+                // Update the CTA button
+                const ctaButton = document.querySelector('.subdomain-cta-button');
+                ctaButton.style.display = 'none';
+            }
+
+            async function submitBooking(event) {
+                event.preventDefault();
+                const form = event.target;
+                const bookingDetails = JSON.parse(form.dataset.bookingDetails);
+
+                const formData = {
+                    ...bookingDetails,
+                    clientName: form.querySelector('#clientName').value,
+                    clientEmail: form.querySelector('#clientEmail').value,
+                    clientPhone: form.querySelector('#clientPhone').value,
+                    notes: form.querySelector('#notes').value
+                };
+
+                try {
+                    const response = await fetch('/api/bookings', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Booking failed');
+                    }
+
+                    // Show success message
+                    const container = document.querySelector('.subdomain-content-section');
+                    container.innerHTML = `
+                        <h1>Booking Confirmed!</h1>
+                        <p>Thank you for your booking. We'll see you on ${formatDate(bookingDetails.date)} at ${bookingDetails.time}.</p>
+                        <button class="confirm-booking-button" onclick="window.location.reload()">Done</button>
+                    `;
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Failed to create booking. Please try again.');
+                }
+            }
 
             function toggleDescription(button) {
                 const description = button.parentElement.nextElementSibling;
