@@ -273,6 +273,9 @@
                 for (let currentTime = startMinutes; currentTime < endMinutes; currentTime += INTERVAL) {
                     const slotEndTime = currentTime + parseInt(serviceDuration);
                     
+                    // Check if this slot would extend beyond the end time
+                    const exceedsEndTime = slotEndTime > endMinutes;
+                    
                     // Check if this slot overlaps with any booked range
                     const isBooked = bookedRanges.some(range => {
                         return (currentTime >= range.start && currentTime < range.end) || 
@@ -282,7 +285,7 @@
                     
                     slots.push({
                         time: minutesToTime(currentTime),
-                        booked: isBooked
+                        booked: isBooked || exceedsEndTime // Mark as booked if it exceeds end time
                     });
                 }
                 
