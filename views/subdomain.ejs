@@ -39,11 +39,8 @@
                                     <%= service.description %>
                                 </p>
                                 <div class="subdomain-service-details">
-                                    <span class="subdomain-service-cost">
-                                        <%= service.cost %>
-                                    </span>
-                                    <span class="subdomain-service-duration">
-                                        <%= service.duration %>
+                                    <span>
+                                        $<%= service.cost %> | <%= service.duration %> minutes
                                     </span>
                                 </div>
                                 <p class="subdomain-service-location">
@@ -171,6 +168,12 @@
                             day.classList.add('selected');
                         }
                     });
+
+                    // Clear any previously selected time slots and update button
+                    document.querySelectorAll('.time-slot').forEach(slot => {
+                        slot.classList.remove('selected');
+                    });
+                    updateBookButton();
 
                     // Fetch and update time slots with booking data
                     await this.fetchAndUpdateTimeSlots(dateString);
@@ -313,7 +316,7 @@
 
                 if (selectedSlot && selectedDay) {
                     bookButton.removeAttribute('disabled');
-                    bookButton.textContent = 'Book Appointment';
+                    bookButton.textContent = 'Schedule now';
                 } else {
                     bookButton.setAttribute('disabled', '');
                     bookButton.textContent = 'Select time and service';

@@ -51,10 +51,11 @@ body {
 
 /* Service Item Styles */
 .subdomain-service-item {
-    padding: 1.5rem;
-    margin-bottom: 1rem;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
     border-radius: var(--border-radius);
     transition: all 0.2s ease;
+    text-align: left;
 }
 
 .light-theme .subdomain-service-item {
@@ -71,24 +72,52 @@ body {
     box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
 }
 
-.subdomain-service-title {
-    font-size: 1.25rem;
+.subdomain-service-item h2 {
+    font-size: 1.5rem;
     font-weight: 600;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+    color: var(--primary-blue);
 }
 
 .subdomain-service-description {
     font-size: 1rem;
-    line-height: 1.5;
-    opacity: 0.9;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    opacity: 0.85;
 }
 
-.light-theme .subdomain-service-description {
+.subdomain-service-details {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.subdomain-service-details span {
+    font-size: 1.1rem;
+}
+
+.subdomain-service-location {
+    font-size: 0.9rem;
+    opacity: 0.7;
+    margin-bottom: 1.5rem;
+}
+
+.light-theme .subdomain-service-item h2 {
+    color: var(--primary-blue);
+}
+
+.dark-theme .subdomain-service-item h2 {
+    color: var(--primary-light-blue);
+}
+
+.light-theme .subdomain-service-details {
     color: var(--primary-dark-blue);
 }
 
-.dark-theme .subdomain-service-description {
-    color: rgba(255, 255, 255, 0.8);
+.dark-theme .subdomain-service-details {
+    color: rgba(255, 255, 255, 0.9);
 }
 
 /* Calendar Styles */
