@@ -619,18 +619,16 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .booking-header h1 {
-  font-size: 2rem;
+  font-size: 3.5rem;
   font-weight: 600;
+  margin-bottom: 3rem;
 }
 
 .return-button {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
   padding: 0.75rem 1.5rem;
   border-radius: var(--border-radius);
   font-weight: 500;
@@ -638,12 +636,13 @@ body {
   transition: all 0.2s ease;
   border: none;
   font-family: var(--primary-font);
+  backdrop-filter: blur(8px);
 }
 
 .light-theme .return-button {
-  background: var(--primary-light-blue);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--primary-dark-blue);
-  border: 1px solid var(--light-grey);
+  border: 1px solid rgba(48, 171, 247, 0.2);
 }
 
 .dark-theme .return-button {
@@ -656,10 +655,11 @@ body {
   padding: 1.5rem;
   border-radius: var(--border-radius);
   margin-bottom: 2rem;
+  backdrop-filter: blur(8px);
 }
 
 .light-theme .service-details-section {
-  background: var(--primary-light-blue);
+  background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(48, 171, 247, 0.2);
 }
 
@@ -677,12 +677,8 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.dark-theme .service-detail-item {
-  border-bottom-color: rgba(255, 255, 255, 0.1);
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .service-detail-item:last-child {
@@ -690,11 +686,13 @@ body {
 }
 
 .detail-label {
+  font-size: 1.2rem;
   font-weight: 500;
   opacity: 0.8;
 }
 
 .detail-value {
+  font-size: 1.2rem;
   font-weight: 600;
 }
 
