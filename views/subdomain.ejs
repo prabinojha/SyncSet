@@ -366,13 +366,13 @@
             }
 
             function showBookingConfirmation(bookingDetails) {
-                // Scroll to top of page
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-
-                const container = document.querySelector('.subdomain-content-section');
                 
-                // Add class to the parent container to change the background margin bottom
+                // Add the class to both the container and body
+                document.body.classList.add('booking-confirmation-view');
                 document.querySelector('.subdomain-container').classList.add('booking-confirmation-view');
+                
+                const container = document.querySelector('.subdomain-content-section');
                 
                 container.innerHTML = `
                     <div class="booking-header">
