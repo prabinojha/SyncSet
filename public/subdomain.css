@@ -75,14 +75,23 @@ body {
 .service-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
 }
 
 .service-title-section {
     display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.service-info-row {
+    display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 1.5rem;
+    font-size: 0.95rem;
+    color: #666;
+    margin-top: 0.25rem;
 }
 
 .subdomain-service-item h2 {
@@ -92,7 +101,6 @@ body {
 }
 
 .subdomain-service-details {
-    font-size: 1.1rem;
     font-weight: 500;
     opacity: 0.85;
 }
@@ -111,6 +119,15 @@ body {
     transition: background-color 0.2s ease;
 }
 
+.description-toggle i {
+    font-size: 0.9rem;
+    transition: transform 0.2s ease;
+}
+
+.description-toggle:hover i {
+    transform: translateY(2px);
+}
+
 .subdomain-service-description {
     font-size: 1rem;
     line-height: 1.6;
@@ -125,18 +142,12 @@ body {
     display: block;
 }
 
-.subdomain-service-location {
-    font-size: 0.9rem;
-    opacity: 0.7;
-    margin-bottom: 1.5rem;
-}
-
 .light-theme .subdomain-service-item h2 {
     color: var(--primary-blue);
 }
 
 .dark-theme .subdomain-service-item h2 {
-    color: var(--primary-light-blue);
+    color: white;
 }
 
 .light-theme .subdomain-service-details {
@@ -507,4 +518,9 @@ body {
 
 .dark-theme .description-toggle:hover {
     background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Theme Variants */
+.dark-theme .service-info-row {
+    color: rgba(255, 255, 255, 0.7);
 }

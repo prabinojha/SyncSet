@@ -34,19 +34,25 @@
                             <div class="subdomain-service-item" data-service-id="<%= service.id %>">
                                 <div class="service-header">
                                     <div class="service-title-section">
-                                        <h2><%= service.title %></h2>
-                                        <div class="subdomain-service-details">
-                                            $<%= service.cost %> | <%= service.duration %> minutes
+                                        <h2>
+                                            <%= service.title %>
+                                        </h2>
+                                        <div class="service-info-row">
+                                            <div class="subdomain-service-details">
+                                                $<%= service.cost %> | <%= service.duration %> minutes <% if
+                                                            (service.location) { %> | <%= service.location %>
+                                                                <% } %>
+                                            </div>
                                         </div>
                                     </div>
                                     <button class="description-toggle" onclick="toggleDescription(this)">
-                                        ↓
+                                        <i class="fas fa-chevron-down"></i>
                                     </button>
                                 </div>
                                 <p class="subdomain-service-description">
                                     <%= service.description %>
                                 </p>
-                                
+
                                 <!-- Add time slots container -->
                                 <div class="service-time-slots" style="display: none;">
                                     <div class="time-slots-grid"></div>
@@ -83,7 +89,7 @@
                 init() {
                     this.setupCalendarControls();
                     this.renderCalendar();
-                    
+
                     // Select current date on initialisation
                     const today = new Date();
                     const dateString = today.toISOString().split('T')[0];
@@ -123,11 +129,11 @@
                     for (let day = 1; day <= lastDay.getDate(); day++) {
                         const dayElement = this.createDayElement(day);
                         const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                        
+
                         const currentDate = new Date(dateString);
                         const today = new Date();
                         today.setHours(0, 0, 0, 0);
-                        
+
                         if (currentDate < today) {
                             dayElement.classList.add('disabled');
                         } else {
@@ -138,7 +144,7 @@
                         if (this.isToday(year, month, day)) {
                             dayElement.classList.add('today');
                         }
-                        
+
                         daysGrid.appendChild(dayElement);
                     }
                 },
@@ -157,7 +163,7 @@
                         today.getDate() === day;
                 },
 
-                selectDate: async function(dateString) {
+                selectDate: async function (dateString) {
                     const selectedDate = new Date(dateString);
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
@@ -184,15 +190,15 @@
                     await this.fetchAndUpdateTimeSlots(dateString);
                 },
 
-                fetchAndUpdateTimeSlots: async function(dateString) {
+                fetchAndUpdateTimeSlots: async function (dateString) {
                     try {
                         const subdomain = window.location.pathname.split('/')[1];
                         const response = await fetch(`/api/bookings/${subdomain}/${dateString}`);
-                        
+
                         if (!response.ok) {
                             throw new Error(`HTTP error! status: ${response.status}`);
                         }
-                        
+
                         const bookings = await response.json();
 
                         // Create a timeline of all booked slots
@@ -226,7 +232,7 @@
                             // Add click handlers for time slots
                             slotsGrid.querySelectorAll('.time-slot:not(.booked)').forEach(slot => {
                                 slot.addEventListener('click', () => {
-                                    document.querySelectorAll('.time-slot').forEach(s => 
+                                    document.querySelectorAll('.time-slot').forEach(s =>
                                         s.classList.remove('selected'));
                                     slot.classList.add('selected');
                                     updateBookButton();
@@ -245,17 +251,17 @@
             // Helper function to create a timeline of booked slots
             function createBookedTimeline(bookings) {
                 const bookedRanges = [];
-                
+
                 bookings.forEach(booking => {
                     const startMinutes = timeToMinutes(booking.time);
                     const endMinutes = startMinutes + parseInt(booking.duration);
-                    
+
                     bookedRanges.push({
                         start: startMinutes,
                         end: endMinutes
                     });
                 });
-                
+
                 return bookedRanges;
             }
 
@@ -277,36 +283,36 @@
                 const startMinutes = timeToMinutes(startTime);
                 const endMinutes = timeToMinutes(endTime);
                 const INTERVAL = 30; // Fixed 30-minute intervals
-                
+
                 // Get current time if it's today
                 const now = new Date();
                 const isToday = calendar.selectedDate === now.toISOString().split('T')[0];
                 const currentMinutes = isToday ? now.getHours() * 60 + now.getMinutes() : 0;
                 // Add 60 minutes (1 hour) buffer for today's bookings
                 const minimumBookingTime = isToday ? currentMinutes + 60 : 0;
-                
+
                 for (let currentTime = startMinutes; currentTime < endMinutes; currentTime += INTERVAL) {
                     const slotEndTime = currentTime + parseInt(serviceDuration);
-                    
+
                     // Check if this slot would extend beyond the end time
                     const exceedsEndTime = slotEndTime > endMinutes;
-                    
+
                     // Check if the slot is in the past (including 1-hour buffer)
                     const isPastTime = isToday && currentTime < minimumBookingTime;
-                    
+
                     // Check if this slot overlaps with any booked range
                     const isBooked = bookedRanges.some(range => {
-                        return (currentTime >= range.start && currentTime < range.end) || 
-                               (slotEndTime > range.start && slotEndTime <= range.end) ||
-                               (currentTime <= range.start && slotEndTime >= range.end);
+                        return (currentTime >= range.start && currentTime < range.end) ||
+                            (slotEndTime > range.start && slotEndTime <= range.end) ||
+                            (currentTime <= range.start && slotEndTime >= range.end);
                     });
-                    
+
                     slots.push({
                         time: minutesToTime(currentTime),
                         booked: isBooked || exceedsEndTime || isPastTime // Mark as booked if it's past time or exceeds end time
                     });
                 }
-                
+
                 return slots;
             }
 
@@ -353,7 +359,7 @@
 
                 // Get the current subdomain from the URL
                 const subdomain = window.location.pathname.split('/')[1];
-                
+
                 // Redirect to booking confirmation page with proper path
                 window.location.href = `/${subdomain}/confirm-booking`;
             });
@@ -361,7 +367,9 @@
             function toggleDescription(button) {
                 const description = button.parentElement.nextElementSibling;
                 description.classList.toggle('show');
-                button.textContent = description.classList.contains('show') ? '↑' : '↓';
+                const icon = button.querySelector('i');
+                icon.classList.toggle('fa-chevron-down');
+                icon.classList.toggle('fa-chevron-up');
             }
         </script>
     </body>
