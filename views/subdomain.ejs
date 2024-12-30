@@ -370,11 +370,10 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
 
                 const container = document.querySelector('.subdomain-content-section');
-
-                // Replace content with booking form
+                
                 container.innerHTML = `
                     <div class="booking-header">
-                        <h2>Confirm your booking</h2>
+                        <h1>Confirm your booking</h1>
                         <button class="return-button" onclick="window.location.reload()">Return</button>
                     </div>
                     
@@ -431,10 +430,6 @@
                 // Store booking details in the form
                 const form = container.querySelector('.booking-form');
                 form.dataset.bookingDetails = JSON.stringify(bookingDetails);
-
-                // Update the CTA button
-                const ctaButton = document.querySelector('.subdomain-cta-button');
-                ctaButton.style.display = 'none';
             }
 
             async function submitBooking(event) {
