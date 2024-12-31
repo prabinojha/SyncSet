@@ -145,14 +145,34 @@ document.addEventListener('DOMContentLoaded', () => {
             const timeGrid = document.querySelector('.dashboard-time-grid');
             timeGrid.innerHTML = '';
             
+            // Create a map of all booked time slots including duration
+            const bookedTimeSlots = new Map();
+            bookings.forEach(booking => {
+                const [hours, minutes] = booking.time.split(':').map(Number);
+                const durationInMinutes = booking.duration || 60; // Default to 60 minutes if not specified
+                
+                // Calculate how many 30-minute slots this booking spans
+                const slotsToBook = Math.ceil(durationInMinutes / 30);
+                
+                // Mark each 30-minute slot within the booking duration as booked
+                for (let i = 0; i < slotsToBook; i++) {
+                    const slotMinutes = minutes + (i * 30);
+                    const slotHours = hours + Math.floor(slotMinutes / 60);
+                    const slotMinutesNormalized = slotMinutes % 60;
+                    
+                    const timeString = `${String(slotHours).padStart(2, '0')}:${String(slotMinutesNormalized).padStart(2, '0')}`;
+                    bookedTimeSlots.set(timeString, booking);
+                }
+            });
+            
             // Create 24 hours worth of 30-minute slots
             for (let hour = 0; hour < 24; hour++) {
                 for (let minute of [0, 30]) {
                     const timeString = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-                    const timeBookings = bookings.filter(b => b.time === timeString);
+                    const booking = bookedTimeSlots.get(timeString);
                     
                     const timeSlot = document.createElement('div');
-                    timeSlot.className = `dashboard-time-slot ${timeBookings.length > 0 ? 'booked' : ''}`;
+                    timeSlot.className = `dashboard-time-slot ${booking ? 'booked' : ''}`;
                     
                     const timeDisplay = document.createElement('span');
                     timeDisplay.className = 'dashboard-time-display';
@@ -160,12 +180,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     const status = document.createElement('span');
                     status.className = 'dashboard-status';
-                    status.textContent = timeBookings.length > 0 ? `Booked` : '';
+                    status.textContent = booking ? 'Booked' : '';
                     
                     timeSlot.appendChild(timeDisplay);
                     timeSlot.appendChild(status);
                     
-                    if (timeBookings.length > 0) {
+                    if (booking) {
                         timeSlot.addEventListener('click', () => {
                             // Remove selected class from all slots
                             document.querySelectorAll('.dashboard-time-slot').forEach(slot => {
@@ -176,8 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             timeSlot.classList.add('selected');
                             
                             // Show bookings for this time slot
-                            this.showBookingsForTimeSlot(timeBookings);
-                            
+                            this.showBookingsForTimeSlot([booking]);
                         });
                     }
                     
