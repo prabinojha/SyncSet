@@ -1,24 +1,27 @@
 <div class="calendar-section">
     <div class="calendar-grid">
-        <div class="calendar-container">
-            <div class="calendar-header">
-                <button id="prevMonth" class="calendar-nav-btn">&lt;</button>
-                <h2 id="currentMonth">Month Year</h2>
-                <button id="nextMonth" class="calendar-nav-btn">&gt;</button>
+        <div class="calendar-left-panel">
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <button id="prevMonth" class="calendar-nav-btn">&lt;</button>
+                    <h2 id="currentMonth">Month Year</h2>
+                    <button id="nextMonth" class="calendar-nav-btn">&gt;</button>
+                </div>
+                <div class="calendar-body">
+                    <div class="weekdays"></div>
+                    <div class="days"></div>
+                </div>
             </div>
-            <div class="calendar-body">
-                <div class="weekdays"></div>
-                <div class="days"></div>
+            
+            <div class="dashboard-time-grid">
+                <!-- Time slots will be dynamically inserted here -->
             </div>
         </div>
         
         <div class="bookings-panel">
             <h3 id="selectedDate">Select a date to view bookings</h3>
-            <div class="dashboard-time-grid">
-                <!-- Time slots will be dynamically inserted here -->
-            </div>
-            <div id="bookingsList" class="bookings-list hidden">
-                <!-- Booking details will be shown here when a booked time slot is clicked -->
+            <div id="bookingsList" class="bookings-list">
+                <!-- Booking details will be shown here -->
             </div>
         </div>
     </div>
@@ -105,10 +108,6 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         async selectDate(dateString) {
-            // Clear the bookings list
-            document.getElementById('bookingsList').innerHTML = '';
-            document.getElementById('bookingsList').classList.add('hidden');
-
             this.selectedDate = dateString;
             document.querySelectorAll('.day').forEach(day => {
                 day.classList.remove('selected');
@@ -126,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             document.getElementById('selectedDate').textContent = formattedDate;
 
-            // Load bookings for selected date
+            // Load all bookings for the selected date
             await this.loadBookings(dateString);
         },
 
@@ -156,17 +155,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         renderTimeGrid(bookings) {
             const timeGrid = document.querySelector('.dashboard-time-grid');
-            const bookingsList = document.getElementById('bookingsList');
             timeGrid.innerHTML = '';
             
             // Create 24 hours worth of 30-minute slots
             for (let hour = 0; hour < 24; hour++) {
                 for (let minute of [0, 30]) {
                     const timeString = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-                    const booking = bookings.find(b => b.time === timeString);
+                    const timeBookings = bookings.filter(b => b.time === timeString);
                     
                     const timeSlot = document.createElement('div');
-                    timeSlot.className = `dashboard-time-slot ${booking ? 'booked' : ''}`;
+                    timeSlot.className = `dashboard-time-slot ${timeBookings.length > 0 ? 'booked' : ''}`;
                     
                     const timeDisplay = document.createElement('span');
                     timeDisplay.className = 'dashboard-time-display';
@@ -174,42 +172,73 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     const status = document.createElement('span');
                     status.className = 'dashboard-status';
-                    status.textContent = booking ? 'Booked' : '';
+                    status.textContent = timeBookings.length > 0 ? `${timeBookings.length}` : '';
                     
                     timeSlot.appendChild(timeDisplay);
                     timeSlot.appendChild(status);
                     
-                    if (booking) {
+                    if (timeBookings.length > 0) {
                         timeSlot.addEventListener('click', () => {
-                            document.querySelectorAll('.dashboard-time-slot').forEach(slot => 
-                                slot.classList.remove('selected'));
+                            // Remove selected class from all slots
+                            document.querySelectorAll('.dashboard-time-slot').forEach(slot => {
+                                slot.classList.remove('selected');
+                            });
+                            
+                            // Add selected class to clicked slot
                             timeSlot.classList.add('selected');
                             
-                            bookingsList.innerHTML = `
-                                <div class="booking-card">
-                                    <div class="booking-header">
-                                        <h4>${booking.clientName} | ${booking.time}</h4>
-                                    </div>
-                                    <div class="booking-details">
-                                        <div class="booking-service">
-                                            <span>Service: ${booking.serviceName}</span>
-                                            <span>Price: $${booking.cost}</span>
-                                        </div>
-                                        <div class="booking-actions">
-                                            <button onclick="messageClient('${booking.id}')" class="message-btn">Message Client</button>
-                                            <button onclick="editBooking('${booking.id}')" class="edit-btn">Edit Details</button>
-                                        </div>
-                                        <button onclick="markComplete('${booking.id}')" class="complete-btn">Mark as complete</button>
-                                    </div>
-                                </div>
-                            `;
-                            bookingsList.classList.remove('hidden');
+                            // Show bookings for this time slot
+                            this.showBookingsForTimeSlot(timeBookings);
+                            
+                            // Scroll to top smoothly
+                            window.scrollTo({
+                                top: 0,
+                                behavior: 'smooth'
+                            });
                         });
                     }
                     
                     timeGrid.appendChild(timeSlot);
                 }
             }
+            
+            // Show all bookings for the selected date by default
+            this.showAllBookings(bookings);
+        },
+
+        showBookingsForTimeSlot(bookings) {
+            const bookingsList = document.getElementById('bookingsList');
+            bookingsList.innerHTML = this.generateBookingsHTML(bookings);
+        },
+
+        showAllBookings(bookings) {
+            const bookingsList = document.getElementById('bookingsList');
+            bookingsList.innerHTML = this.generateBookingsHTML(bookings);
+        },
+
+        generateBookingsHTML(bookings) {
+            if (bookings.length === 0) {
+                return '<p class="no-bookings">No bookings for this selection</p>';
+            }
+            
+            return bookings.map(booking => `
+                <div class="booking-card">
+                    <div class="booking-header">
+                        <h4>${booking.clientName} | ${booking.time}</h4>
+                    </div>
+                    <div class="booking-details">
+                        <div class="booking-service">
+                            <span>Service: ${booking.serviceName}</span>
+                            <span>Price: $${booking.cost}</span>
+                        </div>
+                        <div class="booking-actions">
+                            <button onclick="messageClient('${booking.id}')" class="message-btn">Message Client</button>
+                            <button onclick="editBooking('${booking.id}')" class="edit-btn">Edit Details</button>
+                        </div>
+                        <button onclick="markComplete('${booking.id}')" class="complete-btn">Mark as complete</button>
+                    </div>
+                </div>
+            `).join('');
         }
     };
 
