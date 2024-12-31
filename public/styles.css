@@ -1056,10 +1056,10 @@ header {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 0.5rem;
-    border-radius: 20px;
-    background: var(--primary-dark-blue);
-    color: white;
+    padding: 0.25rem 0.4;
+    border-radius: var(--border-radius);
+    background: white;
+    color: black;
     transition: all 0.2s ease;
     text-align: center;
     min-height: 40px;
@@ -1072,11 +1072,13 @@ header {
 }
 
 .dashboard-time-slot.booked {
-    background-color: var(--primary-purple);
+    background-color: var(--primary-blue);
+    color: white;
 }
 
 .dashboard-time-slot.selected {
-    background-color: var(--primary-blue);
+    background-color: var(--primary-purple);
+    color: white;
     transform: translateY(-2px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }

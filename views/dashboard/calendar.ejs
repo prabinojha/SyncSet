@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     const status = document.createElement('span');
                     status.className = 'dashboard-status';
-                    status.textContent = timeBookings.length > 0 ? `${timeBookings.length}` : '';
+                    status.textContent = timeBookings.length > 0 ? `Booked` : '';
                     
                     timeSlot.appendChild(timeDisplay);
                     timeSlot.appendChild(status);
@@ -190,11 +190,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             // Show bookings for this time slot
                             this.showBookingsForTimeSlot(timeBookings);
                             
-                            // Scroll to top smoothly
-                            window.scrollTo({
-                                top: 0,
-                                behavior: 'smooth'
-                            });
                         });
                     }
                     
