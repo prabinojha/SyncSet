@@ -1046,53 +1046,61 @@ header {
 }
 
 .dashboard-time-grid {
-    display: grid;
-    grid-template-rows: repeat(auto-fill, minmax(50px, 1fr));
-    gap: 0.5rem;
-    padding: 1rem;
+    background: white;
     border-radius: var(--border-radius);
     border: 1px solid var(--light-grey);
-    background-color: #f8f9fa;
+    padding: 1rem;
+    overflow-y: auto;
+    max-height: 50vh;
+}
+
+.time-slots-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .dashboard-time-slot {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 0.75rem 0.5rem;
+    padding: 0.75rem 1rem;
     background: white;
-    border-radius: var(--border-radius);
+    border: 1px solid var(--light-grey);
+    border-radius: 2rem;
     transition: all 0.2s ease;
     cursor: pointer;
-    text-align: center;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    gap: 1rem;
+    justify-content: space-between;
 }
 
 .dashboard-time-slot:hover:not(.booked) {
-    transform: translateY(-2px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: var(--primary-light-blue);
 }
 
 .dashboard-time-slot.booked {
-    background-color: var(--primary-blue);
-    color: white;
+    background-color: var(--primary-light-blue);
+    border-color: var(--primary-blue);
 }
 
 .dashboard-time-slot.selected {
     background-color: var(--primary-purple);
     color: white;
+    border-color: var(--primary-purple);
 }
 
 .dashboard-time-display {
     font-size: 0.9rem;
     font-weight: 500;
+    min-width: 60px;
 }
 
 .dashboard-status {
-    font-size: 0.75rem;
-    margin-top: 0.25rem;
-    opacity: 0.9;
+    font-size: 0.9rem;
+    color: var(--primary-blue);
+}
+
+.dashboard-time-slot.selected .dashboard-status {
+    color: white;
 }
 
 /* Ensure the scrollbar looks nice */
