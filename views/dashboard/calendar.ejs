@@ -4,11 +4,11 @@
             <div class="calendar-container">
                 <div class="calendar-header">
                     <button id="prevMonth" class="calendar-nav-btn">&lt;</button>
-                    <h2 id="currentMonth">Month Year</h2>
+                    <h3 id="currentMonth">Month Year</h3>
                     <button id="nextMonth" class="calendar-nav-btn">&gt;</button>
                 </div>
                 <div class="calendar-body">
-                    <div class="weekdays"></div>
+                    
                     <div class="days"></div>
                 </div>
             </div>
@@ -60,22 +60,11 @@ document.addEventListener('DOMContentLoaded', () => {
                               "July", "August", "September", "October", "November", "December"];
             document.getElementById('currentMonth').textContent = `${monthNames[month]} ${year}`;
 
-            // Setup weekdays
-            const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            document.querySelector('.weekdays').innerHTML = weekdays.map(day => 
-                `<div class="weekday">${day}</div>`
-            ).join('');
-
             // Calculate days
             const firstDay = new Date(year, month, 1);
             const lastDay = new Date(year, month + 1, 0);
             const daysGrid = document.querySelector('.days');
             daysGrid.innerHTML = '';
-
-            // Add empty cells for days before the first of the month
-            for (let i = 0; i < firstDay.getDay(); i++) {
-                daysGrid.appendChild(this.createDayElement(''));
-            }
 
             // Add the days of the month
             for (let day = 1; day <= lastDay.getDate(); day++) {
@@ -132,7 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
         async loadBookings(date = null) {
             const bookingsList = document.getElementById('bookingsList');
             if (!date) {
-                bookingsList.innerHTML = '<p class="no-bookings">Select a date to view bookings</p>';
                 return;
             }
 

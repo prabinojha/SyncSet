@@ -796,10 +796,11 @@ header {
 .calendar-nav-btn {
     background: none;
     border: none;
-    font-size: 1.5rem;
+    font-size: 1rem;
     cursor: pointer;
     color: var(--primary-dark-blue);
     padding: 0.5rem 1rem;
+    font-weight: 700;
     border-radius: var(--border-radius);
 }
 
@@ -807,22 +808,9 @@ header {
     background-color: var(--light-grey);
 }
 
-.weekdays {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    text-align: center;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-}
-
-.weekday {
-    padding: 0.5rem;
-    color: var(--primary-dark-blue);
-}
-
 .days {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(11, 1fr);
     gap: 0.5rem;
 }
 
@@ -1024,6 +1012,17 @@ header {
 
     .dashboard-time-grid {
         grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+
+
+    .days {
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
+        gap: 0.25rem;
+    } 
+
+    .day {
+        font-size: 0.75rem;
     }
 }
 
