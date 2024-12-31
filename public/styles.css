@@ -2,7 +2,7 @@
     --primary-purple: #9766f9;
     --primary-light-purple: #ddc0fb;
     --primary-blue: #30abf7;
-    --primary-light-blue: #e1f5ff;
+    --primary-light-blue: #ebf8ff;
     --primary-dark-blue: #002c45;
     --light-grey: #e1e0e0;
     --primary-font: 'Poppins', sans-serif;
@@ -1022,4 +1022,55 @@ header {
     to {
         background-position: 200% center;
     }
+}
+
+.dashboard-time-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.5rem;
+    margin-top: 1rem;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.dashboard-time-slot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--light-grey);
+    background: white;
+    transition: all 0.2s ease;
+}
+
+.dashboard-time-slot.booked {
+    background-color: var(--primary-blue);
+    
+    color: white;
+    cursor: pointer;
+}
+
+.dashboard-time-slot.booked:hover {
+    transform: translateY(-2px);
+}
+
+.dashboard-time-slot.selected {
+    background: var(--primary-purple);
+}
+
+.dashboard-time-display {
+    font-weight: 500;
+}
+
+.dashboard-status {
+    font-size: 0.9rem;
+}
+
+.bookings-list.hidden {
+    display: none;
+}
+
+.booking-card {
+    margin-top: 1rem;
 }

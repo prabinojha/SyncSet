@@ -12,10 +12,13 @@
             </div>
         </div>
         
-        <div id="bookingsPanel" class="bookings-panel">
+        <div class="bookings-panel">
             <h3 id="selectedDate">Select a date to view bookings</h3>
-            <div id="bookingsList" class="bookings-list">
-                <!-- Bookings will be dynamically inserted here -->
+            <div class="dashboard-time-grid">
+                <!-- Time slots will be dynamically inserted here -->
+            </div>
+            <div id="bookingsList" class="bookings-list hidden">
+                <!-- Booking details will be shown here when a booked time slot is clicked -->
             </div>
         </div>
     </div>
@@ -102,6 +105,10 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         async selectDate(dateString) {
+            // Clear the bookings list
+            document.getElementById('bookingsList').innerHTML = '';
+            document.getElementById('bookingsList').classList.add('hidden');
+
             this.selectedDate = dateString;
             document.querySelectorAll('.day').forEach(day => {
                 day.classList.remove('selected');
@@ -131,7 +138,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
-                // Get the user's subdomain from the domainData passed to the template
                 const subdomain = '<%= userSubdomain %>';
                 const response = await fetch(`/api/bookings/${subdomain}/${date}`);
                 
@@ -140,33 +146,69 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 
                 const bookings = await response.json();
-
-                if (bookings.length === 0) {
-                    bookingsList.innerHTML = '<p class="no-bookings">No bookings for this date</p>';
-                    return;
-                }
-
-                bookingsList.innerHTML = bookings.map(booking => `
-                    <div class="booking-card">
-                        <div class="booking-header">
-                            <h4>${booking.clientName} | ${booking.time}</h4>
-                        </div>
-                        <div class="booking-details">
-                            <div class="booking-service">
-                                <span>Service: ${booking.serviceName}</span>
-                                <span>Price: $${booking.cost}</span>
-                            </div>
-                            <div class="booking-actions">
-                                <button onclick="messageClient('${booking.id}')" class="message-btn">Message Client</button>
-                                <button onclick="editBooking('${booking.id}')" class="edit-btn">Edit Details</button>
-                            </div>
-                            <button onclick="markComplete('${booking.id}')" class="complete-btn">Mark as complete</button>
-                        </div>
-                    </div>
-                `).join('');
+                this.renderTimeGrid(bookings);
+                
             } catch (error) {
                 console.error('Error loading bookings:', error);
                 bookingsList.innerHTML = '<p class="error">Failed to load bookings</p>';
+            }
+        },
+
+        renderTimeGrid(bookings) {
+            const timeGrid = document.querySelector('.dashboard-time-grid');
+            const bookingsList = document.getElementById('bookingsList');
+            timeGrid.innerHTML = '';
+            
+            // Create 24 hours worth of 30-minute slots
+            for (let hour = 0; hour < 24; hour++) {
+                for (let minute of [0, 30]) {
+                    const timeString = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+                    const booking = bookings.find(b => b.time === timeString);
+                    
+                    const timeSlot = document.createElement('div');
+                    timeSlot.className = `dashboard-time-slot ${booking ? 'booked' : ''}`;
+                    
+                    const timeDisplay = document.createElement('span');
+                    timeDisplay.className = 'dashboard-time-display';
+                    timeDisplay.textContent = timeString;
+                    
+                    const status = document.createElement('span');
+                    status.className = 'dashboard-status';
+                    status.textContent = booking ? 'Booked' : '';
+                    
+                    timeSlot.appendChild(timeDisplay);
+                    timeSlot.appendChild(status);
+                    
+                    if (booking) {
+                        timeSlot.addEventListener('click', () => {
+                            document.querySelectorAll('.dashboard-time-slot').forEach(slot => 
+                                slot.classList.remove('selected'));
+                            timeSlot.classList.add('selected');
+                            
+                            bookingsList.innerHTML = `
+                                <div class="booking-card">
+                                    <div class="booking-header">
+                                        <h4>${booking.clientName} | ${booking.time}</h4>
+                                    </div>
+                                    <div class="booking-details">
+                                        <div class="booking-service">
+                                            <span>Service: ${booking.serviceName}</span>
+                                            <span>Price: $${booking.cost}</span>
+                                        </div>
+                                        <div class="booking-actions">
+                                            <button onclick="messageClient('${booking.id}')" class="message-btn">Message Client</button>
+                                            <button onclick="editBooking('${booking.id}')" class="edit-btn">Edit Details</button>
+                                        </div>
+                                        <button onclick="markComplete('${booking.id}')" class="complete-btn">Mark as complete</button>
+                                    </div>
+                                </div>
+                            `;
+                            bookingsList.classList.remove('hidden');
+                        });
+                    }
+                    
+                    timeGrid.appendChild(timeSlot);
+                }
             }
         }
     };
