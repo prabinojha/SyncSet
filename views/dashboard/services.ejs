@@ -18,7 +18,7 @@
                 
                 <div class="service-details">
                     <input type="number" id="serviceCost" placeholder="Cost ($AUD)" required>
-                    <input type="number" id="serviceDuration" placeholder="Duration (mins)" step="30" min="30" max="180" required>
+                    <input type="number" id="serviceDuration" placeholder="Duration (mins)" step="15" min="15" max="180" required>
                 </div>
 
                 <div class="time-selection">
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Validate duration is in 15-minute increments
         if (duration % 15 !== 0) {
-            alert('Duration must be in 30-minute increments');
+            alert('Duration must be in 15-minute increments');
             return;
         }
 

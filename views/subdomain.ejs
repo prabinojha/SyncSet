@@ -115,16 +115,27 @@
                         "July", "August", "September", "October", "November", "December"];
                     document.getElementById('subdomain-currentMonth').textContent = `${monthNames[month]} ${year}`;
 
+                    // Add weekday names
+                    const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                    const weekdaysContainer = document.querySelector('.subdomain-weekdays');
+                    weekdaysContainer.innerHTML = weekdays.map(day => `
+                        <div class="subdomain-weekday">${day}</div>
+                    `).join('');
+
                     const daysGrid = document.querySelector('.subdomain-days');
                     daysGrid.innerHTML = '';
 
                     const firstDay = new Date(year, month, 1);
                     const lastDay = new Date(year, month + 1, 0);
 
+                    // Add empty cells for days before the first day of the month
                     for (let i = 0; i < firstDay.getDay(); i++) {
-                        daysGrid.appendChild(this.createDayElement(''));
+                        const emptyCell = this.createDayElement('');
+                        emptyCell.classList.add('subdomain-day');
+                        daysGrid.appendChild(emptyCell);
                     }
 
+                    // Add the days of the month
                     for (let day = 1; day <= lastDay.getDate(); day++) {
                         const dayElement = this.createDayElement(day);
                         const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -145,6 +156,16 @@
                         }
 
                         daysGrid.appendChild(dayElement);
+                    }
+
+                    // Add empty cells for days after the last day of the month
+                    const lastDayOfWeek = lastDay.getDay();
+                    if (lastDayOfWeek < 6) {
+                        for (let i = lastDayOfWeek + 1; i < 7; i++) {
+                            const emptyCell = this.createDayElement('');
+                            emptyCell.classList.add('subdomain-day');
+                            daysGrid.appendChild(emptyCell);
+                        }
                     }
                 },
 
@@ -281,7 +302,7 @@
                 const slots = [];
                 const startMinutes = timeToMinutes(startTime);
                 const endMinutes = timeToMinutes(endTime);
-                const INTERVAL = 30; // Fixed 30-minute intervals
+                const INTERVAL = 15; // Changed to 15-minute intervals
 
                 // Get current time if it's today
                 const now = new Date();

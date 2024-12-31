@@ -243,7 +243,6 @@ body {
 
 .subdomain-day:empty {
     background: none !important;
-    border: none !important;
     cursor: default;
 }
 

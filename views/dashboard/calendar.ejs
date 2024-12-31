@@ -145,18 +145,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const timeGrid = document.querySelector('.dashboard-time-grid');
             timeGrid.innerHTML = '';
             
+            // Create a time slots row container
+            const timeRow = document.createElement('div');
+            timeRow.className = 'time-slots-row';
+            
             // Create a map of all booked time slots including duration
             const bookedTimeSlots = new Map();
             bookings.forEach(booking => {
                 const [hours, minutes] = booking.time.split(':').map(Number);
-                const durationInMinutes = booking.duration || 60; // Default to 60 minutes if not specified
+                const durationInMinutes = booking.duration || 60;
                 
-                // Calculate how many 30-minute slots this booking spans
-                const slotsToBook = Math.ceil(durationInMinutes / 30);
+                // Calculate how many 15-minute slots this booking spans
+                const slotsToBook = Math.ceil(durationInMinutes / 15);
                 
-                // Mark each 30-minute slot within the booking duration as booked
+                // Mark each 15-minute slot within the booking duration as booked
                 for (let i = 0; i < slotsToBook; i++) {
-                    const slotMinutes = minutes + (i * 30);
+                    const slotMinutes = minutes + (i * 15);
                     const slotHours = hours + Math.floor(slotMinutes / 60);
                     const slotMinutesNormalized = slotMinutes % 60;
                     
@@ -165,9 +169,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
             
-            // Create 24 hours worth of 30-minute slots
+            // Create 24 hours worth of 15-minute slots
             for (let hour = 0; hour < 24; hour++) {
-                for (let minute of [0, 30]) {
+                for (let minute of [0, 15, 30, 45]) {
                     const timeString = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
                     const booking = bookedTimeSlots.get(timeString);
                     
@@ -187,24 +191,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     if (booking) {
                         timeSlot.addEventListener('click', () => {
-                            // Remove selected class from all slots
                             document.querySelectorAll('.dashboard-time-slot').forEach(slot => {
                                 slot.classList.remove('selected');
                             });
-                            
-                            // Add selected class to clicked slot
                             timeSlot.classList.add('selected');
-                            
-                            // Show bookings for this time slot
                             this.showBookingsForTimeSlot([booking]);
                         });
                     }
                     
-                    timeGrid.appendChild(timeSlot);
+                    timeRow.appendChild(timeSlot);
                 }
             }
             
-            // Show all bookings for the selected date by default
+            timeGrid.appendChild(timeRow);
             this.showAllBookings(bookings);
         },
 
