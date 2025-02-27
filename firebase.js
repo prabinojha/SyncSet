@@ -1,15 +1,16 @@
+require('dotenv').config();
 const { initializeApp } = require("firebase/app");
 const { getAuth } = require("firebase/auth");
 const { getFirestore } = require("firebase/firestore");
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDUlDGztSXrkUNmxvoHF37s_X-ruQvrXAY",
-  authDomain: "syncset100.firebaseapp.com",
-  projectId: "syncset100",
-  storageBucket: "syncset100.firebasestorage.app",
-  messagingSenderId: "519453488014",
-  appId: "1:519453488014:web:579cf3305a8d7d697f6adf",
-  measurementId: "G-0G1NEJ6FF3"
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID,
+  measurementId: process.env.FIREBASE_MEASUREMENT_ID
 };
 
 const app = initializeApp(firebaseConfig);
