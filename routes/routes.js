@@ -57,7 +57,7 @@ router.get('/signup', checkAuth, (req, res) => {
 
 router.get('/', (req, res) => {
   const user = auth.currentUser;
-  res.render('home', { user });
+  res.render('home', { user, isHomePage: true });
 });
 
 router.get('/dashboard/:section?', async (req, res) => {

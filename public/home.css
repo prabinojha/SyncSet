@@ -7,12 +7,12 @@ body {
     text-align: center;
     padding: 5rem 1rem 2rem;
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 2.5rem auto;
 }
 
 .hero h1 {
-    font-size: 3.5rem;
-    margin-bottom: 1.5rem;
+    font-size: 3rem;
+    margin-bottom: 2rem;
     line-height: 1.2;
 }
 
@@ -43,14 +43,15 @@ body {
     margin: 0 auto 2rem;
     font-size: 1.2rem;
     height: 2rem;
-    background: rgba(255, 255, 255, 0.5);
+    background: var(--primary-light-blue);
+    border: 1px solid var(--primary-dark-blue);
     padding: 0.5rem 1rem;
     border-radius: 8px;
-    max-width: 90%;
+    max-width: fit-content;
 }
 
 .subdomain-display .domain {
-    color: #4A4A4A;
+    color: var(--primary-dark-blue);
     font-weight: 500;
     white-space: nowrap;
 }
