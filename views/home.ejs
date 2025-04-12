@@ -85,10 +85,30 @@
         <!-- FAQ Section -->
         <section class="faq-section">
             <h2>FAQs Answered</h2>
-            <div class="faq-item" onclick="toggleFAQ(this)">FAQ 1</div>
-            <div class="faq-item" onclick="toggleFAQ(this)">FAQ 2</div>
-            <div class="faq-item" onclick="toggleFAQ(this)">FAQ 3</div>
-            <div class="faq-item" onclick="toggleFAQ(this)">FAQ 4</div>
+            <div class="faq-item">
+                <div class="question">How do I get started with SyncSet?</div>
+                <div class="answer">
+                    Getting started is easy! Simply sign up for a free account, choose your custom domain, and start setting up your services. Our intuitive interface will guide you through the process of creating your booking website in minutes.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="question">Can I integrate with my existing calendar?</div>
+                <div class="answer">
+                    Yes! SyncSet seamlessly integrates with popular calendar services like Google Calendar, Outlook, and iCal. Your bookings will automatically sync with your calendar, and your availability will always be up to date.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="question">How do payments work?</div>
+                <div class="answer">
+                    We support secure payments through various payment processors including Stripe and PayPal. You can accept deposits, full payments, or set up custom payment schedules. All transactions are secure and automatically tracked in your dashboard.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="question">Is there a free plan available?</div>
+                <div class="answer">
+                    Yes! We offer a generous free plan that includes all essential features to get your booking website up and running. As your business grows, you can upgrade to our premium plans for additional features and higher booking limits.
+                </div>
+            </div>
         </section>
 
         <!-- CTA Section -->
@@ -116,17 +136,17 @@
             const nextIndex = (currentIndex + 1) % subdomains.length;
             
             // Start exit animation
-            subdomainElement.style.animation = 'slideDown 0.5s ease-in-out';
+            subdomainElement.style.animation = 'slideDown 0.3s ease-in-out';
             
             setTimeout(() => {
                 subdomainElement.textContent = subdomains[nextIndex];
-                subdomainElement.style.animation = 'slideUp 0.5s ease-in-out';
+                subdomainElement.style.animation = 'slideUp 0.3s ease-in-out';
                 currentIndex = nextIndex;
-            }, 500);
+            }, 300);
         }
 
-        // Change subdomain every 3 seconds
-        setInterval(changeSubdomain, 3000);
+        // Change subdomain every 2 seconds
+        setInterval(changeSubdomain, 2000);
 
         // FAQ toggle function
         function toggleFAQ(element) {
@@ -138,6 +158,13 @@
             });
             element.classList.toggle('active');
         }
+
+        // Add click event listeners to FAQ items
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.addEventListener('click', function() {
+                toggleFAQ(this);
+            });
+        });
     </script>
 </body>
 </html> 
