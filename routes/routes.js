@@ -56,13 +56,14 @@ router.get('/signup', checkAuth, (req, res) => {
 });
 
 router.get('/', (req, res) => {
-  res.redirect('/dashboard');
+  const user = auth.currentUser;
+  res.render('home', { user });
 });
 
 router.get('/dashboard/:section?', async (req, res) => {
   const user = auth.currentUser;
   if (!user) {
-    return res.redirect('/login');
+    return res.redirect('/');
   }
 
   try {
