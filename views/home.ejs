@@ -9,8 +9,15 @@
             <h1>Welcome to SyncSet</h1>
             <p>Your all-in-one solution for managing appointments and services.</p>
             <div class="cta-buttons">
-                <a href="/login" class="btn btn-primary">Login</a>
-                <a href="/signup" class="btn btn-secondary">Sign Up</a>
+                <% if (locals.user) { %>
+                    <a href="/dashboard" class="btn btn-primary">Go to Dashboard</a>
+                    <form action="/logout" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-secondary">Logout</button>
+                    </form>
+                <% } else { %>
+                    <a href="/login" class="btn btn-primary">Login</a>
+                    <a href="/signup" class="btn btn-secondary">Sign Up</a>
+                <% } %>
             </div>
         </div>
     </main>
