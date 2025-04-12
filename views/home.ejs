@@ -1,25 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include('includes/head', {title: 'Welcome to SyncSet'}) %>
+<link rel="stylesheet" href="/public/home.css">
 
 <body>
     <%- include('includes/header') %>
     <main>
-        <div class="home-container">
-            <h1>Welcome to SyncSet</h1>
-            <p>Your all-in-one solution for managing appointments and services.</p>
-            <div class="cta-buttons">
-                <% if (locals.user) { %>
-                    <a href="/dashboard" class="btn btn-primary">Go to Dashboard</a>
-                    <form action="/logout" method="POST" style="display: inline;">
-                        <button type="submit" class="btn btn-secondary">Logout</button>
-                    </form>
-                <% } else { %>
-                    <a href="/login" class="btn btn-primary">Login</a>
-                    <a href="/signup" class="btn btn-secondary">Sign Up</a>
-                <% } %>
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1><span class="sync">Sync</span> & <span class="automate">Automate</span><br>Appointments with your Clients</h1>
+            <p>Instantly create a personalised website for clients to book appointments and make payments</p>
+            <div class="subdomain-display">
+                <span class="domain">syncset.xyz /</span>
+                <span class="subdomain" id="changing-subdomain">my-business</span>
             </div>
-        </div>
+            <div class="cta-buttons">
+                <a href="/signup" class="btn btn-get-started">Get Started for free</a>
+            </div>
+            <div class="demo-images">
+                <div class="demo-images-container">
+                    <!-- Original set -->
+                    <div class="demo-image">Demo Page 1</div>
+                    <div class="demo-image">Demo Page 2</div>
+                    <div class="demo-image">Demo Page 3</div>
+                    <div class="demo-image">Demo Page 4</div>
+                    <!-- Duplicate set for seamless loop -->
+                    <div class="demo-image">Demo Page 1</div>
+                    <div class="demo-image">Demo Page 2</div>
+                    <div class="demo-image">Demo Page 3</div>
+                    <div class="demo-image">Demo Page 4</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features-section">
+            <h2>Features</h2>
+            <div class="features-grid">
+                <div class="feature">
+                    <div class="feature-content">
+                        <h3>Instantly create your booking website</h3>
+                        <p>Success is free! SyncSet landing pages with support for hosting payments and scheduling.</p>
+                        <a href="/signup" class="btn btn-primary">Get Started Free</a>
+                    </div>
+                    <div class="feature-image"></div>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-content">
+                        <h3>Directly sync with your calendar</h3>
+                        <p>Let your clients make bookings based on the availability in your calendar.</p>
+                        <a href="/signup" class="btn btn-primary">Get Started Free</a>
+                    </div>
+                    <div class="feature-image"></div>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-content">
+                        <h3>Offer your services to the world</h3>
+                        <p>Share your services with pricing, time, and details at your offer.</p>
+                        <a href="/signup" class="btn btn-primary">Get Started Free</a>
+                    </div>
+                    <div class="feature-image"></div>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-content">
+                        <h3>View your customer analytics</h3>
+                        <p>Track bookings and your revenue, gain growth and more.</p>
+                        <a href="/signup" class="btn btn-primary">Get Started Free</a>
+                    </div>
+                    <div class="feature-image"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Video Section -->
+        <section class="video-section">
+            <h2>See how SyncSet works</h2>
+            <div class="video-container"></div>
+            <p>Link to Youtube video on how it works</p>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section">
+            <h2>FAQs Answered</h2>
+            <div class="faq-item" onclick="toggleFAQ(this)">FAQ 1</div>
+            <div class="faq-item" onclick="toggleFAQ(this)">FAQ 2</div>
+            <div class="faq-item" onclick="toggleFAQ(this)">FAQ 3</div>
+            <div class="faq-item" onclick="toggleFAQ(this)">FAQ 4</div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <h2>Ready to build your page?</h2>
+            <p>Automate your bookings, manage your clients, and analyze your customer growth</p>
+            <a href="/signup" class="btn btn-primary">Get Started Free</a>
+        </section>
     </main>
+
+    <script>
+        // Subdomain animation
+        const subdomains = [
+            'my-tutoring-company',
+            'my-driving-school',
+            'my-salon-booking',
+            'my-fitness-studio',
+            'my-consulting-biz'
+        ];
+        
+        let currentIndex = 0;
+        const subdomainElement = document.getElementById('changing-subdomain');
+
+        function changeSubdomain() {
+            const nextIndex = (currentIndex + 1) % subdomains.length;
+            
+            // Start exit animation
+            subdomainElement.style.animation = 'slideDown 0.5s ease-in-out';
+            
+            setTimeout(() => {
+                subdomainElement.textContent = subdomains[nextIndex];
+                subdomainElement.style.animation = 'slideUp 0.5s ease-in-out';
+                currentIndex = nextIndex;
+            }, 500);
+        }
+
+        // Change subdomain every 3 seconds
+        setInterval(changeSubdomain, 3000);
+
+        // FAQ toggle function
+        function toggleFAQ(element) {
+            const faqs = document.querySelectorAll('.faq-item');
+            faqs.forEach(faq => {
+                if (faq !== element) {
+                    faq.classList.remove('active');
+                }
+            });
+            element.classList.toggle('active');
+        }
+    </script>
 </body>
 </html> 
