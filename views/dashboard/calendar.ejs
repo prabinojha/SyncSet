@@ -8,16 +8,16 @@
                     <button id="nextMonth" class="calendar-nav-btn">&gt;</button>
                 </div>
                 <div class="calendar-body">
-                    
+
                     <div class="days"></div>
                 </div>
             </div>
-            
+
             <div class="dashboard-time-grid">
                 <!-- Time slots will be dynamically inserted here -->
             </div>
         </div>
-        
+
         <div class="bookings-panel">
             <h3 id="selectedDate">Select a date to view bookings</h3>
             <div id="bookingsList" class="bookings-list">
@@ -28,250 +28,284 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const calendar = {
-        currentDate: new Date(),
-        selectedDate: null,
-        
-        init() {
-            this.setupCalendarControls();
-            this.renderCalendar();
-            this.loadBookings();
-        },
+    document.addEventListener('DOMContentLoaded', () => {
+        const calendar = {
+            currentDate: new Date(),
+            selectedDate: null,
 
-        setupCalendarControls() {
-            document.getElementById('prevMonth').addEventListener('click', () => {
-                this.currentDate.setMonth(this.currentDate.getMonth() - 1);
+            init() {
+                this.setupCalendarControls();
                 this.renderCalendar();
-            });
+                this.loadBookings();
+            },
 
-            document.getElementById('nextMonth').addEventListener('click', () => {
-                this.currentDate.setMonth(this.currentDate.getMonth() + 1);
-                this.renderCalendar();
-            });
-        },
+            setupCalendarControls() {
+                document.getElementById('prevMonth').addEventListener('click', () => {
+                    this.currentDate.setMonth(this.currentDate.getMonth() - 1);
+                    this.renderCalendar();
+                });
 
-        renderCalendar() {
-            const year = this.currentDate.getFullYear();
-            const month = this.currentDate.getMonth();
-            
-            // Update month/year display
-            const monthNames = ["January", "February", "March", "April", "May", "June",
-                              "July", "August", "September", "October", "November", "December"];
-            document.getElementById('currentMonth').textContent = `${monthNames[month]} ${year}`;
+                document.getElementById('nextMonth').addEventListener('click', () => {
+                    this.currentDate.setMonth(this.currentDate.getMonth() + 1);
+                    this.renderCalendar();
+                });
+            },
 
-            // Calculate days
-            const firstDay = new Date(year, month, 1);
-            const lastDay = new Date(year, month + 1, 0);
-            const daysGrid = document.querySelector('.days');
-            daysGrid.innerHTML = '';
+            renderCalendar() {
+                const year = this.currentDate.getFullYear();
+                const month = this.currentDate.getMonth();
 
-            // Add the days of the month
-            for (let day = 1; day <= lastDay.getDate(); day++) {
-                const dayElement = this.createDayElement(day);
-                const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                
-                dayElement.dataset.date = dateString;
-                dayElement.addEventListener('click', () => this.selectDate(dateString));
-                
-                if (this.isToday(year, month, day)) {
-                    dayElement.classList.add('today');
-                }
-                
-                daysGrid.appendChild(dayElement);
-            }
-        },
+                // Update month/year display
+                const monthNames = ["January", "February", "March", "April", "May", "June",
+                    "July", "August", "September", "October", "November", "December"];
+                document.getElementById('currentMonth').textContent = `${monthNames[month]} ${year}`;
 
-        createDayElement(content) {
-            const div = document.createElement('div');
-            div.className = 'day';
-            div.textContent = content;
-            return div;
-        },
+                // Calculate days
+                const firstDay = new Date(year, month, 1);
+                const lastDay = new Date(year, month + 1, 0);
+                const daysGrid = document.querySelector('.days');
+                daysGrid.innerHTML = '';
 
-        isToday(year, month, day) {
-            const today = new Date();
-            return today.getFullYear() === year && 
-                   today.getMonth() === month && 
-                   today.getDate() === day;
-        },
+                // Add the days of the month
+                for (let day = 1; day <= lastDay.getDate(); day++) {
+                    const dayElement = this.createDayElement(day);
+                    const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
-        async selectDate(dateString) {
-            this.selectedDate = dateString;
-            document.querySelectorAll('.day').forEach(day => {
-                day.classList.remove('selected');
-                if (day.dataset.date === dateString) {
-                    day.classList.add('selected');
-                }
-            });
+                    dayElement.dataset.date = dateString;
+                    dayElement.addEventListener('click', () => this.selectDate(dateString));
 
-            // Update bookings panel
-            const formattedDate = new Date(dateString).toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-            document.getElementById('selectedDate').textContent = formattedDate;
-
-            // Load all bookings for the selected date
-            await this.loadBookings(dateString);
-        },
-
-        async loadBookings(date = null) {
-            const bookingsList = document.getElementById('bookingsList');
-            if (!date) {
-                return;
-            }
-
-            try {
-                const subdomain = '<%= userSubdomain %>';
-                const response = await fetch(`/api/bookings/${subdomain}/${date}`);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const bookings = await response.json();
-                this.renderTimeGrid(bookings);
-                
-            } catch (error) {
-                console.error('Error loading bookings:', error);
-                bookingsList.innerHTML = '<p class="error">Failed to load bookings</p>';
-            }
-        },
-
-        renderTimeGrid(bookings) {
-            const timeGrid = document.querySelector('.dashboard-time-grid');
-            timeGrid.innerHTML = '';
-            
-            // Create a time slots row container
-            const timeRow = document.createElement('div');
-            timeRow.className = 'time-slots-row';
-            
-            // Create a map of all booked time slots including duration
-            const bookedTimeSlots = new Map();
-            bookings.forEach(booking => {
-                const [hours, minutes] = booking.time.split(':').map(Number);
-                const durationInMinutes = booking.duration || 60;
-                
-                // Calculate how many 15-minute slots this booking spans
-                const slotsToBook = Math.ceil(durationInMinutes / 15);
-                
-                // Mark each 15-minute slot within the booking duration as booked
-                for (let i = 0; i < slotsToBook; i++) {
-                    const slotMinutes = minutes + (i * 15);
-                    const slotHours = hours + Math.floor(slotMinutes / 60);
-                    const slotMinutesNormalized = slotMinutes % 60;
-                    
-                    const timeString = `${String(slotHours).padStart(2, '0')}:${String(slotMinutesNormalized).padStart(2, '0')}`;
-                    bookedTimeSlots.set(timeString, booking);
-                }
-            });
-            
-            // Create 24 hours worth of 15-minute slots
-            for (let hour = 0; hour < 24; hour++) {
-                for (let minute of [0, 15, 30, 45]) {
-                    const timeString = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-                    const booking = bookedTimeSlots.get(timeString);
-                    
-                    const timeSlot = document.createElement('div');
-                    timeSlot.className = `dashboard-time-slot ${booking ? 'booked' : ''}`;
-                    
-                    const timeDisplay = document.createElement('span');
-                    timeDisplay.className = 'dashboard-time-display';
-                    timeDisplay.textContent = timeString;
-                    
-                    const status = document.createElement('span');
-                    status.className = 'dashboard-status';
-                    status.textContent = booking ? 'Booked' : '';
-                    
-                    timeSlot.appendChild(timeDisplay);
-                    timeSlot.appendChild(status);
-                    
-                    if (booking) {
-                        timeSlot.addEventListener('click', () => {
-                            document.querySelectorAll('.dashboard-time-slot').forEach(slot => {
-                                slot.classList.remove('selected');
-                            });
-                            timeSlot.classList.add('selected');
-                            this.showBookingsForTimeSlot([booking]);
-                        });
+                    if (this.isToday(year, month, day)) {
+                        dayElement.classList.add('today');
                     }
-                    
-                    timeRow.appendChild(timeSlot);
+
+                    daysGrid.appendChild(dayElement);
                 }
-            }
-            
-            timeGrid.appendChild(timeRow);
-            this.showAllBookings(bookings);
-        },
+            },
 
-        showBookingsForTimeSlot(bookings) {
-            const bookingsList = document.getElementById('bookingsList');
-            bookingsList.innerHTML = this.generateBookingsHTML(bookings);
-        },
+            createDayElement(content) {
+                const div = document.createElement('div');
+                div.className = 'day';
+                div.textContent = content;
+                return div;
+            },
 
-        showAllBookings(bookings) {
-            const bookingsList = document.getElementById('bookingsList');
-            bookingsList.innerHTML = this.generateBookingsHTML(bookings);
-        },
+            isToday(year, month, day) {
+                const today = new Date();
+                return today.getFullYear() === year &&
+                    today.getMonth() === month &&
+                    today.getDate() === day;
+            },
 
-        generateBookingsHTML(bookings) {
-            if (bookings.length === 0) {
-                return '<p class="no-bookings">No bookings for this selection</p>';
-            }
-            
-            return bookings.map(booking => `
-                <div class="booking-card">
-                    <div class="booking-header">
-                        <h4>${booking.clientName} | ${booking.time}</h4>
-                    </div>
-                    <div class="booking-details">
-                        <div class="booking-service">
-                            <span>Service: ${booking.serviceName}</span>
-                            <span>Price: $${booking.cost}</span>
+            async selectDate(dateString) {
+                this.selectedDate = dateString;
+                document.querySelectorAll('.day').forEach(day => {
+                    day.classList.remove('selected');
+                    if (day.dataset.date === dateString) {
+                        day.classList.add('selected');
+                    }
+                });
+
+                // Update bookings panel
+                const formattedDate = new Date(dateString).toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                document.getElementById('selectedDate').textContent = formattedDate;
+
+                // Load all bookings for the selected date
+                await this.loadBookings(dateString);
+            },
+
+            async loadBookings(date = null) {
+                const bookingsList = document.getElementById('bookingsList');
+                if (!date) {
+                    return;
+                }
+
+                try {
+                    const subdomain = '<%= userSubdomain %>';
+                    const response = await fetch(`/api/bookings/${subdomain}/${date}`);
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const bookings = await response.json();
+                    this.renderTimeGrid(bookings);
+
+                } catch (error) {
+                    console.error('Error loading bookings:', error);
+                    bookingsList.innerHTML = '<p class="error">Failed to load bookings</p>';
+                }
+            },
+
+            renderTimeGrid(bookings) {
+                const timeGrid = document.querySelector('.dashboard-time-grid');
+                timeGrid.innerHTML = '';
+
+                // Create a time slots row container
+                const timeRow = document.createElement('div');
+                timeRow.className = 'time-slots-row';
+
+                // Create a map of all booked time slots including duration
+                const bookedTimeSlots = new Map();
+                bookings.forEach(booking => {
+                    const [hours, minutes] = booking.time.split(':').map(Number);
+                    const durationInMinutes = booking.duration || 60;
+
+                    // Calculate how many 15-minute slots this booking spans
+                    const slotsToBook = Math.ceil(durationInMinutes / 15);
+
+                    // Mark each 15-minute slot within the booking duration as booked
+                    for (let i = 0; i < slotsToBook; i++) {
+                        const slotMinutes = minutes + (i * 15);
+                        const slotHours = hours + Math.floor(slotMinutes / 60);
+                        const slotMinutesNormalized = slotMinutes % 60;
+
+                        const timeString = `${String(slotHours).padStart(2, '0')}:${String(slotMinutesNormalized).padStart(2, '0')}`;
+                        bookedTimeSlots.set(timeString, booking);
+                    }
+                });
+
+                // Create 24 hours worth of 15-minute slots
+                for (let hour = 0; hour < 24; hour++) {
+                    for (let minute of [0, 15, 30, 45]) {
+                        const timeString = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+                        const booking = bookedTimeSlots.get(timeString);
+
+                        const timeSlot = document.createElement('div');
+                        timeSlot.className = `dashboard-time-slot ${booking ? 'booked' : ''}`;
+
+                        const timeDisplay = document.createElement('span');
+                        timeDisplay.className = 'dashboard-time-display';
+                        timeDisplay.textContent = timeString;
+
+                        const status = document.createElement('span');
+                        status.className = 'dashboard-status';
+                        status.textContent = booking ? 'Booked' : '';
+
+                        timeSlot.appendChild(timeDisplay);
+                        timeSlot.appendChild(status);
+
+                        if (booking) {
+                            timeSlot.addEventListener('click', () => {
+                                document.querySelectorAll('.dashboard-time-slot').forEach(slot => {
+                                    slot.classList.remove('selected');
+                                });
+                                timeSlot.classList.add('selected');
+                                this.showBookingsForTimeSlot([booking]);
+                            });
+                        }
+
+                        timeRow.appendChild(timeSlot);
+                    }
+                }
+
+                timeGrid.appendChild(timeRow);
+                this.showAllBookings(bookings);
+            },
+
+            showBookingsForTimeSlot(bookings) {
+                const bookingsList = document.getElementById('bookingsList');
+                bookingsList.innerHTML = this.generateBookingsHTML(bookings);
+            },
+
+            showAllBookings(bookings) {
+                const bookingsList = document.getElementById('bookingsList');
+                bookingsList.innerHTML = this.generateBookingsHTML(bookings);
+            },
+
+            generateBookingsHTML(bookings) {
+                if (bookings.length === 0) {
+                    return '<p class="no-bookings">No bookings for this selection</p>';
+                }
+
+                return bookings.map(booking => {
+                    // Parse start time
+                    const [hours, minutes] = booking.time.split(':').map(Number);
+                    const duration = parseInt(booking.duration) || 30; // Default to 30 minutes if not specified
+
+                    // Create Date objects for start and end times
+                    const startDate = new Date();
+                    startDate.setHours(hours, minutes, 0);
+
+                    const endDate = new Date(startDate);
+                    endDate.setMinutes(startDate.getMinutes() + duration);
+
+                    const startTime = startDate.toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true
+                    }).replace(/\s/g, ''); // Remove space before AM/PM
+
+                    const endTime = endDate.toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true
+                    }).replace(/\s/g, ''); // Remove space before AM/PM
+
+                    const timeRange = `${startTime} - ${endTime}`;
+
+                    return `
+                    <div class="booking-card">
+                        <div class="booking-header">
+                            <h4>${booking.clientName}</h4>
+                            <span class="booking-time">${timeRange}</span>
                         </div>
-                        <div class="booking-actions">
-                            <button onclick="messageClient('${booking.id}')" class="message-btn">Message Client</button>
-                            <button onclick="editBooking('${booking.id}')" class="edit-btn">Edit Details</button>
+                        <div class="booking-details">
+                            <div class="booking-service">
+                                <span>Service: ${booking.serviceName}</span>
+                                <span>$${booking.cost}</span>
+                            </div>
+                            <div class="booking-actions">
+                                <button onclick="messageClient('${booking.id}')" class="message-btn">
+                                    <i class="fas fa-envelope"></i> Message
+                                </button>
+                                <button onclick="editBooking('${booking.id}')" class="edit-btn">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button onclick="markComplete('${booking.id}')" class="complete-btn">
+                                    <i class="fas fa-check"></i> Mark as complete
+                                </button>
+                            </div>
                         </div>
-                        <button onclick="markComplete('${booking.id}')" class="complete-btn">Mark as complete</button>
                     </div>
-                </div>
-            `).join('');
-        }
-    };
-
-    // Initialize calendar
-    calendar.init();
-
-    // Global functions for booking actions
-    window.messageClient = async (bookingId) => {
-        // Implement message client functionality
-        console.log('Message client:', bookingId);
-    };
-
-    window.editBooking = async (bookingId) => {
-        // Implement edit booking functionality
-        console.log('Edit booking:', bookingId);
-    };
-
-    window.markComplete = async (bookingId) => {
-        try {
-            const response = await fetch(`/api/bookings/${bookingId}/complete`, {
-                method: 'POST'
-            });
-
-            if (response.ok) {
-                calendar.loadBookings(calendar.selectedDate);
-            } else {
-                throw new Error('Failed to mark booking as complete');
+                `;
+                }).join('');
             }
-        } catch (error) {
-            console.error('Error marking booking complete:', error);
-            alert('Failed to mark booking as complete');
-        }
-    };
-});
-</script> 
+        };
+
+        // Initialize calendar
+        calendar.init();
+
+        // Global functions for booking actions
+        window.messageClient = async (bookingId) => {
+            // Implement message client functionality
+            console.log('Message client:', bookingId);
+        };
+
+        window.editBooking = async (bookingId) => {
+            // Implement edit booking functionality
+            console.log('Edit booking:', bookingId);
+        };
+
+        window.markComplete = async (bookingId) => {
+            try {
+                const response = await fetch(`/api/bookings/${bookingId}/complete`, {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    calendar.loadBookings(calendar.selectedDate);
+                } else {
+                    throw new Error('Failed to mark booking as complete');
+                }
+            } catch (error) {
+                console.error('Error marking booking complete:', error);
+                alert('Failed to mark booking as complete');
+            }
+        };
+    });
+</script>
