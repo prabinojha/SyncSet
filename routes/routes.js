@@ -536,8 +536,19 @@ router.get('/api/analytics', async (req, res) => {
 
         // Get unique clients
         const newClients = new Set();
+        const existingClients = new Set();
+        
+        // First, get all clients from previous periods to identify truly new ones
+        bookingsSnap.forEach(doc => {
+            const booking = doc.data();
+            if (booking.date < startDateStr) {
+                existingClients.add(booking.clientEmail);
+            }
+        });
+
+        // Now count only clients that weren't in previous periods
         bookings.forEach(booking => {
-            if (booking.status !== 'cancelled') {
+            if (!existingClients.has(booking.clientEmail)) {
                 newClients.add(booking.clientEmail);
             }
         });
@@ -545,10 +556,19 @@ router.get('/api/analytics', async (req, res) => {
         const clientsChange = previousNewClients.size === 0 ? 100 : 
             Math.round(((newClients.size - previousNewClients.size) / previousNewClients.size) * 100);
 
-        // Calculate conversion rate (completed bookings / total bookings)
+        // Calculate conversion rate (completed bookings / total bookings, excluding cancelled)
+        const activeBookings = bookings.filter(b => b.status !== 'cancelled').length;
         const completedBookings = bookings.filter(b => b.status === 'completed').length;
-        const conversionRate = totalBookings === 0 ? 0 : Math.round((completedBookings / totalBookings) * 100);
+        const conversionRate = activeBookings === 0 ? 0 : Math.round((completedBookings / activeBookings) * 100);
         
+        const previousActiveBookings = Array.from(bookingsSnap.docs)
+            .filter(doc => {
+                const data = doc.data();
+                return data.date >= previousStartDateStr && 
+                       data.date < startDateStr && 
+                       data.status !== 'cancelled';
+            }).length;
+            
         const previousCompletedBookings = Array.from(bookingsSnap.docs)
             .filter(doc => {
                 const data = doc.data();
@@ -557,8 +577,8 @@ router.get('/api/analytics', async (req, res) => {
                        data.status === 'completed';
             }).length;
             
-        const previousConversionRate = previousTotalBookings === 0 ? 0 : 
-            Math.round((previousCompletedBookings / previousTotalBookings) * 100);
+        const previousConversionRate = previousActiveBookings === 0 ? 0 : 
+            Math.round((previousCompletedBookings / previousActiveBookings) * 100);
         const conversionChange = previousConversionRate === 0 ? 100 : 
             Math.round(((conversionRate - previousConversionRate) / previousConversionRate) * 100);
 
