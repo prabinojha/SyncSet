@@ -2,7 +2,7 @@
 <html>
 <%- include('includes/head', {title: title}) %>
 
-    <body class="<%= domainData && domainData.theme === 'dark' ? 'dark-theme' : 'light-theme' %>">
+    <body class="<%= domainData && domainData.theme ? `${domainData.theme}-theme` : 'light-theme' %>">
         <div class="subdomain-container">
             <div class="subdomain-content-section">
                 <h1 id="subdomain-title">
@@ -77,7 +77,7 @@
                     if (title) document.getElementById('subdomain-title').textContent = title;
                     if (description) document.getElementById('subdomain-description').textContent = description;
 
-                    document.body.className = theme === 'dark' ? 'dark-theme' : 'light-theme';
+                    document.body.className = `${theme}-theme`;
                 }
             });
 
@@ -503,6 +503,103 @@
                 icon.classList.toggle('fa-chevron-up');
             }
         </script>
+
+        <style>
+            /* Light theme (default) */
+            .light-theme {
+                --bg-color: #ffffff;
+                --text-color: #333333;
+                --primary-color: #4a90e2;
+                --secondary-color: #f5f5f5;
+                --accent-color: #2c3e50;
+            }
+
+            /* Dark theme */
+            .dark-theme {
+                --bg-color: #1a1a1a;
+                --text-color: #ffffff;
+                --primary-color: #4a90e2;
+                --secondary-color: #2c2c2c;
+                --accent-color: #6c8eaf;
+            }
+
+            /* Ocean theme */
+            .ocean-theme {
+                --bg-color: #e6f3ff;
+                --text-color: #1a3b5d;
+                --primary-color: #0077be;
+                --secondary-color: #b3d9ff;
+                --accent-color: #004d7a;
+            }
+
+            /* Forest theme */
+            .forest-theme {
+                --bg-color: #f0f7f0;
+                --text-color: #2c4a2c;
+                --primary-color: #3e7b3e;
+                --secondary-color: #c8e6c8;
+                --accent-color: #1e4d1e;
+            }
+
+            /* Sunset theme */
+            .sunset-theme {
+                --bg-color: #fff5eb;
+                --text-color: #4a3226;
+                --primary-color: #ff7e33;
+                --secondary-color: #ffd4b8;
+                --accent-color: #cc5414;
+            }
+
+            /* Apply theme variables to elements */
+            body {
+                background-color: var(--bg-color);
+                color: var(--text-color);
+            }
+
+            .subdomain-container {
+                background-color: var(--bg-color);
+            }
+
+            .subdomain-service-item {
+                background-color: var(--secondary-color);
+                border: 1px solid var(--accent-color);
+            }
+
+            .subdomain-cta-button {
+                background-color: var(--primary-color);
+                color: white;
+            }
+
+            .subdomain-calendar-nav-btn {
+                color: var(--primary-color);
+            }
+
+            .time-slot {
+                border: 1px solid var(--accent-color);
+                color: var(--text-color);
+            }
+
+            .time-slot:hover {
+                background-color: var(--primary-color);
+                color: white;
+            }
+
+            .time-slot.selected {
+                background-color: var(--primary-color);
+                color: white;
+            }
+
+            .booking-form input {
+                border: 1px solid var(--accent-color);
+                background-color: var(--bg-color);
+                color: var(--text-color);
+            }
+
+            .confirm-button {
+                background-color: var(--primary-color);
+                color: white;
+            }
+        </style>
     </body>
 
 </html>
