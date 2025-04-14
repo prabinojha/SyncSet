@@ -481,7 +481,7 @@ router.get('/api/analytics', async (req, res) => {
             const bookingDate = booking.date; // Already a string in YYYY-MM-DD format
             
             // Only process bookings within the date range
-            if (bookingDate >= startDateStr && bookingDate <= currentDateStr) {
+            if (bookingDate >= startDateStr) {
                 // Add to bookings array (for recent bookings)
                 bookings.push({
                     id: doc.id,
@@ -585,7 +585,10 @@ router.get('/api/analytics', async (req, res) => {
         // Prepare time series data
         const dates = [];
         let currentDateIter = new Date(startDate);
-        while (currentDateIter <= currentDate) {
+        const futureDate = new Date();
+        futureDate.setDate(futureDate.getDate() + 30); // Include 30 days into the future
+        
+        while (currentDateIter <= futureDate) {
             dates.push(currentDateIter.toISOString().split('T')[0]);
             currentDateIter.setDate(currentDateIter.getDate() + 1);
         }
