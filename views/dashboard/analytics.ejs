@@ -106,9 +106,10 @@
         // Chart instances
         let popularServicesChart = null;
         let trendsChart = null;
+        let currentPeriod = 30; // Store the current period
 
         // Initialize with 30 days data
-        loadAnalyticsData(30);
+        loadAnalyticsData(currentPeriod);
         
         // Set up time filter buttons
         const timeFilterButtons = document.querySelectorAll('.time-filter-btn');
@@ -117,8 +118,19 @@
                 timeFilterButtons.forEach(btn => btn.classList.remove('active'));
                 this.classList.add('active');
                 const period = this.getAttribute('data-period');
+                currentPeriod = period;
                 loadAnalyticsData(period);
             });
+        });
+        
+        // Add window resize event listener to update charts
+        let resizeTimeout;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(function() {
+                // Reload the current data to update charts for the new screen size
+                loadAnalyticsData(currentPeriod);
+            }, 250); // Debounce the resize event
         });
 
         async function loadAnalyticsData(period) {
@@ -198,6 +210,9 @@
                 popularServicesChart.destroy();
             }
             
+            // Check if we're on a mobile device
+            const isMobile = window.innerWidth <= 768;
+            
             popularServicesChart = new Chart(canvas, {
                 type: 'bar',
                 data: {
@@ -213,18 +228,38 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
-                    aspectRatio: 1.5,
+                    aspectRatio: isMobile ? 1.2 : 1.5,
                     scales: {
                         y: {
                             beginAtZero: true,
                             ticks: {
-                                precision: 0
+                                precision: 0,
+                                font: {
+                                    size: isMobile ? 10 : 12
+                                }
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: {
+                                    size: isMobile ? 10 : 12
+                                },
+                                maxRotation: isMobile ? 45 : 0,
+                                minRotation: isMobile ? 45 : 0
                             }
                         }
                     },
                     plugins: {
                         legend: {
                             display: false
+                        },
+                        tooltip: {
+                            titleFont: {
+                                size: isMobile ? 12 : 14
+                            },
+                            bodyFont: {
+                                size: isMobile ? 11 : 13
+                            }
                         }
                     }
                 }
@@ -237,6 +272,10 @@
             if (trendsChart) {
                 trendsChart.destroy();
             }
+            
+            // Check if we're on a mobile device
+            const isMobile = window.innerWidth <= 768;
+            const isSmallMobile = window.innerWidth <= 480;
             
             const formattedDates = revenueData.labels.map(date => {
                 const d = new Date(date);
@@ -286,9 +325,13 @@
                                 display: false
                             },
                             ticks: {
-                                maxRotation: 0,
+                                maxRotation: isMobile ? 45 : 0,
+                                minRotation: isMobile ? 45 : 0,
                                 autoSkip: true,
-                                maxTicksLimit: 10
+                                maxTicksLimit: isSmallMobile ? 5 : (isMobile ? 8 : 10),
+                                font: {
+                                    size: isMobile ? 10 : 12
+                                }
                             }
                         },
                         y: {
@@ -299,6 +342,9 @@
                             ticks: {
                                 callback: function(value) {
                                     return '$' + value;
+                                },
+                                font: {
+                                    size: isMobile ? 10 : 12
                                 }
                             },
                             grid: {
@@ -311,7 +357,10 @@
                             position: 'right',
                             beginAtZero: true,
                             ticks: {
-                                precision: 0
+                                precision: 0,
+                                font: {
+                                    size: isMobile ? 10 : 12
+                                }
                             },
                             grid: {
                                 drawOnChartArea: false
@@ -324,16 +373,22 @@
                             align: 'end',
                             labels: {
                                 usePointStyle: true,
-                                padding: 20,
+                                padding: isMobile ? 10 : 20,
                                 font: {
-                                    size: 11,
+                                    size: isMobile ? 10 : 11,
                                     family: 'Arial, sans-serif'
                                 }
                             }
                         },
                         tooltip: {
                             mode: 'index',
-                            intersect: false
+                            intersect: false,
+                            titleFont: {
+                                size: isMobile ? 12 : 14
+                            },
+                            bodyFont: {
+                                size: isMobile ? 11 : 13
+                            }
                         }
                     }
                 }
