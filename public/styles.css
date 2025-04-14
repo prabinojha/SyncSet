@@ -1268,3 +1268,227 @@ header {
         display: none;
     }
 }
+
+/* Analytics Dashboard Styles */
+.analytics-dashboard {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.analytics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.time-filter {
+    display: flex;
+    gap: 1rem;
+}
+
+.time-filter-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.time-filter-btn.active {
+    background: #9766f9;
+    color: white;
+    border-color: #9766f9;
+}
+
+.analytics-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.summary-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.summary-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    background: rgba(151, 102, 249, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9766f9;
+    font-size: 1.5rem;
+}
+
+.summary-content {
+    flex: 1;
+}
+
+.summary-content h3 {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #666;
+}
+
+.summary-value {
+    margin: 0.5rem 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.summary-change {
+    margin: 0;
+    font-size: 0.75rem;
+    color: #666;
+}
+
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+}
+
+.analytics-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.card-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #333;
+}
+
+.view-all {
+    color: #9766f9;
+    text-decoration: none;
+    font-size: 0.875rem;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+canvas.chart-container {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.loading-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #666;
+    z-index: 1;
+}
+
+.bookings-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.bookings-table th,
+.bookings-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.bookings-table th {
+    font-weight: 600;
+    color: #666;
+    background: #f9f9f9;
+}
+
+.status-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.status-badge.completed {
+    background: rgba(46, 204, 113, 0.1);
+    color: #2ecc71;
+}
+
+.status-badge.pending {
+    background: rgba(241, 196, 15, 0.1);
+    color: #f1c40f;
+}
+
+.status-badge.cancelled {
+    background: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+}
+
+.no-data {
+    text-align: center;
+    color: #666;
+    padding: 2rem !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .analytics-dashboard {
+        padding: 1rem;
+    }
+
+    .analytics-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-container {
+        height: 250px;
+    }
+}
+
+.analytics-card.full-width {
+    grid-column: 1 / -1;
+}
+
+.trends-overview {
+    position: relative;
+    height: 400px;
+}
+
+.chart-container.large {
+    height: 100%;
+}
+
+@media (max-width: 768px) {
+    .trends-overview {
+        height: 300px;
+    }
+}

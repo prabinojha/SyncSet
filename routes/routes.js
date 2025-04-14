@@ -438,6 +438,172 @@ router.get('/:subdomain/confirm-booking', async (req, res) => {
     }
 });
 
+// Get analytics data
+router.get('/api/analytics', async (req, res) => {
+    const user = auth.currentUser;
+    if (!user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const { period } = req.query;
+    const currentDate = new Date();
+    let startDate;
+
+    if (period === '30') {
+        startDate = new Date();
+        startDate.setDate(currentDate.getDate() - 30);
+    } else if (period === 'lifetime') {
+        // Get user's creation date as start date
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        startDate = userDoc.data().createdAt.toDate();
+    } else {
+        return res.status(400).json({ error: 'Invalid period parameter' });
+    }
+
+    try {
+        // Get all bookings for the user
+        const bookingsRef = collection(db, 'users', user.uid, 'bookings');
+        const bookingsSnap = await getDocs(bookingsRef);
+        
+        // Process bookings data
+        const bookings = [];
+        let totalRevenue = 0;
+        let totalBookings = 0;
+        const serviceBookings = {};
+        const dailyBookings = {};
+        const dailyRevenue = {};
+        
+        const startDateStr = startDate.toISOString().split('T')[0];
+        const currentDateStr = currentDate.toISOString().split('T')[0];
+        
+        bookingsSnap.forEach(doc => {
+            const booking = doc.data();
+            const bookingDate = booking.date; // Already a string in YYYY-MM-DD format
+            
+            // Only process bookings within the date range
+            if (bookingDate >= startDateStr && bookingDate <= currentDateStr) {
+                // Add to bookings array (for recent bookings)
+                bookings.push({
+                    id: doc.id,
+                    clientName: booking.clientName,
+                    serviceName: booking.serviceName,
+                    date: new Date(booking.date),
+                    amount: parseFloat(booking.cost) || 0, // Convert cost to amount
+                    status: booking.status
+                });
+                
+                // Update totals
+                if (booking.status !== 'cancelled') {
+                    totalRevenue += parseFloat(booking.cost) || 0;
+                    totalBookings++;
+                    
+                    // Update service bookings count
+                    serviceBookings[booking.serviceName] = (serviceBookings[booking.serviceName] || 0) + 1;
+                    
+                    // Update daily stats
+                    dailyBookings[bookingDate] = (dailyBookings[bookingDate] || 0) + 1;
+                    dailyRevenue[bookingDate] = (dailyRevenue[bookingDate] || 0) + (parseFloat(booking.cost) || 0);
+                }
+            }
+        });
+
+        // Calculate previous period
+        const periodDays = Math.floor((currentDate - startDate) / (1000 * 60 * 60 * 24));
+        const previousStartDate = new Date(startDate);
+        previousStartDate.setDate(previousStartDate.getDate() - periodDays);
+        const previousStartDateStr = previousStartDate.toISOString().split('T')[0];
+        
+        let previousTotalRevenue = 0;
+        let previousTotalBookings = 0;
+        let previousNewClients = new Set();
+        
+        bookingsSnap.forEach(doc => {
+            const booking = doc.data();
+            if (booking.date >= previousStartDateStr && booking.date < startDateStr) {
+                if (booking.status !== 'cancelled') {
+                    previousTotalRevenue += parseFloat(booking.cost) || 0;
+                    previousTotalBookings++;
+                    previousNewClients.add(booking.clientEmail);
+                }
+            }
+        });
+
+        // Calculate changes
+        const revenueChange = previousTotalRevenue === 0 ? 100 : 
+            Math.round(((totalRevenue - previousTotalRevenue) / previousTotalRevenue) * 100);
+        const bookingsChange = previousTotalBookings === 0 ? 100 : 
+            Math.round(((totalBookings - previousTotalBookings) / previousTotalBookings) * 100);
+
+        // Get unique clients
+        const newClients = new Set();
+        bookings.forEach(booking => {
+            if (booking.status !== 'cancelled') {
+                newClients.add(booking.clientEmail);
+            }
+        });
+
+        const clientsChange = previousNewClients.size === 0 ? 100 : 
+            Math.round(((newClients.size - previousNewClients.size) / previousNewClients.size) * 100);
+
+        // Calculate conversion rate (completed bookings / total bookings)
+        const completedBookings = bookings.filter(b => b.status === 'completed').length;
+        const conversionRate = totalBookings === 0 ? 0 : Math.round((completedBookings / totalBookings) * 100);
+        
+        const previousCompletedBookings = Array.from(bookingsSnap.docs)
+            .filter(doc => {
+                const data = doc.data();
+                return data.date >= previousStartDateStr && 
+                       data.date < startDateStr && 
+                       data.status === 'completed';
+            }).length;
+            
+        const previousConversionRate = previousTotalBookings === 0 ? 0 : 
+            Math.round((previousCompletedBookings / previousTotalBookings) * 100);
+        const conversionChange = previousConversionRate === 0 ? 100 : 
+            Math.round(((conversionRate - previousConversionRate) / previousConversionRate) * 100);
+
+        // Prepare time series data
+        const dates = [];
+        let currentDateIter = new Date(startDate);
+        while (currentDateIter <= currentDate) {
+            dates.push(currentDateIter.toISOString().split('T')[0]);
+            currentDateIter.setDate(currentDateIter.getDate() + 1);
+        }
+
+        // Format response data
+        const response = {
+            summary: {
+                totalBookings,
+                bookingsChange,
+                totalRevenue,
+                revenueChange,
+                newClients: newClients.size,
+                clientsChange,
+                conversionRate,
+                conversionChange
+            },
+            recentBookings: bookings.sort((a, b) => b.date - a.date).slice(0, 5),
+            popularServices: Object.entries(serviceBookings)
+                .map(([name, bookings]) => ({ name, bookings }))
+                .sort((a, b) => b.bookings - a.bookings)
+                .slice(0, 5),
+            revenueData: {
+                labels: dates,
+                values: dates.map(date => dailyRevenue[date] || 0)
+            },
+            bookingTrends: {
+                labels: dates,
+                values: dates.map(date => dailyBookings[date] || 0)
+            }
+        };
+
+        res.json(response);
+    } catch (error) {
+        console.error('Error fetching analytics:', error);
+        res.status(500).json({ error: 'Failed to fetch analytics data' });
+    }
+});
+
 router.get('*', (req, res) => {
   res.status(404).render('404');
 });

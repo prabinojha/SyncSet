@@ -1,6 +1,363 @@
-<div>
-    <h1>Analytics</h1>
-    <div class="analytics-container">
-        <!-- Add your analytics content here -->
+<div class="analytics-dashboard">
+    <div class="analytics-header">
+        <h1>Analytics</h1>
+        <div class="time-filter">
+            <button class="time-filter-btn active" data-period="30">Last 30 Days</button>
+            <button class="time-filter-btn" data-period="lifetime">Lifetime</button>
+        </div>
     </div>
-</div> 
+
+    <div class="analytics-summary">
+        <div class="summary-card">
+            <div class="summary-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="summary-content">
+                <h3>Total Bookings</h3>
+                <p class="summary-value" id="totalBookings">0</p>
+                <p class="summary-change" id="bookingsChange">+0% from previous period</p>
+            </div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-icon">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="summary-content">
+                <h3>Revenue</h3>
+                <p class="summary-value" id="totalRevenue">$0</p>
+                <p class="summary-change" id="revenueChange">+0% from previous period</p>
+            </div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="summary-content">
+                <h3>New Clients</h3>
+                <p class="summary-value" id="newClients">0</p>
+                <p class="summary-change" id="clientsChange">+0% from previous period</p>
+            </div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="summary-content">
+                <h3>Conversion Rate</h3>
+                <p class="summary-value" id="conversionRate">0%</p>
+                <p class="summary-change" id="conversionChange">+0% from previous period</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="analytics-grid">
+        <div class="analytics-card">
+            <div class="card-header">
+                <h2>Recent Bookings</h2>
+                <a href="#" class="view-all">View All</a>
+            </div>
+            <div class="recent-bookings">
+                <table class="bookings-table">
+                    <thead>
+                        <tr>
+                            <th>Client</th>
+                            <th>Service</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentBookingsTable">
+                        <!-- Bookings will be loaded here -->
+                        <tr>
+                            <td colspan="5" class="loading-message">Loading bookings...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="analytics-card">
+            <div class="card-header">
+                <h2>Popular Services</h2>
+            </div>
+            <div class="popular-services">
+                <canvas id="popularServicesChart" class="chart-container">
+                    <!-- Chart will be loaded here -->
+                </canvas>
+                <div class="loading-message">Loading chart...</div>
+            </div>
+        </div>
+
+        <div class="analytics-card full-width">
+            <div class="card-header">
+                <h2>Revenue & Booking Trends</h2>
+            </div>
+            <div class="trends-overview">
+                <canvas id="trendsChart" class="chart-container large">
+                    <!-- Chart will be loaded here -->
+                </canvas>
+                <div class="loading-message">Loading chart...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Chart instances
+        let popularServicesChart = null;
+        let trendsChart = null;
+
+        // Initialize with 30 days data
+        loadAnalyticsData(30);
+        
+        // Set up time filter buttons
+        const timeFilterButtons = document.querySelectorAll('.time-filter-btn');
+        timeFilterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                timeFilterButtons.forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Get the period value
+                const period = this.getAttribute('data-period');
+                // Load data for the selected period
+                loadAnalyticsData(period);
+            });
+        });
+        
+        // Function to load analytics data
+        function loadAnalyticsData(period) {
+            // Show loading state
+            document.querySelectorAll('.loading-message').forEach(el => {
+                el.style.display = 'block';
+            });
+            
+            // Fetch data from the server
+            fetch(`/api/analytics?period=${period}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Update summary cards
+                    updateSummaryCards(data.summary);
+                    
+                    // Update recent bookings table
+                    updateRecentBookings(data.recentBookings);
+                    
+                    // Update charts
+                    updatePopularServicesChart(data.popularServices);
+                    updateTrendsChart(data.revenueData, data.bookingTrends);
+                    
+                    // Hide loading messages
+                    document.querySelectorAll('.loading-message').forEach(el => {
+                        el.style.display = 'none';
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading analytics data:', error);
+                    // Show error message
+                    document.querySelectorAll('.loading-message').forEach(el => {
+                        el.textContent = 'Error loading data. Please try again.';
+                    });
+                });
+        }
+        
+        // Function to update summary cards
+        function updateSummaryCards(summary) {
+            document.getElementById('totalBookings').textContent = summary.totalBookings;
+            document.getElementById('bookingsChange').textContent = `${summary.bookingsChange >= 0 ? '+' : ''}${summary.bookingsChange}% from previous period`;
+            document.getElementById('totalRevenue').textContent = `$${summary.totalRevenue}`;
+            document.getElementById('revenueChange').textContent = `${summary.revenueChange >= 0 ? '+' : ''}${summary.revenueChange}% from previous period`;
+            document.getElementById('newClients').textContent = summary.newClients;
+            document.getElementById('clientsChange').textContent = `${summary.clientsChange >= 0 ? '+' : ''}${summary.clientsChange}% from previous period`;
+            document.getElementById('conversionRate').textContent = `${summary.conversionRate}%`;
+            document.getElementById('conversionChange').textContent = `${summary.conversionChange >= 0 ? '+' : ''}${summary.conversionChange}% from previous period`;
+        }
+        
+        // Function to update recent bookings table
+        function updateRecentBookings(bookings) {
+            const tableBody = document.getElementById('recentBookingsTable');
+            tableBody.innerHTML = '';
+            
+            if (bookings.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="no-data">No bookings found</td></tr>';
+                return;
+            }
+            
+            bookings.forEach(booking => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${booking.clientName}</td>
+                    <td>${booking.serviceName}</td>
+                    <td>${formatDate(booking.date)}</td>
+                    <td>$${booking.amount}</td>
+                    <td><span class="status-badge ${booking.status.toLowerCase()}">${booking.status}</span></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // Function to update popular services chart
+        function updatePopularServicesChart(services) {
+            const canvas = document.getElementById('popularServicesChart');
+            
+            // Destroy existing chart if it exists
+            if (popularServicesChart) {
+                popularServicesChart.destroy();
+            }
+            
+            // Create new chart
+            popularServicesChart = new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: services.map(service => service.name),
+                    datasets: [{
+                        label: 'Bookings',
+                        data: services.map(service => service.bookings),
+                        backgroundColor: 'rgba(151, 102, 249, 0.7)',
+                        borderColor: 'rgba(151, 102, 249, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Function to update trends chart (combined revenue and bookings)
+        function updateTrendsChart(revenueData, bookingTrends) {
+            const canvas = document.getElementById('trendsChart');
+            
+            // Destroy existing chart if it exists
+            if (trendsChart) {
+                trendsChart.destroy();
+            }
+            
+            // Format dates for better display
+            const formattedDates = revenueData.labels.map(date => {
+                const d = new Date(date);
+                return d.toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric'
+                });
+            });
+            
+            // Create new chart
+            trendsChart = new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: formattedDates,
+                    datasets: [
+                        {
+                            label: 'Revenue',
+                            data: revenueData.values,
+                            backgroundColor: 'rgba(48, 171, 247, 0.1)',
+                            borderColor: 'rgba(48, 171, 247, 1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Bookings',
+                            data: bookingTrends.values,
+                            backgroundColor: 'rgba(151, 102, 249, 0.1)',
+                            borderColor: 'rgba(151, 102, 249, 1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                maxRotation: 0,
+                                autoSkip: true,
+                                maxTicksLimit: 10
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value;
+                                }
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            align: 'end',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Helper function to format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+    });
+</script> 
