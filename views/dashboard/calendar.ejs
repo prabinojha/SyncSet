@@ -37,6 +37,11 @@
                 this.setupCalendarControls();
                 this.renderCalendar();
                 this.loadBookings();
+
+                // Automatically select the current date
+                const today = new Date();
+                const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                this.selectDate(formattedDate);
             },
 
             setupCalendarControls() {
@@ -237,14 +242,14 @@
                     const startTime = startDate.toLocaleTimeString('en-US', {
                         hour: 'numeric',
                         minute: '2-digit',
-                        hour12: true
-                    }).replace(/\s/g, ''); // Remove space before AM/PM
+                        hour12: false
+                    }).replace(/\s/g, '');
 
                     const endTime = endDate.toLocaleTimeString('en-US', {
                         hour: 'numeric',
                         minute: '2-digit',
                         hour12: true
-                    }).replace(/\s/g, ''); // Remove space before AM/PM
+                    }).replace(/\s/g, '');
 
                     const timeRange = `${startTime} - ${endTime}`;
 
