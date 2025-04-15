@@ -367,6 +367,89 @@ router.post('/api/bookings/:id/complete', async (req, res) => {
   }
 });
 
+// Get a single booking by ID
+router.get('/api/bookings/:id', async (req, res) => {
+    const user = auth.currentUser;
+    if (!user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    try {
+        const { id } = req.params;
+        const bookingRef = doc(db, 'users', user.uid, 'bookings', id);
+        const bookingSnapshot = await getDoc(bookingRef);
+        
+        if (!bookingSnapshot.exists()) {
+            return res.status(404).json({ error: 'Booking not found' });
+        }
+        
+        res.json({ id: bookingSnapshot.id, ...bookingSnapshot.data() });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Cancel a booking
+router.post('/api/bookings/:id/cancel', async (req, res) => {
+    const user = auth.currentUser;
+    if (!user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    try {
+        const { id } = req.params;
+        const bookingRef = doc(db, 'users', user.uid, 'bookings', id);
+        const bookingSnapshot = await getDoc(bookingRef);
+        
+        if (!bookingSnapshot.exists()) {
+            return res.status(404).json({ error: 'Booking not found' });
+        }
+        
+        await updateDoc(bookingRef, {
+            status: 'cancelled',
+            cancelledAt: new Date()
+        });
+        
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Reschedule a booking
+router.post('/api/bookings/:id/reschedule', async (req, res) => {
+    const user = auth.currentUser;
+    if (!user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    try {
+        const { id } = req.params;
+        const { date, time } = req.body;
+        
+        if (!date || !time) {
+            return res.status(400).json({ error: 'Date and time are required' });
+        }
+        
+        const bookingRef = doc(db, 'users', user.uid, 'bookings', id);
+        const bookingSnapshot = await getDoc(bookingRef);
+        
+        if (!bookingSnapshot.exists()) {
+            return res.status(404).json({ error: 'Booking not found' });
+        }
+        
+        await updateDoc(bookingRef, {
+            date,
+            time,
+            rescheduledAt: new Date()
+        });
+        
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Create new booking
 router.post('/api/bookings', async (req, res) => {
     const {

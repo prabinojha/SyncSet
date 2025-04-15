@@ -181,7 +181,10 @@
                         const booking = bookedTimeSlots.get(timeString);
 
                         const timeSlot = document.createElement('div');
-                        timeSlot.className = `dashboard-time-slot ${booking ? 'booked' : ''}`;
+                        timeSlot.className = `dashboard-time-slot ${booking ? (
+                            booking.status === 'completed' ? 'completed' : 
+                            booking.status === 'cancelled' ? 'cancelled' : 'booked'
+                        ) : ''}`;
 
                         const timeDisplay = document.createElement('span');
                         timeDisplay.className = 'dashboard-time-display';
@@ -189,7 +192,10 @@
 
                         const status = document.createElement('span');
                         status.className = 'dashboard-status';
-                        status.textContent = booking ? 'Booked' : '';
+                        status.textContent = booking ? (
+                            booking.status === 'completed' ? 'Completed' : 
+                            booking.status === 'cancelled' ? 'Cancelled' : 'Booked'
+                        ) : '';
 
                         timeSlot.appendChild(timeDisplay);
                         timeSlot.appendChild(status);
@@ -253,11 +259,32 @@
 
                     const timeRange = `${startTime} - ${endTime}`;
 
+                    // Determine if the booking is completed or cancelled
+                    const isCompleted = booking.status === 'completed';
+                    const isCancelled = booking.status === 'cancelled';
+                    
+                    // CSS class for the booking card based on status
+                    let bookingCardClass = 'booking-card';
+                    if (isCompleted) bookingCardClass += ' completed';
+                    if (isCancelled) bookingCardClass += ' cancelled';
+                    
+                    // Text for the complete button based on status
+                    const completeButtonText = isCompleted ? 'Completed' : 'Mark as complete';
+                    // CSS class for the complete button based on status
+                    const completeButtonClass = isCompleted ? 'complete-btn completed' : 'complete-btn';
+                    // Disabled attribute for the complete button if already completed or cancelled
+                    const completeButtonDisabled = (isCompleted || isCancelled) ? 'disabled' : '';
+                    // Disable edit button if booking is completed or cancelled
+                    const editButtonDisabled = (isCompleted || isCancelled) ? 'disabled' : '';
+                    // CSS class for the edit button based on booking status
+                    const editButtonClass = (isCompleted || isCancelled) ? 'edit-btn disabled' : 'edit-btn';
+
                     return `
-                    <div class="booking-card">
+                    <div class="${bookingCardClass}">
                         <div class="booking-header">
                             <h4>${booking.clientName}</h4>
                             <span class="booking-time">${timeRange}</span>
+                            ${isCancelled ? '<span class="cancelled-badge">Cancelled</span>' : ''}
                         </div>
                         <div class="booking-details">
                             <div class="booking-service">
@@ -265,14 +292,14 @@
                                 <span>$${booking.cost}</span>
                             </div>
                             <div class="booking-actions">
-                                <button onclick="messageClient('${booking.id}')" class="message-btn">
-                                    <i class="fas fa-envelope"></i> Message
+                                <button onclick="viewBookingDetails('${booking.id}')" class="details-btn">
+                                    <i class="fas fa-info-circle"></i> View Details
                                 </button>
-                                <button onclick="editBooking('${booking.id}')" class="edit-btn">
+                                <button onclick="editBooking('${booking.id}')" class="${editButtonClass}" ${editButtonDisabled}>
                                     <i class="fas fa-edit"></i> Edit
                                 </button>
-                                <button onclick="markComplete('${booking.id}')" class="complete-btn">
-                                    <i class="fas fa-check"></i> Mark as complete
+                                <button onclick="markComplete('${booking.id}')" class="${completeButtonClass}" ${completeButtonDisabled}>
+                                    <i class="fas fa-check"></i> ${completeButtonText}
                                 </button>
                             </div>
                         </div>
@@ -286,14 +313,274 @@
         calendar.init();
 
         // Global functions for booking actions
-        window.messageClient = async (bookingId) => {
-            // Implement message client functionality
-            console.log('Message client:', bookingId);
+        window.viewBookingDetails = async (bookingId) => {
+            try {
+                const response = await fetch(`/api/bookings/${bookingId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch booking details');
+                }
+                
+                const booking = await response.json();
+                
+                // Create a modal to display booking details
+                const modal = document.createElement('div');
+                modal.className = 'booking-details-modal';
+                
+                const modalContent = document.createElement('div');
+                modalContent.className = 'booking-details-content';
+                
+                const closeButton = document.createElement('span');
+                closeButton.className = 'close-modal';
+                closeButton.innerHTML = '&times;';
+                closeButton.onclick = () => document.body.removeChild(modal);
+                
+                const notes = booking.notes ? booking.notes : 'No notes provided';
+                const statusClass = booking.status === 'completed' ? 'status-completed' : 
+                                   (booking.status === 'cancelled' ? 'status-cancelled' : 'status-booked');
+                
+                // Format date in a more readable form
+                const bookingDate = new Date(booking.date);
+                const formattedDate = bookingDate.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                modalContent.innerHTML = `
+                    <h2 class="booking-details-title">Booking Details</h2>
+                    
+                    <div class="booking-details-status">
+                        <span class="booking-status ${statusClass}">
+                            ${booking.status === 'completed' ? 'Completed' : 
+                             (booking.status === 'cancelled' ? 'Cancelled' : 'Active')}
+                        </span>
+                    </div>
+                    
+                    <div class="booking-details-section">
+                        <h3 class="section-title">Client Information</h3>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="detail-label">Name</span>
+                                <span class="detail-value">${booking.clientName}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Email</span>
+                                <span class="detail-value">${booking.clientEmail}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Phone</span>
+                                <span class="detail-value">${booking.clientPhone || 'Not provided'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="booking-details-section">
+                        <h3 class="section-title">Service Details</h3>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="detail-label">Service</span>
+                                <span class="detail-value">${booking.serviceName}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Date</span>
+                                <span class="detail-value">${formattedDate}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Time</span>
+                                <span class="detail-value">${booking.time}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Duration</span>
+                                <span class="detail-value">${booking.duration} minutes</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Cost</span>
+                                <span class="detail-value price">$${booking.cost}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="booking-details-section">
+                        <h3 class="section-title">Notes</h3>
+                        <div class="notes-container">
+                            ${notes}
+                        </div>
+                    </div>
+                `;
+                
+                modal.appendChild(modalContent);
+                modalContent.appendChild(closeButton);
+                document.body.appendChild(modal);
+                
+                // Close when clicking outside the modal
+                window.onclick = (event) => {
+                    if (event.target === modal) {
+                        document.body.removeChild(modal);
+                    }
+                };
+                
+            } catch (error) {
+                console.error('Error fetching booking details:', error);
+                alert('Failed to load booking details');
+            }
         };
 
         window.editBooking = async (bookingId) => {
-            // Implement edit booking functionality
-            console.log('Edit booking:', bookingId);
+            try {
+                const response = await fetch(`/api/bookings/${bookingId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch booking details');
+                }
+                
+                const booking = await response.json();
+                
+                // Check if booking is already completed
+                if (booking.status === 'completed') {
+                    alert('This booking is already completed and cannot be edited.');
+                    return;
+                }
+                
+                // Create a modal for editing
+                const modal = document.createElement('div');
+                modal.className = 'booking-details-modal';
+                
+                const modalContent = document.createElement('div');
+                modalContent.className = 'booking-details-content';
+                
+                const closeButton = document.createElement('span');
+                closeButton.className = 'close-modal';
+                closeButton.innerHTML = '&times;';
+                closeButton.onclick = () => document.body.removeChild(modal);
+                
+                modalContent.innerHTML = `
+                    <h2>Edit Booking</h2>
+                    <div class="edit-booking-options">
+                        <h3>What would you like to do?</h3>
+                        <div class="edit-booking-buttons">
+                            <button id="rescheduleBtn" class="edit-option-btn">
+                                <i class="fas fa-calendar-alt"></i> Reschedule
+                            </button>
+                            <button id="cancelBookingBtn" class="cancel-option-btn">
+                                <i class="fas fa-times-circle"></i> Cancel Booking
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="rescheduleForm" style="display: none;">
+                        <h3>Reschedule Booking</h3>
+                        <form id="bookingRescheduleForm">
+                            <div class="form-group">
+                                <label for="newDate">New Date:</label>
+                                <input type="date" id="newDate" value="${booking.date}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="newTime">New Time:</label>
+                                <input type="time" id="newTime" value="${booking.time}" required>
+                            </div>
+                            <div class="form-buttons">
+                                <button type="button" id="backToOptions" class="cancel-btn">Back</button>
+                                <button type="submit" class="save-btn">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div id="cancelConfirm" style="display: none;">
+                        <h3>Cancel Booking</h3>
+                        <p>Are you sure you want to cancel this booking? This action cannot be undone.</p>
+                        <div class="form-buttons">
+                            <button type="button" id="backFromCancel" class="cancel-btn">Back</button>
+                            <button type="button" id="confirmCancel" class="delete-btn">Yes, Cancel Booking</button>
+                        </div>
+                    </div>
+                `;
+                
+                modal.appendChild(modalContent);
+                modalContent.appendChild(closeButton);
+                document.body.appendChild(modal);
+                
+                // Setup event handlers
+                document.getElementById('rescheduleBtn').addEventListener('click', () => {
+                    document.querySelector('.edit-booking-options').style.display = 'none';
+                    document.getElementById('rescheduleForm').style.display = 'block';
+                });
+                
+                document.getElementById('cancelBookingBtn').addEventListener('click', () => {
+                    document.querySelector('.edit-booking-options').style.display = 'none';
+                    document.getElementById('cancelConfirm').style.display = 'block';
+                });
+                
+                document.getElementById('backToOptions').addEventListener('click', () => {
+                    document.getElementById('rescheduleForm').style.display = 'none';
+                    document.querySelector('.edit-booking-options').style.display = 'block';
+                });
+                
+                document.getElementById('backFromCancel').addEventListener('click', () => {
+                    document.getElementById('cancelConfirm').style.display = 'none';
+                    document.querySelector('.edit-booking-options').style.display = 'block';
+                });
+                
+                document.getElementById('confirmCancel').addEventListener('click', async () => {
+                    try {
+                        const cancelResponse = await fetch(`/api/bookings/${bookingId}/cancel`, {
+                            method: 'POST'
+                        });
+                        
+                        if (cancelResponse.ok) {
+                            document.body.removeChild(modal);
+                            calendar.loadBookings(calendar.selectedDate);
+                            alert('Booking cancelled successfully');
+                        } else {
+                            throw new Error('Failed to cancel booking');
+                        }
+                    } catch (error) {
+                        console.error('Error cancelling booking:', error);
+                        alert('Failed to cancel booking');
+                    }
+                });
+                
+                document.getElementById('bookingRescheduleForm').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    const newDate = document.getElementById('newDate').value;
+                    const newTime = document.getElementById('newTime').value;
+                    
+                    try {
+                        const rescheduleResponse = await fetch(`/api/bookings/${bookingId}/reschedule`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                date: newDate,
+                                time: newTime
+                            })
+                        });
+                        
+                        if (rescheduleResponse.ok) {
+                            document.body.removeChild(modal);
+                            calendar.loadBookings(calendar.selectedDate);
+                            alert('Booking rescheduled successfully');
+                        } else {
+                            throw new Error('Failed to reschedule booking');
+                        }
+                    } catch (error) {
+                        console.error('Error rescheduling booking:', error);
+                        alert('Failed to reschedule booking');
+                    }
+                });
+                
+                // Close when clicking outside the modal
+                window.onclick = (event) => {
+                    if (event.target === modal) {
+                        document.body.removeChild(modal);
+                    }
+                };
+                
+            } catch (error) {
+                console.error('Error setting up booking edit:', error);
+                alert('Failed to load booking for editing');
+            }
         };
 
         window.markComplete = async (bookingId) => {
@@ -314,3 +601,26 @@
         };
     });
 </script>
+
+<style>
+    /* Add this at the end of existing styles */
+    .dashboard-time-slot.cancelled {
+        background-color: #ffcccc;
+        border-color: #ff6666;
+    }
+    
+    .booking-card.cancelled {
+        border-left: 4px solid #ff6666;
+        opacity: 0.8;
+    }
+    
+    .cancelled-badge {
+        display: inline-block;
+        background-color: #ff6666;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.8em;
+        margin-left: 10px;
+    }
+</style>
