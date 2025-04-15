@@ -343,7 +343,7 @@ header {
 .dashboard-main {
     flex: 1;
     margin-left: var(--sidebar-width);
-    padding: 1rem;
+    padding: 2rem;
     box-sizing: border-box;
     width: calc(100% - var(--sidebar-width));
     min-height: calc(100vh - var(--header-height));
@@ -412,7 +412,7 @@ header {
 .overview-container {
     display: flex;
     width: 100%;
-    gap: 1rem;
+    gap: 1.5rem;
     box-sizing: border-box;
 }
 
@@ -426,6 +426,9 @@ header {
 
 .overview-section h1 {
     margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary-dark-blue);
 }
 
 .overview-form-group {
@@ -596,13 +599,13 @@ header {
 .services-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    margin: 1rem 0;
+    gap: 1.5rem;
 }
 
 .service-card {
     background: white;
-    border: 1px solid var(--primary-dark-blue);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--light-grey);
     border-radius: var(--border-radius);
     padding: 1rem;
     display: flex;
@@ -618,7 +621,7 @@ header {
     color: var(--primary-dark-blue);
     font-size: 1.25rem;
     font-weight: 600;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
 }
 
 .service-meta {
@@ -633,7 +636,7 @@ header {
 .delete-btn {
     background: var(--primary-purple);
     color: white;
-    padding: 0.75rem 1.5rem;
+    padding: 0.5rem 1.25rem;
     border-radius: var(--border-radius);
     border: none;
     font-size: 1rem;
@@ -648,7 +651,8 @@ header {
 
 .service-form-container {
     background: var(--primary-light-blue);
-    border: 1px solid var(--primary-dark-blue);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--light-grey);
     padding: 2rem;
     border-radius: var(--border-radius);
     max-width: 600px;
@@ -788,16 +792,12 @@ header {
    Calendar Styles
    ====================== */
 
-.calendar-section {
-    padding: 1.5rem;
-}
-
 .calendar-grid {
     display: grid;
     grid-template-columns: 1.2fr 1fr;
     gap: 1.5rem;
     height: max-content;
-    padding: 1.5rem;
+    
 }
 
 .calendar-left-panel {
@@ -1516,9 +1516,7 @@ header {
 }
 
 /* Analytics Dashboard Styles */
-.analytics-dashboard {
-    padding: 2rem;
-}
+
 
 .analytics-header {
     display: flex;
@@ -1528,7 +1526,7 @@ header {
 }
 
 .analytics-header h1 {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     font-weight: 600;
     color: var(--primary-dark-blue);
     margin: 0;
