@@ -923,10 +923,6 @@ header {
     transition: border-color 0.2s ease;
 }
 
-.booking-card:hover {
-    border-color: var(--primary-purple);
-}
-
 .booking-header {
     margin-bottom: 1rem;
     display: flex;
@@ -972,7 +968,7 @@ header {
 
 .booking-service span:last-child {
     font-weight: 600;
-    color: var(--primary-purple);
+    color: var(--primary-dark-blue);
 }
 
 .booking-actions {
@@ -1062,7 +1058,6 @@ header {
     display: flex;
     align-items: center;
     padding: 0.75rem 1rem;
-    background: white;
     border: 1px solid var(--light-grey);
     border-radius: 0.75rem;
     transition: all 0.2s ease;
@@ -1071,49 +1066,69 @@ header {
     justify-content: space-between;
 }
 
-.dashboard-time-slot:hover:not(.booked) {
-    background-color: var(--primary-light-blue);
-    border-color: var(--primary-blue);
-}
-
 .dashboard-time-slot.booked {
-    background-color: var(--primary-light-purple);
+    border-color: var(--primary-purple);
     color: var(--primary-dark-blue);
     cursor: pointer;
 }
 
 .dashboard-time-slot.completed {
-    background-color: #a8e6cf;
+    border-color: #4CAF50;
     color: var(--primary-dark-blue);
     cursor: pointer;
 }
 
 .dashboard-time-slot.selected {
-    background-color: var(--primary-purple);
-    color: white;
+    border: 1px solid var(--primary-purple);
+    color: var(--primary-dark-blue);
+}
+
+.dashboard-time-slot.cancelled {
+    border-color: #ff6666;
+    color: var(--primary-dark-blue);
+}
+
+.dashboard-time-slot .dashboard-status {
+    background: transparent;
+}
+
+.dashboard-time-slot.booked .dashboard-status {
+    color: var(--primary-purple);
     border-color: var(--primary-purple);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(151, 102, 249, 0.2);
+}
+
+.dashboard-time-slot.completed .dashboard-status {
+    color: #4CAF50;
+    border-color: #4CAF50;
+}
+
+.dashboard-time-slot.cancelled .dashboard-status {
+    color: #ff6666;
+    border-color: #ff6666;
+}
+
+.dashboard-time-slot.selected .dashboard-status {
+    color: var(--primary-purple);
+    border-color: var(--primary-purple);
 }
 
 .dashboard-time-display {
     font-size: 0.9rem;
-    font-weight: 500;
+    font-weight: 600;
     min-width: 60px;
 }
 
 .dashboard-status {
     font-size: 0.85rem;
     font-weight: 500;
-    color: var(--primary-blue);
+    color: var(--primary-dark-blue);
     padding: 0.25rem 0.75rem;
-    background: var(--primary-light-blue);
     border-radius: 1rem;
+    border: 1px solid currentColor;
 }
 
 .dashboard-time-slot.selected .dashboard-status {
-    color: white;
-    background: rgba(255, 255, 255, 0.2);
+    color: var(--primary-purple);
 }
 
 /* Scrollbar Styles */
@@ -1330,7 +1345,6 @@ header {
     display: flex;
     align-items: center;
     padding: 0.75rem 1rem;
-    background: white;
     border: 1px solid var(--light-grey);
     border-radius: 2rem;
     transition: all 0.2s ease;
@@ -1340,18 +1354,24 @@ header {
 }
 
 .dashboard-time-slot:hover:not(.booked) {
-    background-color: var(--primary-light-blue);
+    border-color:  var(--primary-purple);
 }
 
 .dashboard-time-slot.booked {
-    background-color: var(--primary-light-blue);
-    border-color: var(--primary-blue);
+    border-color: var(--primary-purple);
+    color: var(--primary-dark-blue);
+    cursor: pointer;
+}
+
+.dashboard-time-slot.completed {
+    border-color: #4CAF50;
+    color: var(--primary-dark-blue);
+    cursor: pointer;
 }
 
 .dashboard-time-slot.selected {
-    background-color: var(--primary-purple);
-    color: white;
-    border-color: var(--primary-purple);
+    border: 2px solid var(--primary-purple);
+    color: var(--primary-dark-blue);
 }
 
 .dashboard-time-display {
@@ -1362,11 +1382,7 @@ header {
 
 .dashboard-status {
     font-size: 0.9rem;
-    color: var(--primary-blue);
-}
-
-.dashboard-time-slot.selected .dashboard-status {
-    color: white;
+    color: var(--light-grey)
 }
 
 /* Ensure the scrollbar looks nice */
@@ -2122,23 +2138,21 @@ header {
 }
 
 .dashboard-time-slot.booked {
-    background-color: var(--primary-light-purple);
+    border-color: var(--primary-purple);
     color: var(--primary-dark-blue);
     cursor: pointer;
 }
 
 .dashboard-time-slot.completed {
-    background-color: #a8e6cf;
+    border-color: #4CAF50;
     color: var(--primary-dark-blue);
     cursor: pointer;
 }
 
 .dashboard-time-slot.selected {
-    background-color: var(--primary-purple);
-    color: white;
-    border-color: var(--primary-purple);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(151, 102, 249, 0.2);
+    border: 1px solid var(--primary-purple);
+    color: var(--primary-dark-blue);
+    background-color: var(--primary-light-blue)
 }
 
 .complete-btn {
@@ -2397,18 +2411,17 @@ header {
     background-color: #7f49eb;
 }
 
-.delete-btn {
-    background: var(--primary-purple);
-    color: white;
-    padding: 0.5rem 1.25rem;
-    border-radius: var(--border-radius);
-    border: none;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    align-self: center;
+.booking-card.cancelled {
+    border-left: 4px solid #ff6666;
+    opacity: 0.8;
 }
 
-.delete-btn:hover {
-    background: var(--primary-dark-blue);
+.cancelled-badge {
+    display: inline-block;
+    background-color: #ff6666;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    margin-left: 10px;
 }
