@@ -192,4 +192,39 @@
         margin-top: -1px;
         stroke-width: 2.2;
     }
+    
+    .overview-save-button {
+        background-color: rgba(244, 66, 110, 0.08);
+        color: #f4426e;
+        border: 1px solid rgba(244, 66, 110, 0.3);
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: var(--primary-font);
+        font-size: 15px;
+        font-weight: 500;
+        margin-top: 1.5rem;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+        gap: 12px;
+        min-width: 160px;
+    }
+    
+    .overview-save-button:hover {
+        background-color: rgba(244, 66, 110, 0.15);
+        color: #e50c2c;
+        border-color: rgba(229, 12, 44, 0.5);
+        transform: translateY(-1px);
+    }
+    
+    .overview-save-button:active {
+        transform: translateY(0);
+    }
+    
+    .overview-save-button svg {
+        stroke-width: 2.2;
+        margin-top: -1px;
+    }
 </style>
