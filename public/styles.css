@@ -2425,3 +2425,49 @@ header {
     font-size: 0.8em;
     margin-left: 10px;
 }
+
+/* Logout */
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--light-grey);
+}
+
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 2rem);
+}
+
+.logout-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    padding: 0.75rem 1rem;
+    color: #dc3545;
+    border-radius: var(--border-radius);
+    margin-bottom: 0.5rem;
+    transition: all 0.2s;
+    font-family: var(--primary-font);
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.logout-btn i {
+    margin-right: 1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.logout-btn:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+#logoutForm {
+    margin: 0;
+    padding: 0;
+}

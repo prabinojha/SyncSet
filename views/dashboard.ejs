@@ -23,6 +23,19 @@
                         <i class="fas fa-cog"></i>
                         <span>Services</span>
                     </a>
+                    <a href="/dashboard/user" class="nav-item <%= active === 'user' ? 'active' : '' %>">
+                        <i class="fas fa-user"></i>
+                        <span>User</span>
+                    </a>
+                    
+                    <div class="sidebar-footer">
+                        <form id="logoutForm" action="/logout" method="POST">
+                            <button type="submit" class="nav-item logout-btn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Logout</span>
+                            </button>
+                        </form>
+                    </div>
                 </nav>
             </aside>
             <main class="dashboard-main">

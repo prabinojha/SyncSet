@@ -1,0 +1,299 @@
+<div class="user-settings-container">
+    <h1>User Settings</h1>
+    
+    <div class="settings-section">
+        <h2>Profile Information</h2>
+        <form id="profileForm">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" value="<%= user.email %>" required>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="update-btn">Update Profile</button>
+            </div>
+        </form>
+    </div>
+    
+    <div class="settings-section">
+        <h2>Change Password</h2>
+        <form id="passwordForm">
+            <div class="form-group">
+                <label for="currentPassword">Current Password</label>
+                <input type="password" id="currentPassword" name="currentPassword" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="newPassword">New Password</label>
+                <input type="password" id="newPassword" name="newPassword" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">Confirm New Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="update-btn">Change Password</button>
+            </div>
+        </form>
+    </div>
+    
+    <div class="settings-section">
+        <h2>Subdomain Settings</h2>
+        <form id="subdomainForm">
+            <p>Current Subdomain: <strong><%= userSubdomain %></strong></p>
+            <div class="form-group">
+                <label for="newSubdomain">New Subdomain</label>
+                <div id="domainCheckWrapper">
+                    <input type="text" id="newSubdomain" name="newSubdomain" 
+                           placeholder="Enter your desired subdomain" required>
+                    <div id="domainStatus"></div>
+                </div>
+                <small class="help-text">This will change your website URL. The change is permanent and your old URL will be available for others.</small>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" id="updateSubdomainBtn" class="update-btn" disabled>Update Subdomain</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .user-settings-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .settings-section {
+        background-color: white;
+        border-radius: var(--border-radius);
+        border: 1px solid var(--light-grey);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    }
+    
+    .settings-section h2 {
+        margin-top: 0;
+        margin-bottom: 1.5rem;
+        font-size: 1.25rem;
+        color: var(--primary-dark-blue);
+        border-bottom: 1px solid var(--light-grey);
+        padding-bottom: 0.75rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--primary-dark-blue);
+    }
+    
+    .form-group input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--light-grey);
+        border-radius: var(--border-radius);
+        font-family: var(--primary-font);
+        font-size: 1rem;
+        box-sizing: border-box;
+    }
+    
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+    }
+    
+    .update-btn {
+        background-color: var(--primary-purple);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-family: var(--primary-font);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .update-btn:hover {
+        background-color: var(--primary-dark-blue);
+    }
+    
+    .update-btn:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+    }
+    
+    .help-text {
+        display: block;
+        margin-top: 0.5rem;
+        color: #666;
+        font-size: 0.875rem;
+    }
+    
+    #domainCheckWrapper {
+        position: relative;
+    }
+    
+    #domainStatus {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    
+    .available {
+        color: green;
+    }
+    
+    .taken {
+        color: red;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Profile form handling
+        const profileForm = document.getElementById('profileForm');
+        profileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                const response = await fetch('/api/user/profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: document.getElementById('email').value
+                    })
+                });
+                
+                if (response.ok) {
+                    alert('Profile updated successfully!');
+                } else {
+                    const data = await response.json();
+                    throw new Error(data.error || 'Failed to update profile');
+                }
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+        
+        // Password form handling
+        const passwordForm = document.getElementById('passwordForm');
+        passwordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword !== confirmPassword) {
+                alert('New passwords do not match!');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/user/password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        currentPassword: document.getElementById('currentPassword').value,
+                        newPassword: newPassword
+                    })
+                });
+                
+                if (response.ok) {
+                    alert('Password updated successfully!');
+                    passwordForm.reset();
+                } else {
+                    const data = await response.json();
+                    throw new Error(data.error || 'Failed to update password');
+                }
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+        
+        // Subdomain form handling
+        const subdomainForm = document.getElementById('subdomainForm');
+        const newSubdomainInput = document.getElementById('newSubdomain');
+        const domainStatus = document.getElementById('domainStatus');
+        const updateSubdomainBtn = document.getElementById('updateSubdomainBtn');
+        let subdomainAvailable = false;
+        
+        // Check domain availability as user types
+        let debounceTimer;
+        newSubdomainInput.addEventListener('input', (e) => {
+            const subdomain = e.target.value.trim().toLowerCase();
+            
+            // Clear previous status
+            domainStatus.innerHTML = '';
+            updateSubdomainBtn.disabled = true;
+            subdomainAvailable = false;
+            
+            if (!subdomain) return;
+            
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(async () => {
+                try {
+                    const response = await fetch(`/check-domain?domain=${subdomain}`);
+                    const data = await response.json();
+                    
+                    if (data.available) {
+                        domainStatus.innerHTML = '<span class="available">Available</span>';
+                        updateSubdomainBtn.disabled = false;
+                        subdomainAvailable = true;
+                    } else {
+                        domainStatus.innerHTML = '<span class="taken">Already taken</span>';
+                        updateSubdomainBtn.disabled = true;
+                        subdomainAvailable = false;
+                    }
+                } catch (error) {
+                    console.error('Error checking domain:', error);
+                }
+            }, 500);
+        });
+        
+        // Handle subdomain update
+        subdomainForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!subdomainAvailable) {
+                alert('Please choose an available subdomain');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/user/subdomain', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        newSubdomain: newSubdomainInput.value.trim().toLowerCase()
+                    })
+                });
+                
+                if (response.ok) {
+                    alert('Subdomain updated successfully! You will be redirected to login again.');
+                    // Redirect to login after subdomain change
+                    window.location.href = '/login';
+                } else {
+                    const data = await response.json();
+                    throw new Error(data.error || 'Failed to update subdomain');
+                }
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+    });
+</script>

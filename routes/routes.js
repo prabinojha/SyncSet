@@ -73,7 +73,7 @@ router.get('/dashboard/:section?', async (req, res) => {
     const userSubdomain = userDoc.data().subdomain;
 
     const section = req.params.section || 'overview';
-    const validSections = ['overview', 'calendar', 'analytics', 'services'];
+    const validSections = ['overview', 'calendar', 'analytics', 'services', 'user'];
     
     if (!validSections.includes(section)) {
       return res.redirect('/dashboard/overview');
@@ -708,6 +708,113 @@ router.get('/api/analytics', async (req, res) => {
         console.error('Error fetching analytics:', error);
         res.status(500).json({ error: 'Failed to fetch analytics data' });
     }
+});
+
+// Logout Route
+router.post('/logout', async (req, res) => {
+  try {
+    await signOut(auth);
+    res.redirect('/login');
+  } catch (error) {
+    console.error('Error during logout:', error);
+    res.status(500).render('error', { message: 'Failed to logout. Please try again.' });
+  }
+});
+
+// Update user profile
+router.post('/api/user/profile', async (req, res) => {
+  const user = auth.currentUser;
+  if (!user) {
+      return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  try {
+      const { email } = req.body;
+      
+      // Update email in Firebase Auth
+      await user.updateEmail(email);
+      
+      // Update email in Firestore
+      await updateDoc(doc(db, 'users', user.uid), {
+          email: email
+      });
+      
+      res.json({ success: true });
+  } catch (error) {
+      console.error('Error updating profile:', error);
+      res.status(500).json({ error: error.message });
+  }
+});
+
+// Update user password
+router.post('/api/user/password', async (req, res) => {
+  const user = auth.currentUser;
+  if (!user) {
+      return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  try {
+      const { currentPassword, newPassword } = req.body;
+      
+      // Re-authenticate user before password change
+      const credential = require('firebase/auth').EmailAuthProvider.credential(
+          user.email, 
+          currentPassword
+      );
+      
+      await require('firebase/auth').reauthenticateWithCredential(user, credential);
+      
+      // Update password
+      await user.updatePassword(newPassword);
+      
+      res.json({ success: true });
+  } catch (error) {
+      console.error('Error updating password:', error);
+      res.status(500).json({ error: error.message });
+  }
+});
+
+// Update user subdomain
+router.post('/api/user/subdomain', async (req, res) => {
+  const user = auth.currentUser;
+  if (!user) {
+      return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  try {
+      const { newSubdomain } = req.body;
+      
+      // Check if the new subdomain is available
+      const domainDoc = doc(db, 'domains', newSubdomain);
+      const domainSnap = await getDoc(domainDoc);
+      
+      if (domainSnap.exists()) {
+          return res.status(400).json({ error: 'Subdomain already taken' });
+      }
+      
+      // Get the current subdomain
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      const currentSubdomain = userDoc.data().subdomain;
+      
+      // Delete the old domain document
+      await deleteDoc(doc(db, 'domains', currentSubdomain));
+      
+      // Create the new domain document
+      await setDoc(domainDoc, {
+          uid: user.uid,
+          published: userDoc.data().published || false
+      });
+      
+      // Update the user's subdomain
+      await updateDoc(doc(db, 'users', user.uid), {
+          subdomain: newSubdomain
+      });
+      
+      res.json({ success: true });
+  } catch (error) {
+      console.error('Error updating subdomain:', error);
+      res.status(500).json({ error: error.message });
+  }
 });
 
 router.get('*', (req, res) => {
