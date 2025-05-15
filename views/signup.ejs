@@ -9,7 +9,22 @@
                     <h1>Sign Up</h1>
                     <form id="signupForm">
                         <input type="email" name="email" placeholder="name@example.com" required>
-                        <input type="password" name="password" placeholder="password" required>
+                        <div class="passwordContainer">
+                            <input type="password" name="password" id="passwordInput" placeholder="password" required>
+                            <div class="passwordFeedback">
+                                <div class="passwordStrength">
+                                    <div class="strengthBar"></div>
+                                </div>
+                                <p class="strengthText">Password strength</p>
+                            </div>
+                            <ul class="passwordRequirements">
+                                <li id="lengthReq"><span></span>At least 8 characters</li>
+                                <li id="upperReq"><span></span>At least 1 uppercase letter</li>
+                                <li id="lowerReq"><span></span>At least 1 lowercase letter</li>
+                                <li id="numberReq"><span></span>At least 1 number</li>
+                                <li id="specialReq"><span></span>At least 1 special character</li>
+                            </ul>
+                        </div>
                         <div id="domainCheckWrapper">
                             <span>syncset.xyz /</span>
                             <div class="domainInputWrapper">
@@ -18,10 +33,15 @@
                                 <span id="domainStatus"></span>
                             </div>
                         </div>
-                        <button type="submit">Sign Up</button>
+                        <button type="submit" id="signupButton">Sign Up</button>
                     </form>
                     <p class="errorP" id="message"></p>
                     <p>Already have an account? <a href="/login">Login</a></p>
+                </div>
+                <div id="verificationPrompt" style="display: none;" class="verificationPrompt">
+                    <h2>Verify Your Email</h2>
+                    <p>A verification email has been sent to your inbox. Please verify your email before continuing.</p>
+                    <p>Once verified, you can <a href="/login">login here</a>.</p>
                 </div>
             </main>
             <script>
@@ -57,10 +77,93 @@
                         }
                     } catch (error) {
                         console.error("Error checking domain:", error);
-                        domainStatus.innerHTML = '<img src="/cross.png" alt="Error" style="height: 20px;">';
+                        domainStatus.innerHTML = '<img src="/public/cross.png" alt="Error" style="height: 20px;">';
                         domainInput.setCustomValidity('Error checking domain availability.');
                     }
                 });
+
+                // Password strength checker
+                const passwordInput = document.getElementById('passwordInput');
+                const strengthBar = document.querySelector('.strengthBar');
+                const strengthText = document.querySelector('.strengthText');
+                const lengthReq = document.getElementById('lengthReq');
+                const upperReq = document.getElementById('upperReq');
+                const lowerReq = document.getElementById('lowerReq');
+                const numberReq = document.getElementById('numberReq');
+                const specialReq = document.getElementById('specialReq');
+                const signupButton = document.getElementById('signupButton');
+
+                passwordInput.addEventListener('input', checkPasswordStrength);
+
+                function checkPasswordStrength() {
+                    const password = passwordInput.value;
+                    let strength = 0;
+                    let message = '';
+
+                    // Check length
+                    const isLengthValid = password.length >= 8;
+                    if (isLengthValid) {
+                        strength += 20;
+                        lengthReq.classList.add('valid');
+                    } else {
+                        lengthReq.classList.remove('valid');
+                    }
+
+                    // Check uppercase
+                    const hasUppercase = /[A-Z]/.test(password);
+                    if (hasUppercase) {
+                        strength += 20;
+                        upperReq.classList.add('valid');
+                    } else {
+                        upperReq.classList.remove('valid');
+                    }
+
+                    // Check lowercase
+                    const hasLowercase = /[a-z]/.test(password);
+                    if (hasLowercase) {
+                        strength += 20;
+                        lowerReq.classList.add('valid');
+                    } else {
+                        lowerReq.classList.remove('valid');
+                    }
+
+                    // Check numbers
+                    const hasNumber = /[0-9]/.test(password);
+                    if (hasNumber) {
+                        strength += 20;
+                        numberReq.classList.add('valid');
+                    } else {
+                        numberReq.classList.remove('valid');
+                    }
+
+                    // Check special characters
+                    const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+                    if (hasSpecial) {
+                        strength += 20;
+                        specialReq.classList.add('valid');
+                    } else {
+                        specialReq.classList.remove('valid');
+                    }
+
+                    // Update UI
+                    strengthBar.style.width = `${strength}%`;
+                    
+                    if (strength < 40) {
+                        strengthBar.style.backgroundColor = '#ff4d4d';
+                        message = 'Weak';
+                        passwordInput.setCustomValidity('Password is too weak');
+                    } else if (strength < 80) {
+                        strengthBar.style.backgroundColor = '#ffdd59';
+                        message = 'Medium';
+                        passwordInput.setCustomValidity('');
+                    } else {
+                        strengthBar.style.backgroundColor = '#4cd137';
+                        message = 'Strong';
+                        passwordInput.setCustomValidity('');
+                    }
+
+                    strengthText.textContent = message;
+                }
 
                 document.getElementById('signupForm').addEventListener('submit', async (event) => {
                     event.preventDefault();
@@ -68,22 +171,107 @@
                     const formData = new FormData(form);
                     const data = Object.fromEntries(formData.entries());
 
-                    const response = await fetch('/signup', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(data),
-                    });
+                    try {
+                        const response = await fetch('/signup', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(data),
+                        });
 
-                    const result = await response.json();
-                    if (response.ok) {
-                        window.location.href = '/overview';
-                    } else {
-                        document.getElementById('message').textContent = result.error;
+                        const result = await response.json();
+                        if (response.ok) {
+                            // Redirect to verify-email page
+                            window.location.href = '/verify-email';
+                        } else {
+                            document.getElementById('message').textContent = result.error;
+                        }
+                    } catch (error) {
+                        document.getElementById('message').textContent = 'An error occurred. Please try again.';
                     }
                 });
             </script>
+            <style>
+                .passwordContainer {
+                    position: relative;
+                    width: 100%;
+                    margin-bottom: 15px;
+                }
+                .passwordFeedback {
+                    margin-top: 8px;
+                    display: flex;
+                    align-items: center;
+                }
+                .passwordStrength {
+                    flex: 1;
+                    height: 4px;
+                    background-color: #e6e6e6;
+                    border-radius: 2px;
+                    overflow: hidden;
+                    margin-right: 10px;
+                }
+                .strengthBar {
+                    height: 100%;
+                    width: 0;
+                    transition: width 0.3s, background-color 0.3s;
+                }
+                .strengthText {
+                    font-size: 12px;
+                    color: #777;
+                    margin: 0;
+                    min-width: 60px;
+                    text-align: right;
+                }
+                .passwordRequirements {
+                    list-style: none;
+                    padding: 0;
+                    margin: 8px 0 0;
+                    font-size: 12px;
+                    color: #777;
+                    background-color: #f9f9f9;
+                    border-radius: 4px;
+                    padding: 10px 15px;
+                    border: 1px solid #eaeaea;
+                }
+                .passwordRequirements li {
+                    margin-bottom: 4px;
+                    display: flex;
+                    align-items: center;
+                }
+                .passwordRequirements li span {
+                    width: 16px;
+                    height: 16px;
+                    display: inline-block;
+                    margin-right: 8px;
+                    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%23aaa' d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z'/%3E%3C/svg%3E");
+                    background-size: contain;
+                }
+                .passwordRequirements li.valid span {
+                    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%234cd137' d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z'/%3E%3C/svg%3E");
+                }
+                #signupButton {
+                    margin-top: 15px;
+                    background-color: #4285f4;
+                    transition: background-color 0.3s;
+                }
+                #signupButton:hover {
+                    background-color: #3367d6;
+                }
+                #domainCheckWrapper {
+                    padding: 10px;
+                    border-radius: 4px;
+                    background-color: #f9f9f9;
+                    border: 1px solid #eaeaea;
+                }
+                .verificationPrompt {
+                    text-align: center;
+                    padding: 20px;
+                    background: #f9f9f9;
+                    border-radius: 5px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+            </style>
     </body>
 
 </html>

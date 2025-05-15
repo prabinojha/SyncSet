@@ -8,37 +8,240 @@
             <div class="onboardingFormDiv">
                 <h1>Login</h1>
                 <form id="loginForm">
-                    <input type="email" name="email" placeholder="name@example.com" required>
-                    <input type="password" name="password" placeholder="password" required>
+                    <input type="email" name="email" id="emailInput" placeholder="name@example.com" required>
+                    <input type="password" name="password" id="passwordInput" placeholder="password" required>
+                    <div class="loginOptions">
+                        <a href="#" id="forgotPasswordLink">Forgot password?</a>
+                    </div>
                     <button type="submit">Login</button>
                 </form>
                 <p class="errorP" id="message"></p>
                 <p>Don't have an account? <a href="/signup">Sign Up</a></p>
             </div>
+            
+            <!-- Forgot Password Modal -->
+            <div id="forgotPasswordModal" class="modal">
+                <div class="modalContent">
+                    <span class="closeModal">&times;</span>
+                    <h2>Reset Password</h2>
+                    <p>Enter your email address and we'll send you a link to reset your password.</p>
+                    <form id="forgotPasswordForm">
+                        <input type="email" id="resetEmail" name="email" placeholder="name@example.com" required>
+                        <button type="submit">Send Reset Link</button>
+                    </form>
+                    <p id="resetMessage" class="resetMessage"></p>
+                </div>
+            </div>
         </main>
         <script>
+            // Login form submission
             document.getElementById('loginForm').addEventListener('submit', async (event) => {
                 event.preventDefault();
                 const form = event.target;
                 const formData = new FormData(form);
                 const data = Object.fromEntries(formData.entries());
 
-                const response = await fetch('/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data),
-                });
+                try {
+                    const response = await fetch('/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data),
+                    });
 
-                const result = await response.json();
-                if (response.ok) {
-                    window.location.href = '/dashboard';
-                } else {
-                    document.getElementById('message').textContent = result.error;
+                    const result = await response.json();
+                    
+                    if (response.ok) {
+                        if (result.verified === false && result.redirect) {
+                            // Handle unverified email case - redirect to verify page
+                            window.location.href = result.redirect;
+                        } else {
+                            // Normal login success
+                            window.location.href = '/dashboard';
+                        }
+                    } else {
+                        document.getElementById('message').textContent = result.error;
+                    }
+                } catch (error) {
+                    document.getElementById('message').textContent = 'An error occurred. Please try again.';
+                }
+            });
+
+            // Forgot password modal functionality
+            const modal = document.getElementById('forgotPasswordModal');
+            const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+            const closeModal = document.querySelector('.closeModal');
+            
+            // Open modal when clicking on "Forgot password?"
+            forgotPasswordLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                modal.style.display = 'flex';
+                document.getElementById('resetEmail').value = document.getElementById('emailInput').value;
+            });
+            
+            // Close modal when clicking on X
+            closeModal.addEventListener('click', () => {
+                modal.style.display = 'none';
+                document.getElementById('resetMessage').textContent = '';
+                document.getElementById('resetMessage').className = 'resetMessage';
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                    document.getElementById('resetMessage').textContent = '';
+                    document.getElementById('resetMessage').className = 'resetMessage';
+                }
+            });
+            
+            // Handle forgot password form submission
+            document.getElementById('forgotPasswordForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('resetEmail').value;
+                const resetMessage = document.getElementById('resetMessage');
+                
+                if (!email) {
+                    resetMessage.textContent = 'Please enter your email address';
+                    resetMessage.className = 'resetMessage error';
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('/reset-password', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email }),
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (response.ok) {
+                        resetMessage.textContent = 'Password reset email sent. Please check your inbox.';
+                        resetMessage.className = 'resetMessage success';
+                        document.getElementById('forgotPasswordForm').reset();
+                    } else {
+                        resetMessage.textContent = result.error || 'Failed to send reset email. Please try again.';
+                        resetMessage.className = 'resetMessage error';
+                    }
+                } catch (error) {
+                    resetMessage.textContent = 'An error occurred. Please try again.';
+                    resetMessage.className = 'resetMessage error';
                 }
             });
         </script>
+        <style>
+            .loginOptions {
+                display: flex;
+                justify-content: flex-end;
+                margin-bottom: 15px;
+            }
+            
+            #forgotPasswordLink {
+                font-size: 14px;
+                color: #4285f4;
+                text-decoration: none;
+            }
+            
+            #forgotPasswordLink:hover {
+                text-decoration: underline;
+            }
+            
+            /* Modal styles */
+            .modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+            }
+            
+            .modalContent {
+                background-color: white;
+                padding: 30px;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                width: 100%;
+                max-width: 400px;
+                position: relative;
+            }
+            
+            .closeModal {
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                font-size: 24px;
+                cursor: pointer;
+                color: #5f6368;
+            }
+            
+            .modalContent h2 {
+                margin-top: 0;
+                margin-bottom: 15px;
+                font-size: 20px;
+            }
+            
+            .modalContent p {
+                margin-bottom: 20px;
+                color: #5f6368;
+            }
+            
+            .modalContent form {
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .modalContent input {
+                padding: 10px;
+                margin-bottom: 15px;
+                border: 1px solid #dadce0;
+                border-radius: 4px;
+            }
+            
+            .modalContent button {
+                padding: 10px;
+                background-color: #4285f4;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-weight: 500;
+            }
+            
+            .modalContent button:hover {
+                background-color: #3367d6;
+            }
+            
+            .resetMessage {
+                margin-top: 15px;
+                padding: 10px;
+                border-radius: 4px;
+                font-size: 14px;
+                display: none;
+            }
+            
+            .resetMessage:not(:empty) {
+                display: block;
+            }
+            
+            .success {
+                background-color: #e6f4ea;
+                color: #137333;
+            }
+            
+            .error {
+                background-color: #fce8e6;
+                color: #c5221f;
+            }
+        </style>
     </body>
 
 </html>

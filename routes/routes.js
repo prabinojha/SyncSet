@@ -7,7 +7,12 @@ const {
   EmailAuthProvider, 
   reauthenticateWithCredential, 
   updateEmail, 
-  updatePassword 
+  updatePassword,
+  sendEmailVerification,
+  applyActionCode,
+  verifyBeforeUpdateEmail,
+  sendPasswordResetEmail,
+  confirmPasswordReset
 } = require('firebase/auth');
 const { doc, setDoc, getDoc, updateDoc, collection, addDoc, query, where, getDocs, deleteDoc } = require('firebase/firestore');
 const router = express.Router();
@@ -19,6 +24,49 @@ function checkAuth(req, res, next) {
     return res.redirect('/dashboard/overview');
   }
   next();
+}
+
+// Middleware to check if user's email is verified
+async function checkEmailVerified(req, res, next) {
+  const user = auth.currentUser;
+  if (!user) {
+    return res.redirect('/login');
+  }
+  
+  // If Firebase Auth says the email is verified, update Firestore if needed
+  if (user.emailVerified) {
+    try {
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      const userData = userDoc.data();
+      
+      // Update Firestore if it's out of sync with Auth
+      if (!userData.emailVerified) {
+        await updateDoc(doc(db, 'users', user.uid), {
+          emailVerified: true
+        });
+      }
+      
+      // User is verified, proceed to the route
+      return next();
+    } catch (error) {
+      console.error('Error checking user verification status:', error);
+    }
+  }
+  
+  // Double-check with Firestore - in case Auth state is stale
+  try {
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    if (userDoc.exists() && userDoc.data().emailVerified) {
+      // User is verified in Firestore but not in Auth, 
+      // proceed to the route anyway (Auth will refresh)
+      return next();
+    }
+  } catch (error) {
+    console.error('Error checking Firestore verification status:', error);
+  }
+  
+  // User is not verified, redirect to verification page
+  return res.redirect('/verify-email');
 }
 
 // Function to check if a domain upon onboarding is available
@@ -63,12 +111,93 @@ router.get('/signup', checkAuth, (req, res) => {
   res.render('signup');
 });
 
+router.get('/verify-email', async (req, res) => {
+  const user = auth.currentUser;
+  if (!user) {
+    return res.redirect('/login');
+  }
+  
+  // Check if user is already verified
+  if (user.emailVerified) {
+    // Firebase says verified - double check with Firestore
+    try {
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (userDoc.exists()) {
+        // If verified in Firestore too, redirect to dashboard
+        if (userDoc.data().emailVerified) {
+          return res.redirect('/dashboard/overview');
+        }
+        
+        // Firebase says verified but Firestore doesn't - update Firestore
+        await updateDoc(doc(db, 'users', user.uid), {
+          emailVerified: true
+        });
+        return res.redirect('/dashboard/overview');
+      }
+    } catch (error) {
+      console.error('Error checking verification status:', error);
+    }
+  }
+  
+  // If we reach here, user needs to verify email
+  res.render('verify-email', { email: user.email });
+});
+
+router.get('/email-action', async (req, res) => {
+  const { mode, oobCode, continueUrl } = req.query;
+
+  if (mode === 'verifyEmail' && oobCode) {
+    try {
+      await applyActionCode(auth, oobCode);
+      
+      const user = auth.currentUser;
+      
+      // If user is already logged in, update their document
+      if (user) {
+        // Reload the user to get latest state
+        await user.reload();
+        
+        // Update user's email verification status in Firestore
+        await updateDoc(doc(db, 'users', user.uid), {
+          emailVerified: true
+        });
+        
+        // Redirect to dashboard after verification
+        if (continueUrl) {
+          // If a continueUrl was provided in the verification email, use it
+          return res.redirect(continueUrl);
+        } else {
+          return res.redirect('/dashboard/overview');
+        }
+      }
+      
+      // If user is not logged in, show verification success page with auto-redirect
+      res.render('email-verified', { 
+        success: true,
+        // Add a query param to trigger automatic login
+        autoLogin: true
+      });
+    } catch (error) {
+      console.error('Error verifying email:', error);
+      res.render('email-verified', { 
+        success: false, 
+        error: error.message
+      });
+    }
+  } else if (mode === 'resetPassword' && oobCode) {
+    // Redirect to our password reset page
+    res.redirect(`/password-reset?mode=${mode}&oobCode=${oobCode}`);
+  } else {
+    res.status(400).render('error', { message: 'Invalid request' });
+  }
+});
+
 router.get('/', (req, res) => {
   const user = auth.currentUser;
   res.render('home', { user, isHomePage: true });
 });
 
-router.get('/dashboard/:section?', async (req, res) => {
+router.get('/dashboard/:section?', checkEmailVerified, async (req, res) => {
   const user = auth.currentUser;
   if (!user) {
     return res.redirect('/');
@@ -187,6 +316,20 @@ router.get('/api/services', async (req, res) => {
 router.post('/signup', async (req, res) => {
   const { email, password, domain: subdomain } = req.body;
   
+  // Validate password strength
+  const passwordStrengthRegex = {
+    minLength: password.length >= 8,
+    hasUpperCase: /[A-Z]/.test(password),
+    hasLowerCase: /[a-z]/.test(password),
+    hasNumber: /[0-9]/.test(password),
+    hasSpecial: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+  };
+  
+  const passedChecks = Object.values(passwordStrengthRegex).filter(Boolean).length;
+  if (passedChecks < 3) {
+    return res.status(400).json({ error: 'Password is too weak. It must meet at least 3 requirements.' });
+  }
+  
   try {
     const domainDoc = doc(db, 'domains', subdomain);
     const domainSnap = await getDoc(domainDoc);
@@ -198,10 +341,17 @@ router.post('/signup', async (req, res) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
+    // Send email verification
+    await sendEmailVerification(user, {
+      url: `${process.env.APP_URL || 'http://localhost:3000'}/login`,
+      handleCodeInApp: false
+    });
+
     await setDoc(doc(db, 'users', user.uid), {
       email: user.email,
       createdAt: new Date(),
       subdomain,
+      emailVerified: false
     });
 
     await setDoc(domainDoc, {
@@ -210,23 +360,74 @@ router.post('/signup', async (req, res) => {
     });
 
     res.status(201).json({
-      message: 'User created successfully',
+      message: 'User created successfully. Please verify your email.',
       user: user,
     });
   } catch (error) {
-    res.status(400).json({ error: error.message });  }
+    res.status(400).json({ error: error.message });  
+  }
 });
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    
+    if (!user.emailVerified) {
+      // Send them to verify-email page instead of responding with an error
+      await sendEmailVerification(user, {
+        url: `${process.env.APP_URL || 'http://localhost:3000'}/login`,
+        handleCodeInApp: false
+      });
+      
+      return res.status(200).json({
+        verified: false,
+        redirect: '/verify-email'
+      });
+    }
+    
     res.status(200).json({
       message: 'Login successful',
       user: userCredential.user,
     });
   } catch (error) {
     res.status(401).json({ error: error.message });
+  }
+});
+
+router.post('/resend-verification', async (req, res) => {
+  const { email } = req.body;
+  
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+  
+  try {
+    // Find user by email (if they're not logged in)
+    const user = auth.currentUser;
+    
+    if (user) {
+      if (user.email !== email) {
+        return res.status(400).json({ error: 'Email does not match the logged-in user' });
+      }
+      
+      if (user.emailVerified) {
+        return res.status(400).json({ error: 'Email is already verified' });
+      }
+      
+      await sendEmailVerification(user, {
+        url: `${process.env.APP_URL || 'http://localhost:3000'}/login`,
+        handleCodeInApp: false
+      });
+      
+      return res.status(200).json({ message: 'Verification email sent' });
+    } else {
+      return res.status(401).json({ error: 'User not logged in. Please login first.' });
+    }
+  } catch (error) {
+    console.error('Error sending verification email:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -840,6 +1041,206 @@ router.post('/api/user/subdomain', async (req, res) => {
   } catch (error) {
       console.error('Error updating subdomain:', error);
       res.status(500).json({ error: error.message });
+  }
+});
+
+// Route to force refresh the user's email verification status (GET method)
+router.get('/refresh-verification', async (req, res) => {
+  try {
+    console.log("Refresh verification requested (GET)");
+    const user = auth.currentUser;
+    
+    if (!user) {
+      console.log("No current user found, redirecting to login");
+      return res.redirect('/login');
+    }
+    
+    console.log(`Current user found: ${user.email}, emailVerified=${user.emailVerified}`);
+    
+    // Force reload the user to get updated verification status
+    await user.reload();
+    console.log(`After reload: emailVerified=${user.emailVerified}`);
+    
+    // Check Firebase verification status
+    if (user.emailVerified) {
+      console.log("Email is verified in Firebase Auth");
+      // Update Firestore
+      await updateDoc(doc(db, 'users', user.uid), {
+        emailVerified: true
+      });
+      console.log("Updated Firestore with verified status");
+      
+      // Redirect to dashboard
+      return res.redirect('/dashboard/overview');
+    } else {
+      // Check status in Firestore as fallback
+      console.log("Email not verified in Firebase Auth, checking Firestore");
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      
+      if (userDoc.exists() && userDoc.data().emailVerified) {
+        console.log("Email verified in Firestore, redirecting to dashboard");
+        return res.redirect('/dashboard/overview');
+      }
+      
+      // Force token refresh as a last resort to update auth state
+      try {
+        console.log("Attempting to force token refresh");
+        await user.getIdToken(true);
+        await user.reload();
+        
+        if (user.emailVerified) {
+          console.log("Email verified after token refresh");
+          await updateDoc(doc(db, 'users', user.uid), {
+            emailVerified: true
+          });
+          return res.redirect('/dashboard/overview');
+        }
+        
+        console.log("Still not verified after token refresh");
+      } catch (tokenError) {
+        console.error("Error refreshing token:", tokenError);
+      }
+    }
+    
+    // If still not verified, redirect back to verify-email
+    console.log("User still not verified, redirecting back to verify-email");
+    res.redirect('/verify-email?refresh=' + Date.now());
+  } catch (error) {
+    console.error('Error refreshing verification status:', error);
+    res.redirect('/login');
+  }
+});
+
+// POST version of the refresh-verification route
+router.post('/refresh-verification', async (req, res) => {
+  try {
+    console.log("Refresh verification requested (POST)");
+    const user = auth.currentUser;
+    
+    if (!user) {
+      console.log("No current user found, redirecting to login");
+      return res.redirect('/login');
+    }
+    
+    console.log(`Current user found: ${user.email}, emailVerified=${user.emailVerified}`);
+    
+    // Force token refresh to get latest verification status
+    try {
+      await user.getIdToken(true); // Force refresh token
+      await new Promise(resolve => setTimeout(resolve, 500)); // Small delay
+      await user.reload(); // Reload user data after token refresh
+      
+      console.log(`After token refresh and reload: emailVerified=${user.emailVerified}`);
+    } catch (refreshError) {
+      console.error("Error refreshing token:", refreshError);
+    }
+    
+    // Verify email verification status manually with Firebase Admin
+    if (user.emailVerified) {
+      console.log("User verified successfully");
+      // Update Firestore
+      await updateDoc(doc(db, 'users', user.uid), {
+        emailVerified: true
+      });
+      
+      // Redirect to dashboard
+      return res.redirect('/dashboard/overview');
+    }
+    
+    // Check Firestore as a fallback
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    if (userDoc.exists() && userDoc.data().emailVerified) {
+      return res.redirect('/dashboard/overview');
+    }
+    
+    // If still not verified, redirect back to verify-email
+    console.log("User still not verified after all checks");
+    res.redirect('/verify-email?refresh=' + Date.now());
+  } catch (error) {
+    console.error('Error in POST refresh-verification:', error);
+    res.redirect('/verify-email');
+  }
+});
+
+// Password reset route
+router.post('/reset-password', async (req, res) => {
+  const { email } = req.body;
+  
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+  
+  try {
+    // Send password reset email
+    await sendPasswordResetEmail(auth, email, {
+      url: `${process.env.APP_URL || 'http://localhost:3000'}/login`,
+      handleCodeInApp: false
+    });
+    
+    // Always return success, even if email doesn't exist for security reasons
+    res.status(200).json({ message: 'Password reset email sent' });
+  } catch (error) {
+    console.error('Error sending password reset email:', error);
+    // Still return success to avoid revealing if an email exists or not
+    res.status(200).json({ message: 'If your email exists in our system, you will receive a password reset link' });
+  }
+});
+
+// Handle password reset action
+router.get('/password-reset', (req, res) => {
+  const { mode, oobCode } = req.query;
+  
+  if (mode === 'resetPassword' && oobCode) {
+    // Render password reset page with the oobCode
+    res.render('password-reset', { oobCode });
+  } else {
+    res.status(400).render('error', { message: 'Invalid password reset link' });
+  }
+});
+
+// Handle password reset confirmation
+router.post('/confirm-reset-password', async (req, res) => {
+  const { oobCode, newPassword } = req.body;
+  
+  if (!oobCode || !newPassword) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+  
+  // Validate password strength
+  const passwordStrengthRegex = {
+    minLength: newPassword.length >= 8,
+    hasUpperCase: /[A-Z]/.test(newPassword),
+    hasLowerCase: /[a-z]/.test(newPassword),
+    hasNumber: /[0-9]/.test(newPassword),
+    hasSpecial: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(newPassword)
+  };
+  
+  const passedChecks = Object.values(passwordStrengthRegex).filter(Boolean).length;
+  if (passedChecks < 3) {
+    return res.status(400).json({ error: 'Password is too weak. It must meet at least 3 requirements.' });
+  }
+  
+  try {
+    // Complete the password reset
+    await confirmPasswordReset(auth, oobCode, newPassword);
+    
+    // Return success response
+    res.status(200).json({ message: 'Password has been reset successfully' });
+  } catch (error) {
+    console.error('Error confirming password reset:', error);
+    
+    let errorMessage = 'Failed to reset password. Please try again.';
+    
+    // Provide more specific error messages
+    if (error.code === 'auth/invalid-action-code') {
+      errorMessage = 'The reset link has expired or has already been used.';
+    } else if (error.code === 'auth/weak-password') {
+      errorMessage = 'The password is too weak. Please choose a stronger password.';
+    } else if (error.code === 'auth/user-not-found') {
+      errorMessage = 'User account not found.';
+    }
+    
+    res.status(400).json({ error: errorMessage });
   }
 });
 
