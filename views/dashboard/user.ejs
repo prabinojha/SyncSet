@@ -1,60 +1,107 @@
 <div class="user-settings-container">
-    <h1>User Settings</h1>
-    
+    <h1 class="settings-title">User Settings</h1>
+
+    <div class="notification-area" id="notificationArea"></div>
+
     <div class="settings-section">
-        <h2>Profile Information</h2>
-        <form id="profileForm">
+        <div class="section-header">
+            <i class="fas fa-user-circle section-icon"></i>
+            <h2>Profile Information</h2>
+        </div>
+        <form id="profileForm" class="settings-form">
             <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" value="<%= user.email %>" required>
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" value="<%= user.email %>" class="form-control" required>
             </div>
-            
+
             <div class="form-actions">
-                <button type="submit" class="update-btn">Update Profile</button>
+                <button type="submit" class="update-btn">
+                    <i class="fas fa-save"></i> Update Profile
+                </button>
+                <div class="spinner" id="profileSpinner"></div>
             </div>
         </form>
     </div>
-    
+
     <div class="settings-section">
-        <h2>Change Password</h2>
-        <form id="passwordForm">
+        <div class="section-header">
+            <i class="fas fa-lock section-icon"></i>
+            <h2>Change Password</h2>
+        </div>
+        <form id="passwordForm" class="settings-form">
             <div class="form-group">
                 <label for="currentPassword">Current Password</label>
-                <input type="password" id="currentPassword" name="currentPassword" required>
+                <div class="password-input-wrapper">
+                    <input type="password" id="currentPassword" name="currentPassword" class="form-control" required>
+                    <button type="button" class="toggle-password" data-target="currentPassword">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
             </div>
-            
+
             <div class="form-group">
                 <label for="newPassword">New Password</label>
-                <input type="password" id="newPassword" name="newPassword" required>
+                <div class="password-input-wrapper">
+                    <input type="password" id="newPassword" name="newPassword" class="form-control" required>
+                    <button type="button" class="toggle-password" data-target="newPassword">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <div class="password-strength" id="passwordStrength">
+                    <div class="strength-meter">
+                        <div class="strength-bar" id="strengthBar"></div>
+                    </div>
+                    <span class="strength-text" id="strengthText">Password strength</span>
+                </div>
             </div>
-            
+
             <div class="form-group">
                 <label for="confirmPassword">Confirm New Password</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" required>
+                <div class="password-input-wrapper">
+                    <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
+                    <button type="button" class="toggle-password" data-target="confirmPassword">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
             </div>
-            
+
             <div class="form-actions">
-                <button type="submit" class="update-btn">Change Password</button>
+                <button type="submit" class="update-btn">
+                    <i class="fas fa-key"></i> Change Password
+                </button>
+                <div class="spinner" id="passwordSpinner"></div>
             </div>
         </form>
     </div>
-    
+
     <div class="settings-section">
-        <h2>Subdomain Settings</h2>
-        <form id="subdomainForm">
-            <p>Current Subdomain: <strong><%= userSubdomain %></strong></p>
+        <div class="section-header">
+            <i class="fas fa-globe section-icon"></i>
+            <h2>Subdomain Settings</h2>
+        </div>
+        <form id="subdomainForm" class="settings-form">
+            <div class="current-subdomain">
+                <span>Current Subdomain:</span>
+                <strong class="subdomain-highlight">
+                    <%= userSubdomain %>
+                </strong>
+            </div>
             <div class="form-group">
                 <label for="newSubdomain">New Subdomain</label>
-                <div id="domainCheckWrapper">
-                    <input type="text" id="newSubdomain" name="newSubdomain" 
-                           placeholder="Enter your desired subdomain" required>
-                    <div id="domainStatus"></div>
+                <div id="domainCheckWrapper" class="input-with-status">
+                    <input type="text" id="newSubdomain" name="newSubdomain" placeholder="Enter your desired subdomain"
+                        class="form-control" required>
+                    <div id="domainStatus" class="status-indicator"></div>
                 </div>
-                <small class="help-text">This will change your website URL. The change is permanent and your old URL will be available for others.</small>
+                <small class="help-text"><i class="fas fa-info-circle"></i> This will change your website URL. The
+                    change is permanent and your old URL will be available for others.</small>
             </div>
-            
+
             <div class="form-actions">
-                <button type="submit" id="updateSubdomainBtn" class="update-btn" disabled>Update Subdomain</button>
+                <button type="submit" id="updateSubdomainBtn" class="update-btn" disabled>
+                    <i class="fas fa-check-circle"></i> Update Subdomain
+                </button>
+                <div class="spinner" id="subdomainSpinner"></div>
             </div>
         </form>
     </div>
@@ -62,108 +109,435 @@
 
 <style>
     .user-settings-container {
-        max-width: 800px;
         margin: 0 auto;
+        padding: 0 1rem;
     }
-    
+
+    .settings-title {
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--primary-dark-blue);
+    }
+
+    .notification-area {
+        margin-bottom: 1.5rem;
+    }
+
+    .notification {
+        padding: 1rem;
+        border-radius: var(--border-radius);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .notification i {
+        margin-right: 10px;
+        font-size: 1.25rem;
+    }
+
+    .notification-success {
+        background-color: rgb(239, 253, 244);
+        border-left: 4px solid rgb(22, 163, 74);
+        color: rgb(22, 101, 52);
+    }
+
+    .notification-error {
+        background-color: rgb(254, 242, 242);
+        border-left: 4px solid rgb(220, 38, 38);
+        color: rgb(153, 27, 27);
+    }
+
     .settings-section {
         background-color: white;
         border-radius: var(--border-radius);
         border: 1px solid var(--light-grey);
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     }
-    
-    .settings-section h2 {
-        margin-top: 0;
+
+    .section-header {
+        display: flex;
+        align-items: center;
         margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--light-grey);
+    }
+
+    .section-icon {
+        font-size: 1.5rem;
+        margin-right: 0.75rem;
+        color: var(--primary-purple);
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(var(--primary-purple-rgb), 0.1);
+        border-radius: 50%;
+    }
+
+    .section-header h2 {
+        margin: 0;
         font-size: 1.25rem;
         color: var(--primary-dark-blue);
-        border-bottom: 1px solid var(--light-grey);
-        padding-bottom: 0.75rem;
     }
-    
+
+    .settings-form {
+        margin-top: 1rem;
+    }
+
     .form-group {
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.75rem;
     }
-    
+
     .form-group label {
         display: block;
         margin-bottom: 0.5rem;
-        font-weight: 500;
+        font-weight: 600;
         color: var(--primary-dark-blue);
+        font-size: 0.95rem;
     }
-    
-    .form-group input {
+
+    .form-control {
         width: 100%;
-        padding: 0.75rem;
+        padding: 0.85rem 1rem;
         border: 1px solid var(--light-grey);
         border-radius: var(--border-radius);
         font-family: var(--primary-font);
         font-size: 1rem;
         box-sizing: border-box;
+        transition: all 0.2s ease;
+        background-color: #f9fafc;
     }
-    
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-purple);
+        box-shadow: 0 0 0 3px rgba(var(--primary-purple-rgb), 0.15);
+        background-color: white;
+    }
+
     .form-actions {
         display: flex;
         justify-content: flex-end;
+        align-items: center;
+        margin-top: 1rem;
     }
-    
+
     .update-btn {
         background-color: var(--primary-purple);
         color: white;
         border: none;
-        padding: 0.75rem 1.5rem;
+        padding: 0.85rem 1.5rem;
         border-radius: var(--border-radius);
         cursor: pointer;
         font-family: var(--primary-font);
         font-size: 1rem;
         transition: all 0.3s ease;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
-    
+
     .update-btn:hover {
         background-color: var(--primary-dark-blue);
     }
-    
+
     .update-btn:disabled {
         background-color: #cccccc;
         cursor: not-allowed;
     }
-    
+
+    .update-btn:active {
+        transform: translateY(1px);
+    }
+
     .help-text {
         display: block;
         margin-top: 0.5rem;
         color: #666;
         font-size: 0.875rem;
+        line-height: 1.4;
     }
-    
-    #domainCheckWrapper {
+
+    .input-with-status {
         position: relative;
     }
-    
-    #domainStatus {
+
+    .status-indicator {
         position: absolute;
         right: 1rem;
         top: 50%;
         transform: translateY(-50%);
     }
-    
+
     .available {
-        color: green;
+        color: rgb(22, 163, 74);
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 5px;
     }
-    
+
     .taken {
-        color: red;
+        color: rgb(220, 38, 38);
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .password-input-wrapper {
+        position: relative;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #666;
+        cursor: pointer;
+        padding: 0;
+    }
+
+    .toggle-password:focus {
+        outline: none;
+    }
+
+    .password-strength {
+        margin-top: 0.75rem;
+    }
+
+    .strength-meter {
+        height: 6px;
+        background-color: #eee;
+        border-radius: 3px;
+        overflow: hidden;
+        margin-bottom: 5px;
+    }
+
+    .strength-bar {
+        height: 100%;
+        width: 0%;
+        transition: width 0.3s ease, background-color 0.3s ease;
+    }
+
+    .strength-text {
+        font-size: 0.75rem;
+        color: #666;
+    }
+
+    .current-subdomain {
+        margin-bottom: 1.5rem;
+        padding: 0.75rem 1rem;
+        background-color: #f9fafc;
+        border-radius: var(--border-radius);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .subdomain-highlight {
+        color: var(--primary-dark-blue);
+        padding: 0.25rem 0.5rem;
+        background-color: rgba(var(--primary-purple-rgb), 0.1);
+        border-radius: 4px;
+    }
+
+    .spinner {
+        width: 20px;
+        height: 20px;
+        margin-left: 1rem;
+        border: 2px solid rgba(var(--primary-purple-rgb), 0.3);
+        border-top-color: var(--primary-purple);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        display: none;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .settings-section {
+            padding: 1.5rem;
+        }
     }
 </style>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        const notificationArea = document.getElementById('notificationArea');
+
+        // Show notification function
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.classList.add('notification', `notification-${type}`);
+
+            // Icon based on type
+            const icon = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+
+            notification.innerHTML = `
+                <i class="${icon}"></i>
+                <div>${message}</div>
+            `;
+
+            notificationArea.appendChild(notification);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 5000);
+        }
+
+        // Toggle password visibility
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', () => {
+                const targetId = button.getAttribute('data-target');
+                const passwordInput = document.getElementById(targetId);
+                const icon = button.querySelector('i');
+
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        });
+
+        // Password strength meter
+        const newPasswordInput = document.getElementById('newPassword');
+        const strengthBar = document.getElementById('strengthBar');
+        const strengthText = document.getElementById('strengthText');
+
+        function checkPasswordStrength(password) {
+            // Initialize variables
+            let strength = 0;
+            let tips = [];
+
+            // Check password length
+            if (password.length < 8) {
+                tips.push('at least 8 characters');
+            } else {
+                strength += 1;
+            }
+
+            // Check for mixed case
+            if (password.match(/[a-z]/) && password.match(/[A-Z]/)) {
+                strength += 1;
+            } else {
+                tips.push('upper and lowercase letters');
+            }
+
+            // Check for numbers
+            if (password.match(/[0-9]/)) {
+                strength += 1;
+            } else {
+                tips.push('at least one number');
+            }
+
+            // Check for special chars
+            if (password.match(/[^a-zA-Z0-9]/)) {
+                strength += 1;
+            } else {
+                tips.push('at least one special character');
+            }
+
+            // Return results
+            let strengthLevel = '';
+            let color = '';
+            let width = 0;
+
+            switch (strength) {
+                case 0:
+                case 1:
+                    strengthLevel = 'Weak';
+                    color = '#e74c3c';
+                    width = 25;
+                    break;
+                case 2:
+                    strengthLevel = 'Fair';
+                    color = '#f39c12';
+                    width = 50;
+                    break;
+                case 3:
+                    strengthLevel = 'Good';
+                    color = '#3498db';
+                    width = 75;
+                    break;
+                case 4:
+                    strengthLevel = 'Strong';
+                    color = '#27ae60';
+                    width = 100;
+                    break;
+            }
+
+            return {
+                level: strengthLevel,
+                color: color,
+                width: width,
+                tips: tips
+            };
+        }
+
+        newPasswordInput.addEventListener('input', () => {
+            const password = newPasswordInput.value;
+            if (password) {
+                const strength = checkPasswordStrength(password);
+                strengthBar.style.width = strength.width + '%';
+                strengthBar.style.backgroundColor = strength.color;
+
+                if (strength.tips.length > 0) {
+                    strengthText.textContent = `${strength.level}: Add ${strength.tips.join(', ')}`;
+                } else {
+                    strengthText.textContent = strength.level;
+                }
+            } else {
+                strengthBar.style.width = '0%';
+                strengthText.textContent = 'Password strength';
+            }
+        });
+
         // Profile form handling
         const profileForm = document.getElementById('profileForm');
+        const profileSpinner = document.getElementById('profileSpinner');
+
         profileForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            const submitBtn = profileForm.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            profileSpinner.style.display = 'block';
+
             try {
                 const response = await fetch('/api/user/profile', {
                     method: 'POST',
@@ -174,31 +548,48 @@
                         email: document.getElementById('email').value
                     })
                 });
-                
+
+                const data = await response.json();
+
                 if (response.ok) {
-                    alert('Profile updated successfully!');
+                    showNotification(data.message || 'Profile updated successfully!', 'success');
                 } else {
-                    const data = await response.json();
                     throw new Error(data.error || 'Failed to update profile');
                 }
             } catch (error) {
-                alert(error.message);
+                showNotification(error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                profileSpinner.style.display = 'none';
             }
         });
-        
+
         // Password form handling
         const passwordForm = document.getElementById('passwordForm');
+        const passwordSpinner = document.getElementById('passwordSpinner');
+
         passwordForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const newPassword = document.getElementById('newPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
-            
+            const submitBtn = passwordForm.querySelector('button[type="submit"]');
+
             if (newPassword !== confirmPassword) {
-                alert('New passwords do not match!');
+                showNotification('New passwords do not match!', 'error');
                 return;
             }
-            
+
+            // Check password strength
+            const strength = checkPasswordStrength(newPassword);
+            if (strength.width < 50) {
+                showNotification(`Password is too weak. ${strength.tips.join(', ')}.`, 'error');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            passwordSpinner.style.display = 'block';
+
             try {
                 const response = await fetch('/api/user/password', {
                     method: 'POST',
@@ -210,68 +601,82 @@
                         newPassword: newPassword
                     })
                 });
-                
+
+                const data = await response.json();
+
                 if (response.ok) {
-                    alert('Password updated successfully!');
+                    showNotification(data.message || 'Password updated successfully!', 'success');
                     passwordForm.reset();
+                    strengthBar.style.width = '0%';
+                    strengthText.textContent = 'Password strength';
                 } else {
-                    const data = await response.json();
                     throw new Error(data.error || 'Failed to update password');
                 }
             } catch (error) {
-                alert(error.message);
+                showNotification(error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                passwordSpinner.style.display = 'none';
             }
         });
-        
+
         // Subdomain form handling
         const subdomainForm = document.getElementById('subdomainForm');
         const newSubdomainInput = document.getElementById('newSubdomain');
         const domainStatus = document.getElementById('domainStatus');
         const updateSubdomainBtn = document.getElementById('updateSubdomainBtn');
+        const subdomainSpinner = document.getElementById('subdomainSpinner');
         let subdomainAvailable = false;
-        
+
         // Check domain availability as user types
         let debounceTimer;
         newSubdomainInput.addEventListener('input', (e) => {
             const subdomain = e.target.value.trim().toLowerCase();
-            
+
             // Clear previous status
             domainStatus.innerHTML = '';
             updateSubdomainBtn.disabled = true;
             subdomainAvailable = false;
-            
+
             if (!subdomain) return;
-            
+
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(async () => {
+                // Show loading indicator
+                domainStatus.innerHTML = '<span><i class="fas fa-spinner fa-spin"></i></span>';
+
                 try {
                     const response = await fetch(`/check-domain?domain=${subdomain}`);
                     const data = await response.json();
-                    
+
                     if (data.available) {
-                        domainStatus.innerHTML = '<span class="available">Available</span>';
+                        domainStatus.innerHTML = '<span class="available"><i class="fas fa-check-circle"></i> Available</span>';
                         updateSubdomainBtn.disabled = false;
                         subdomainAvailable = true;
                     } else {
-                        domainStatus.innerHTML = '<span class="taken">Already taken</span>';
+                        domainStatus.innerHTML = '<span class="taken"><i class="fas fa-times-circle"></i> Already taken</span>';
                         updateSubdomainBtn.disabled = true;
                         subdomainAvailable = false;
                     }
                 } catch (error) {
                     console.error('Error checking domain:', error);
+                    domainStatus.innerHTML = '<span class="taken"><i class="fas fa-exclamation-circle"></i> Error checking</span>';
                 }
             }, 500);
         });
-        
+
         // Handle subdomain update
         subdomainForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             if (!subdomainAvailable) {
-                alert('Please choose an available subdomain');
+                showNotification('Please choose an available subdomain', 'error');
                 return;
             }
-            
+
+            updateSubdomainBtn.disabled = true;
+            subdomainSpinner.style.display = 'block';
+
             try {
                 const response = await fetch('/api/user/subdomain', {
                     method: 'POST',
@@ -282,17 +687,21 @@
                         newSubdomain: newSubdomainInput.value.trim().toLowerCase()
                     })
                 });
-                
+
                 if (response.ok) {
-                    alert('Subdomain updated successfully! You will be redirected to login again.');
-                    // Redirect to login after subdomain change
-                    window.location.href = '/login';
+                    showNotification('Subdomain updated successfully! You will be redirected to login again.', 'success');
+                    // Redirect to login after subdomain change (with delay for notification visibility)
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 2000);
                 } else {
                     const data = await response.json();
                     throw new Error(data.error || 'Failed to update subdomain');
                 }
             } catch (error) {
-                alert(error.message);
+                showNotification(error.message, 'error');
+                updateSubdomainBtn.disabled = false;
+                subdomainSpinner.style.display = 'none';
             }
         });
     });

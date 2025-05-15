@@ -1,6 +1,14 @@
 const express = require('express');
 const { auth, db } = require('../firebase');
-const { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } = require('firebase/auth');
+const { 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  signOut, 
+  EmailAuthProvider, 
+  reauthenticateWithCredential, 
+  updateEmail, 
+  updatePassword 
+} = require('firebase/auth');
 const { doc, setDoc, getDoc, updateDoc, collection, addDoc, query, where, getDocs, deleteDoc } = require('firebase/firestore');
 const router = express.Router();
 
@@ -732,17 +740,24 @@ router.post('/api/user/profile', async (req, res) => {
       const { email } = req.body;
       
       // Update email in Firebase Auth
-      await user.updateEmail(email);
+      await updateEmail(user, email);
       
       // Update email in Firestore
       await updateDoc(doc(db, 'users', user.uid), {
           email: email
       });
       
-      res.json({ success: true });
+      res.json({ success: true, message: 'Profile updated successfully' });
   } catch (error) {
       console.error('Error updating profile:', error);
-      res.status(500).json({ error: error.message });
+      let errorMessage = error.message;
+      
+      // Provide more user-friendly error messages
+      if (error.code === 'auth/requires-recent-login') {
+          errorMessage = 'For security reasons, please log out and log back in before changing your email';
+      }
+      
+      res.status(500).json({ error: errorMessage });
   }
 });
 
@@ -757,20 +772,31 @@ router.post('/api/user/password', async (req, res) => {
       const { currentPassword, newPassword } = req.body;
       
       // Re-authenticate user before password change
-      const credential = require('firebase/auth').EmailAuthProvider.credential(
+      const credential = EmailAuthProvider.credential(
           user.email, 
           currentPassword
       );
       
-      await require('firebase/auth').reauthenticateWithCredential(user, credential);
+      await reauthenticateWithCredential(user, credential);
       
       // Update password
-      await user.updatePassword(newPassword);
+      await updatePassword(user, newPassword);
       
-      res.json({ success: true });
+      res.json({ success: true, message: 'Password updated successfully' });
   } catch (error) {
       console.error('Error updating password:', error);
-      res.status(500).json({ error: error.message });
+      let errorMessage = error.message;
+      
+      // Provide more user-friendly error messages
+      if (error.code === 'auth/wrong-password') {
+          errorMessage = 'The current password is incorrect';
+      } else if (error.code === 'auth/requires-recent-login') {
+          errorMessage = 'For security reasons, please log out and log back in before changing your password';
+      } else if (error.code === 'auth/weak-password') {
+          errorMessage = 'The new password is too weak. Please choose a stronger password';
+      }
+      
+      res.status(500).json({ error: errorMessage });
   }
 });
 
