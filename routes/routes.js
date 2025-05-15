@@ -356,7 +356,22 @@ router.post('/signup', async (req, res) => {
 
     await setDoc(domainDoc, {
       uid: user.uid,
-      published: false
+      published: true
+    });
+
+    // Create a default service for the new user
+    const servicesRef = collection(db, 'users', user.uid, 'services');
+    await addDoc(servicesRef, {
+      title: "Sample Service",
+      description: "This is a sample service to help you get started. You can delete it anytime.",
+      location: "Online",
+      cost: "50",
+      duration: "60",
+      availability: {
+        startTime: "09:00",
+        endTime: "17:00"
+      },
+      createdAt: new Date()
     });
 
     res.status(201).json({
@@ -1029,7 +1044,7 @@ router.post('/api/user/subdomain', async (req, res) => {
       // Create the new domain document
       await setDoc(domainDoc, {
           uid: user.uid,
-          published: userDoc.data().published || false
+          published: true
       });
       
       // Update the user's subdomain
