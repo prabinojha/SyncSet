@@ -3,7 +3,14 @@
         <div class="overview-content">
             <div class="overview-header">
                 <h1>Overview</h1>
-                <a href="/<%= userSubdomain %>" target="_blank" class="view-website-btn">View website</a>
+                <a href="/<%= userSubdomain %>" target="_blank" class="view-website-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                    View website
+                </a>
             </div>
             <form id="overviewForm">
                 <div class="overview-form-group">
@@ -146,3 +153,43 @@
         });
     });
 </script>
+
+<style>
+    .overview-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .overview-header h1 {
+        margin: 0;
+        padding: 0;
+    }
+    
+    .view-website-btn {
+        padding: 6px 12px;
+        font-size: 14px;
+        color: #f4426e;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+        font-weight: 500;
+        border: 1px solid rgba(244, 66, 110, 0.3);
+        border-radius: 4px;
+        background-color: rgba(244, 66, 110, 0.05);
+    }
+    
+    .view-website-btn:hover {
+        color: #e50c2c;
+        border-color: rgba(229, 12, 44, 0.5);
+        background-color: rgba(244, 66, 110, 0.1);
+    }
+    
+    .view-website-btn svg {
+        margin-top: -1px;
+        stroke-width: 2.2;
+    }
+</style>
