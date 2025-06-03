@@ -73,9 +73,10 @@
             window.addEventListener('message', (event) => {
                 if (event.data.type === 'updatePreview') {
                     const { title, description, theme } = event.data.data;
+                    const subdomain = window.location.pathname.split('/')[1];
 
-                    if (title) document.getElementById('subdomain-title').textContent = title;
-                    if (description) document.getElementById('subdomain-description').textContent = description;
+                    document.getElementById('subdomain-title').textContent = title || `Welcome to ${subdomain}`;
+                    document.getElementById('subdomain-description').textContent = description || 'No description available';
 
                     document.body.className = `${theme}-theme`;
                 }
