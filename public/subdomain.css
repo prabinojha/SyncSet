@@ -58,7 +58,6 @@
 }
 
 .light-theme .confirm-button {
-    color: var(--light-primary);
     border-color: var(--light-primary);
     box-shadow: 0 2px 4px rgba(52, 152, 219, 0.15);
 }
@@ -611,7 +610,7 @@ body {
 }
 
 .light-theme .confirm-button {
-    color: var(--light-primary);
+    
     border-color: var(--light-primary);
 }
 
@@ -855,7 +854,7 @@ body {
 /* Return Button and Confirm Booking Button */
 .return-button,
 .confirm-button {
-    background: transparent !important;
+    background: transparent;
     transition: all 0.2s ease;
     border: 2px solid;
     font-weight: 500;
@@ -878,7 +877,7 @@ body {
 
 .light-theme .return-button,
 .light-theme .confirm-button {
-    color: var(--light-primary);
+
     border-color: var(--light-primary);
 }
 
@@ -890,27 +889,23 @@ body {
 
 .ocean-theme .return-button,
 .ocean-theme .confirm-button {
-    color: var(--ocean-primary);
+    color: white;
     border-color: var(--ocean-primary);
 }
 
 .forest-theme .return-button,
 .forest-theme .confirm-button {
-    color: var(--forest-primary);
+    color: white;
     border-color: var(--forest-primary);
 }
 
 .sunset-theme .return-button,
 .sunset-theme .confirm-button {
-    color: var(--sunset-primary);
+    color: white;
     border-color: var(--sunset-primary);
 }
 
-.return-button:hover,
-.confirm-button:hover {
-    background: transparent !important;
-    opacity: 0.8;
-}
+
 
 /* Booking Confirmation Styles */
 .booking-confirmation-container {
@@ -1213,8 +1208,7 @@ body {
 
 .form-grid {
     display: grid;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .form-group {
@@ -1225,7 +1219,7 @@ body {
 
 .form-group input,
 .form-group textarea {
-    padding: 1rem;
+    padding: 0.75rem;
     border-radius: var(--border-radius);
     font-family: var(--primary-font);
     font-size: 1rem;
