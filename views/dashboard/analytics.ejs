@@ -29,23 +29,23 @@
             </div>
         </div>
         <div class="summary-card">
-            <div class="tooltip">Number of new clients acquired in the selected period</div>
+            <div class="tooltip">Total number of unique clients with bookings in the selected period</div>
             <div class="summary-icon">
-                <i class="fas fa-users"></i>
+                <i class="fas fa-user-check"></i>
             </div>
             <div class="summary-content">
-                <h3>New Clients</h3>
-                <p class="summary-value" id="newClients">0</p>
+                <h3>Unique Clients</h3>
+                <p class="summary-value" id="uniqueClients">0</p>
             </div>
         </div>
         <div class="summary-card">
-            <div class="tooltip">Percentage of successful bookings compared to total visits</div>
+            <div class="tooltip">The average revenue generated per booking</div>
             <div class="summary-icon">
-                <i class="fas fa-chart-line"></i>
+                <i class="fas fa-file-invoice-dollar"></i>
             </div>
             <div class="summary-content">
-                <h3>Conversion Rate</h3>
-                <p class="summary-value" id="conversionRate">0%</p>
+                <h3>Avg. Booking Value</h3>
+                <p class="summary-value" id="averageBookingValue">$0.00</p>
             </div>
         </div>
     </div>
@@ -171,9 +171,9 @@
         
         function updateSummaryCards(summary) {
             document.getElementById('totalBookings').textContent = summary.totalBookings;
-            document.getElementById('totalRevenue').textContent = `$${summary.totalRevenue}`;
-            document.getElementById('newClients').textContent = summary.newClients;
-            document.getElementById('conversionRate').textContent = `${summary.conversionRate}%`;
+            document.getElementById('totalRevenue').textContent = `$${summary.totalRevenue.toFixed(2)}`;
+            document.getElementById('uniqueClients').textContent = summary.uniqueClients;
+            document.getElementById('averageBookingValue').textContent = `$${summary.averageBookingValue.toFixed(2)}`;
         }
         
         function updateRecentBookings(bookings) {

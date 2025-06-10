@@ -793,6 +793,7 @@ router.get('/api/analytics', async (req, res) => {
                 bookings.push({
                     id: doc.id,
                     clientName: booking.clientName,
+                    clientEmail: booking.clientEmail,
                     serviceName: booking.serviceName,
                     date: new Date(booking.date),
                     amount: parseFloat(booking.cost) || 0, // Convert cost to amount
@@ -814,7 +815,15 @@ router.get('/api/analytics', async (req, res) => {
             }
         });
 
-        // Calculate previous period
+        // Get unique clients for the current period
+        const uniqueClients = new Set();
+        bookings.forEach(booking => {
+            if (booking.status !== 'cancelled') {
+                uniqueClients.add(booking.clientEmail);
+            }
+        });
+
+        // Calculate previous period's stats
         const periodDays = Math.floor((currentDate - startDate) / (1000 * 60 * 60 * 24));
         const previousStartDate = new Date(startDate);
         previousStartDate.setDate(previousStartDate.getDate() - periodDays);
@@ -822,7 +831,7 @@ router.get('/api/analytics', async (req, res) => {
         
         let previousTotalRevenue = 0;
         let previousTotalBookings = 0;
-        let previousNewClients = new Set();
+        const previousUniqueClients = new Set();
         
         bookingsSnap.forEach(doc => {
             const booking = doc.data();
@@ -830,7 +839,7 @@ router.get('/api/analytics', async (req, res) => {
                 if (booking.status !== 'cancelled') {
                     previousTotalRevenue += parseFloat(booking.cost) || 0;
                     previousTotalBookings++;
-                    previousNewClients.add(booking.clientEmail);
+                    previousUniqueClients.add(booking.clientEmail);
                 }
             }
         });
@@ -840,54 +849,14 @@ router.get('/api/analytics', async (req, res) => {
             Math.round(((totalRevenue - previousTotalRevenue) / previousTotalRevenue) * 100);
         const bookingsChange = previousTotalBookings === 0 ? 100 : 
             Math.round(((totalBookings - previousTotalBookings) / previousTotalBookings) * 100);
+        const clientsChange = previousUniqueClients.size === 0 ? 100 : 
+            Math.round(((uniqueClients.size - previousUniqueClients.size) / previousUniqueClients.size) * 100);
 
-        // Get unique clients
-        const newClients = new Set();
-        const existingClients = new Set();
-        
-        // First, get all clients from previous periods to identify truly new ones
-        bookingsSnap.forEach(doc => {
-            const booking = doc.data();
-            if (booking.date < startDateStr) {
-                existingClients.add(booking.clientEmail);
-            }
-        });
-
-        // Now count only clients that weren't in previous periods
-        bookings.forEach(booking => {
-            if (!existingClients.has(booking.clientEmail)) {
-                newClients.add(booking.clientEmail);
-            }
-        });
-
-        const clientsChange = previousNewClients.size === 0 ? 100 : 
-            Math.round(((newClients.size - previousNewClients.size) / previousNewClients.size) * 100);
-
-        // Calculate conversion rate (completed bookings / total bookings, excluding cancelled)
-        const activeBookings = bookings.filter(b => b.status !== 'cancelled').length;
-        const completedBookings = bookings.filter(b => b.status === 'completed').length;
-        const conversionRate = activeBookings === 0 ? 0 : Math.round((completedBookings / activeBookings) * 100);
-        
-        const previousActiveBookings = Array.from(bookingsSnap.docs)
-            .filter(doc => {
-                const data = doc.data();
-                return data.date >= previousStartDateStr && 
-                       data.date < startDateStr && 
-                       data.status !== 'cancelled';
-            }).length;
-            
-        const previousCompletedBookings = Array.from(bookingsSnap.docs)
-            .filter(doc => {
-                const data = doc.data();
-                return data.date >= previousStartDateStr && 
-                       data.date < startDateStr && 
-                       data.status === 'completed';
-            }).length;
-            
-        const previousConversionRate = previousActiveBookings === 0 ? 0 : 
-            Math.round((previousCompletedBookings / previousActiveBookings) * 100);
-        const conversionChange = previousConversionRate === 0 ? 100 : 
-            Math.round(((conversionRate - previousConversionRate) / previousConversionRate) * 100);
+        // Calculate Average Booking Value
+        const averageBookingValue = totalBookings === 0 ? 0 : (totalRevenue / totalBookings);
+        const previousAverageBookingValue = previousTotalBookings === 0 ? 0 : (previousTotalRevenue / previousTotalBookings);
+        const averageBookingValueChange = previousAverageBookingValue === 0 ? (averageBookingValue > 0 ? 100 : 0) :
+            Math.round(((averageBookingValue - previousAverageBookingValue) / previousAverageBookingValue) * 100);
 
         // Prepare time series data
         const dates = [];
@@ -905,12 +874,12 @@ router.get('/api/analytics', async (req, res) => {
             summary: {
                 totalBookings,
                 bookingsChange,
-                totalRevenue,
+                totalRevenue: parseFloat(totalRevenue.toFixed(2)),
                 revenueChange,
-                newClients: newClients.size,
+                uniqueClients: uniqueClients.size,
                 clientsChange,
-                conversionRate,
-                conversionChange
+                averageBookingValue: parseFloat(averageBookingValue.toFixed(2)),
+                averageBookingValueChange
             },
             recentBookings: bookings.sort((a, b) => b.date - a.date).slice(0, 5),
             popularServices: Object.entries(serviceBookings)
