@@ -10,13 +10,13 @@
                 <form id="loginForm">
                     <input type="email" name="email" id="emailInput" placeholder="name@example.com" required>
                     <input type="password" name="password" id="passwordInput" placeholder="password" required>
-                    <div class="loginOptions">
-                        <a href="#" id="forgotPasswordLink">Forgot password?</a>
-                    </div>
                     <button type="submit">Login</button>
                 </form>
                 <p class="errorP" id="message"></p>
                 <p>Don't have an account? <a href="/signup">Sign Up</a></p>
+                <p>
+                    <a href="#" id="forgotPasswordLink">Forgot password?</a>
+                </p>                    
             </div>
             
             <!-- Forgot Password Modal -->
@@ -134,15 +134,8 @@
             });
         </script>
         <style>
-            .loginOptions {
-                display: flex;
-                justify-content: flex-end;
-                margin-bottom: 15px;
-            }
-            
             #forgotPasswordLink {
                 font-size: 14px;
-                color: #4285f4;
                 text-decoration: none;
             }
             
