@@ -547,6 +547,7 @@ body {
     width: 90%;
     max-width: 600px;
     margin: 0.75rem auto;
+    margin-bottom: 0.25rem;
     padding: 1rem 2rem;
     border-radius: 8px;
     font-size: 1.125rem;
@@ -1368,4 +1369,53 @@ body {
     --sunset-accent: #3498db;
     --sunset-border: #f5b041;
     --sunset-hover: #fdebd0;
+}
+
+.subdomain-powered-by {
+    font-size: 1rem;
+    opacity: 0.8;
+    margin: none;
+    font-weight: 500;
+    animation: gradientFlow 3s linear infinite;
+}
+
+/* Theme-specific gradients */
+.light-theme .subdomain-powered-by {
+    background: linear-gradient(90deg, #3498db, #9b59b6, #3498db);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.dark-theme .subdomain-powered-by {
+    background: linear-gradient(90deg, #ffffff, #b3b3b3, #ffffff);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.ocean-theme .subdomain-powered-by {
+    background: linear-gradient(90deg, #3498db, #2980b9, #3498db);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.forest-theme .subdomain-powered-by {
+    background: linear-gradient(90deg, #27ae60, #2ecc71, #27ae60);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.sunset-theme .subdomain-powered-by {
+    background: linear-gradient(90deg, #e67e22, #d35400, #e67e22);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
