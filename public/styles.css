@@ -263,10 +263,6 @@ header {
     font-family: var(--primary-font);
 }
 
-.onboardingFormDiv p {
-    margin-top: 0.5rem;
-}
-
 .onboardingFormDiv a {
     color: var(--primary-purple);
     text-decoration: none;

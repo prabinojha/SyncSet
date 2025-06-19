@@ -11,19 +11,20 @@
                         <input type="email" name="email" placeholder="name@example.com" required>
                         <div class="passwordContainer">
                             <input type="password" name="password" id="passwordInput" placeholder="password" required>
-                            <div class="passwordFeedback">
-                                <div class="passwordStrength">
-                                    <div class="strengthBar"></div>
+                            <div class="passwordFeedbackContainer">
+                                <div class="passwordFeedback">
+                                    <div class="passwordStrength">
+                                        <div class="strengthBar"></div>
+                                    </div>
                                 </div>
-                                <p class="strengthText">Password strength</p>
+                                <ul class="passwordRequirements">
+                                    <li id="lengthReq"><span></span>At least 8 characters</li>
+                                    <li id="upperReq"><span></span>At least 1 uppercase letter</li>
+                                    <li id="lowerReq"><span></span>At least 1 lowercase letter</li>
+                                    <li id="numberReq"><span></span>At least 1 number</li>
+                                    <li id="specialReq"><span></span>At least 1 special character</li>
+                                </ul>
                             </div>
-                            <ul class="passwordRequirements">
-                                <li id="lengthReq"><span></span>At least 8 characters</li>
-                                <li id="upperReq"><span></span>At least 1 uppercase letter</li>
-                                <li id="lowerReq"><span></span>At least 1 lowercase letter</li>
-                                <li id="numberReq"><span></span>At least 1 number</li>
-                                <li id="specialReq"><span></span>At least 1 special character</li>
-                            </ul>
                         </div>
                         <div id="domainCheckWrapper">
                             <span>syncset.xyz /</span>
@@ -147,7 +148,7 @@
 
                     // Update UI
                     strengthBar.style.width = `${strength}%`;
-                    
+
                     if (strength < 40) {
                         strengthBar.style.backgroundColor = '#ff4d4d';
                         message = 'Weak';
@@ -198,24 +199,32 @@
                     width: 100%;
                     margin-bottom: 15px;
                 }
+
                 .passwordFeedback {
                     margin-top: 8px;
                     display: flex;
                     align-items: center;
                 }
+
                 .passwordStrength {
                     flex: 1;
                     height: 4px;
                     background-color: #e6e6e6;
                     border-radius: 2px;
                     overflow: hidden;
-                    margin-right: 10px;
                 }
+
                 .strengthBar {
                     height: 100%;
                     width: 0;
                     transition: width 0.3s, background-color 0.3s;
                 }
+
+                .passwordFeedbackContainer {
+                    width: calc(100% - 2rem);
+                    margin-left: 1rem;
+                }
+
                 .strengthText {
                     font-size: 12px;
                     color: #777;
@@ -223,6 +232,7 @@
                     min-width: 60px;
                     text-align: right;
                 }
+
                 .passwordRequirements {
                     list-style: none;
                     padding: 0;
@@ -234,11 +244,13 @@
                     padding: 10px 15px;
                     border: 1px solid #eaeaea;
                 }
+
                 .passwordRequirements li {
                     margin-bottom: 4px;
                     display: flex;
                     align-items: center;
                 }
+
                 .passwordRequirements li span {
                     width: 16px;
                     height: 16px;
@@ -247,29 +259,30 @@
                     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%23aaa' d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z'/%3E%3C/svg%3E");
                     background-size: contain;
                 }
+
                 .passwordRequirements li.valid span {
                     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%234cd137' d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z'/%3E%3C/svg%3E");
                 }
+
                 #signupButton {
                     margin-top: 15px;
-                    background-color: #4285f4;
+                    background-color: var(--primary-purple);
                     transition: background-color 0.3s;
                 }
-                #signupButton:hover {
-                    background-color: #3367d6;
-                }
+
                 #domainCheckWrapper {
                     padding: 10px;
                     border-radius: 4px;
                     background-color: #f9f9f9;
                     border: 1px solid #eaeaea;
                 }
+
                 .verificationPrompt {
                     text-align: center;
                     padding: 20px;
                     background: #f9f9f9;
                     border-radius: 5px;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
                 }
             </style>
     </body>
