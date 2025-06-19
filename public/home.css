@@ -78,56 +78,142 @@ body {
 
 /* Features Section */
 .features-section {
-    padding: 2rem 1rem;
+    padding: 6rem 2rem;
+    background: linear-gradient(135deg, var(--primary-light-blue), #fff);
+    position: relative;
+    overflow: hidden;
+}
+
+.features-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background: linear-gradient(to bottom right, transparent 49%, var(--primary-light-blue) 50%);
+    transform: translateY(-100%);
+}
+
+.features-container {
     max-width: 1200px;
     margin: 0 auto;
-}
-
-.features-section h2 {
-    text-align: center;
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
-    color: #333;
-}
-
-.features-grid {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 3rem;
-}
-
-.feature {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
-    align-items: center;
+    position: relative;
+    z-index: 1;
 }
 
-.feature:nth-child(even) {
-    direction: rtl;
+.feature-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 0;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+}
+
+.feature-card:hover::before {
+    opacity: 0.05;
 }
 
 .feature-content {
-    direction: ltr;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
 }
 
-.feature h3 {
-    font-size: 1.8rem;
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.feature-icon i {
+    font-size: 2rem;
+    color: white;
+}
+
+.feature-content h3 {
+    color: var(--primary-dark-blue);
+    font-size: 1.5rem;
     margin-bottom: 1rem;
-    color: #333;
+    font-weight: 600;
 }
 
-.feature p {
+.feature-content p {
     color: #666;
     margin-bottom: 1.5rem;
     line-height: 1.6;
 }
 
-.feature-image {
-    background: var(--primary-light-blue);
-    border-radius: 8px;
-    aspect-ratio: 16/9;
-    width: 100%;
+.feature-content .btn {
+    background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.feature-content .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(151, 102, 249, 0.3);
+}
+
+/* Animation for fade-up */
+[data-aos="fade-up"] {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+[data-aos="fade-up"].aos-animate {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Add delay for sequential animation */
+[data-aos-delay="200"] {
+    transition-delay: 0.2s;
+}
+
+[data-aos-delay="400"] {
+    transition-delay: 0.4s;
 }
 
 /* Video Section */
@@ -301,17 +387,31 @@ body {
         min-width: 140px;
     }
 
-    .features-section h2,
-    .video-section h2,
-    .faq-section h2,
-    .cta-section h2 {
-        font-size: 2rem;
+    .features-section {
+        padding: 4rem 1rem;
     }
 
-    .feature h3 {
+    .features-container {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .feature-card {
+        padding: 1.5rem;
+    }
+
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+    }
+
+    .feature-icon i {
         font-size: 1.5rem;
     }
 
+    .feature-content h3 {
+        font-size: 1.25rem;
+    }
 
     @keyframes scroll {
         0% { transform: translateX(0); }
@@ -321,10 +421,6 @@ body {
     .btn {
         padding: 0.7rem 1.5rem;
         font-size: 0.9rem;
-    }
-
-    .features-grid {
-        gap: 2rem;
     }
 }
 

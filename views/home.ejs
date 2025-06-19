@@ -2,6 +2,8 @@
 <html lang="en">
 <%- include('includes/head', {title: 'Welcome to SyncSet'}) %>
 <link rel="stylesheet" href="/public/home.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <body>
     <%- include('includes/header') %>
@@ -18,32 +20,38 @@
 
         <!-- Features Section -->
         <section class="features-section">
-            <div class="features-grid">
-                <div class="feature">
+            <div class="features-container">
+                <div class="feature-card" data-aos="fade-up">
                     <div class="feature-content">
+                        <div class="feature-icon">
+                            <i class="fas fa-rocket"></i>
+                        </div>
                         <h3>Instantly create your booking website</h3>
                         <p>Success is free! SyncSet landing pages with support for hosting payments and scheduling.</p>
                         <a href="/signup" class="btn btn-primary">Get Started Free</a>
                     </div>
-                    <div class="feature-image"></div>
                 </div>
 
-                <div class="feature">
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
                     <div class="feature-content">
+                        <div class="feature-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
                         <h3>Offer your services to the world</h3>
                         <p>Share your services with pricing, time, and details at your offer.</p>
                         <a href="/signup" class="btn btn-primary">Get Started Free</a>
                     </div>
-                    <div class="feature-image"></div>
                 </div>
 
-                <div class="feature">
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
                     <div class="feature-content">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
                         <h3>View your customer analytics</h3>
                         <p>Track bookings and your revenue, gain growth and more.</p>
                         <a href="/signup" class="btn btn-primary">Get Started Free</a>
                     </div>
-                    <div class="feature-image"></div>
                 </div>
             </div>
         </section>
@@ -58,21 +66,21 @@
                 </div>
             </div>
             <div class="faq-item">
-                <div class="question">Can I integrate with my existing calendar?</div>
+                <div class="question">What analytics can I view?</div>
                 <div class="answer">
-                    Yes! SyncSet seamlessly integrates with popular calendar services like Google Calendar, Outlook, and iCal. Your bookings will automatically sync with your calendar, and your availability will always be up to date.
+                    You can view your bookings and revenue in your dashboard. You can also view your customer growth and more.
                 </div>
             </div>
             <div class="faq-item">
-                <div class="question">How do payments work?</div>
+                <div class="question">Can I customise my page?</div>
                 <div class="answer">
-                    We support secure payments through various payment processors including Stripe and PayPal. You can accept deposits, full payments, or set up custom payment schedules. All transactions are secure and automatically tracked in your dashboard.
+                    Yes! You can customise your page with your own branding, images, and text. You can also add your own services and pricing.
                 </div>
             </div>
             <div class="faq-item">
                 <div class="question">Is there a free plan available?</div>
                 <div class="answer">
-                    Yes! We offer a generous free plan that includes all essential features to get your booking website up and running. As your business grows, you can upgrade to our premium plans for additional features and higher booking limits.
+                    Yes! We offer a generous free plan that includes all essential features to get your booking website up and running. We currently do not offer a premium plan.
                 </div>
             </div>
         </section>
@@ -85,7 +93,15 @@
         </section>
     </main>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+
         // Subdomain animation
         const subdomains = [
             'my-tutoring-company',
