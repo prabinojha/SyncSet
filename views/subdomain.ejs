@@ -397,10 +397,58 @@
                 const container = document.querySelector('.subdomain-content-section');
                 
                 container.innerHTML = `
-                    <div class="booking-success">
-                        <h1>Booking Confirmed</h1>
-                        <p>Thank you for your booking. Your appointment is scheduled for ${formatDate(bookingDetails.date)} at ${new Date(`2000-01-01T${bookingDetails.time}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}.</p>
-                        <button class="confirm-booking-button" onclick="window.location.reload()">Return to Calendar</button>
+                    <div class="booking-header">
+                        <h2>Confirm your booking</h2>
+                        <button class="return-button" onclick="window.location.reload()">Return</button>
+                    </div>
+                    
+                    <div class="service-details-section">
+                        <div class="service-details-grid">
+                            <div class="service-detail-item">
+                                <span class="detail-label">Service</span>
+                                <span class="detail-value">${bookingDetails.serviceName}</span>
+                            </div>
+                            <div class="service-detail-item">
+                                <span class="detail-label">Cost</span>
+                                <span class="detail-value">$${bookingDetails.cost}</span>
+                            </div>
+                            <div class="service-detail-item">
+                                <span class="detail-label">Duration</span>
+                                <span class="detail-value">${bookingDetails.duration} minutes</span>
+                            </div>
+                            <div class="service-detail-item">
+                                <span class="detail-label">Date</span>
+                                <span class="detail-value">${formatDate(bookingDetails.date)}</span>
+                            </div>
+                            <div class="service-detail-item">
+                                <span class="detail-label">Time</span>
+                                <span class="detail-value">
+                                    ${new Date(`2000-01-01T${bookingDetails.time}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })} to 
+                                    ${new Date(new Date(`2000-01-01T${bookingDetails.time}`).getTime() + bookingDetails.duration * 60000).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="booking-form-section">
+                        <form class="booking-form" onsubmit="submitBooking(event)">
+                            <h3 style="text-align: left;">Your Details</h3>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <input type="text" id="clientName" placeholder="Full Name" required>
+                                </div>
+                                <div class="form-group">
+                                    <input type="email" id="clientEmail" placeholder="Email" required>
+                                </div>
+                                <div class="form-group">
+                                    <input type="tel" id="clientPhone" placeholder="Phone Number" required>
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" id="notes" placeholder="Notes (optional)">
+                                </div>
+                            </div>
+                            <button type="submit" class="confirm-button">Confirm Booking</button>
+                        </form>
                     </div>
                 `;
 
@@ -438,9 +486,51 @@
                     // Show success message
                     const container = document.querySelector('.subdomain-content-section');
                     container.innerHTML = `
-                        <h1>Booking Confirmed!</h1>
-                        <p>Thank you for your booking. We'll see you on ${formatDate(bookingDetails.date)} at ${bookingDetails.time}.</p>
-                        <button class="confirm-booking-button" onclick="window.location.reload()">Done</button>
+                        <div class="booking-confirmed-container" style="
+                            max-width: 400px;
+                            margin: 3rem auto;
+                            padding: 2rem 1.5rem;
+                            border: 1.5px solid #222;
+                            border-radius: 8px;
+                            background: transparent;
+                            box-shadow: none;
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                        ">
+                            <h2 style="
+                                font-size: 1.25rem;
+                                font-weight: 600;
+                                color: #222;
+                                margin-bottom: 1.2rem;
+                                text-align: center;
+                                letter-spacing: 0.01em;
+                            ">Booking Confirmed</h2>
+                            <p style="
+                                font-size: 1rem;
+                                color: #222;
+                                margin-bottom: 2rem;
+                                text-align: center;
+                                line-height: 1.6;
+                            ">
+                                Thank you for your booking.<br>
+                                <span style="color: #222; font-weight: 500;">
+                                    ${formatDate(bookingDetails.date)} at ${bookingDetails.time}
+                                </span>
+                            </p>
+                            <button class="confirm-booking-button" onclick="window.location.reload()" style="
+                                border: 1.5px solid #222;
+                                background: transparent;
+                                color: #222;
+                                border-radius: 4px;
+                                padding: 0.6rem 2rem;
+                                font-size: 1rem;
+                                font-weight: 500;
+                                cursor: pointer;
+                                transition: background 0.2s, color 0.2s;
+                                box-shadow: none;
+                            ">Close</button>
+                        </div>
                     `;
                 } catch (error) {
                     console.error('Error:', error);
@@ -548,5 +638,4 @@
             }
         </style>
     </body>
-
 </html>
