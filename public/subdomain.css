@@ -42,54 +42,6 @@
     opacity: 0.9;
 }
 
-/* Confirm Button - With themed border and shadow */
-.confirm-button {
-    width: 100%;
-    padding: 0.875rem 1.5rem;
-    border-radius: 8px;
-    font-size: 1.125rem;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    cursor: pointer;
-    margin-top: 1rem;
-    transition: all 0.3s ease;
-    background: transparent;
-    border: 2px solid;
-}
-
-.light-theme .confirm-button {
-    border-color: var(--light-primary);
-    box-shadow: 0 2px 4px rgba(52, 152, 219, 0.15);
-}
-
-.dark-theme .confirm-button {
-    color: var(--dark-primary);
-    border-color: var(--dark-primary);
-}
-
-.ocean-theme .confirm-button {
-    color: var(--ocean-primary);
-    border-color: var(--ocean-primary);
-    box-shadow: 0 2px 4px rgba(41, 128, 185, 0.15);
-}
-
-.forest-theme .confirm-button {
-    color: var(--forest-primary);
-    border-color: var(--forest-primary);
-    box-shadow: 0 2px 4px rgba(39, 174, 96, 0.15);
-}
-
-.sunset-theme .confirm-button {
-    color: var(--sunset-primary);
-    border-color: var(--sunset-primary);
-    box-shadow: 0 2px 4px rgba(230, 126, 34, 0.15);
-}
-
-.confirm-button:hover {
-    transform: translateY(-2px);
-    opacity: 0.9;
-}
-
 /* Base styles */
 * {
     margin: 0;
@@ -597,7 +549,6 @@ body {
 /* Confirm Button - With outline */
 .confirm-button {
     width: 100%;
-    padding: 1rem 2rem;
     border-radius: 8px;
     font-size: 1.125rem;
     font-weight: 600;
@@ -606,32 +557,6 @@ body {
     margin-top: 1.5rem;
     transition: all 0.3s ease;
     background: transparent;
-    border: 2px solid;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.light-theme .confirm-button {
-    border-color: var(--light-primary);
-}
-
-.dark-theme .confirm-button {
-    color: var(--dark-primary);
-    border-color: var(--dark-primary);
-}
-
-.ocean-theme .confirm-button {
-    color: var(--ocean-primary);
-    border-color: var(--ocean-primary);
-}
-
-.forest-theme .confirm-button {
-    color: var(--forest-primary);
-    border-color: var(--forest-primary);
-}
-
-.sunset-theme .confirm-button {
-    color: var(--sunset-primary);
-    border-color: var(--sunset-primary);
 }
 
 .confirm-button:hover {
@@ -852,8 +777,7 @@ body {
 }
 
 /* Return Button and Confirm Booking Button */
-.return-button,
-.confirm-button {
+.return-button {
     background: transparent;
     transition: all 0.2s ease;
     border: 2px solid;
@@ -874,38 +798,6 @@ body {
     font-size: 1rem;
     margin-top: 1rem;
 }
-
-.light-theme .return-button,
-.light-theme .confirm-button {
-
-    border-color: var(--light-primary);
-}
-
-.dark-theme .return-button,
-.dark-theme .confirm-button {
-    color: var(--dark-primary);
-    border-color: var(--dark-primary);
-}
-
-.ocean-theme .return-button,
-.ocean-theme .confirm-button {
-    color: white;
-    border-color: var(--ocean-primary);
-}
-
-.forest-theme .return-button,
-.forest-theme .confirm-button {
-    color: white;
-    border-color: var(--forest-primary);
-}
-
-.sunset-theme .return-button,
-.sunset-theme .confirm-button {
-    color: white;
-    border-color: var(--sunset-primary);
-}
-
-
 
 /* Booking Confirmation Styles */
 .booking-confirmation-container {
@@ -1164,7 +1056,6 @@ body {
 .detail-label {
     font-weight: 500;
     font-size: 0.9rem;
-    opacity: 0.8;
 }
 
 .detail-value {
@@ -1478,4 +1369,30 @@ body {
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+
+.light-theme .confirm-booking-button {
+    background: var(--light-primary);
+    color: #fff !important;
+    border-color: var(--light-primary);
+}
+.dark-theme .confirm-booking-button {
+    background: var(--dark-primary);
+    color: var(--dark-bg) !important;
+    border-color: var(--dark-primary);
+}
+.ocean-theme .confirm-booking-button {
+    background: var(--ocean-primary);
+    color: #fff !important;
+    border-color: var(--ocean-primary);
+}
+.forest-theme .confirm-booking-button {
+    background: var(--forest-primary);
+    color: #fff !important;
+    border-color: var(--forest-primary);
+}
+.sunset-theme .confirm-booking-button {
+    background: var(--sunset-primary);
+    color: #fff !important;
+    border-color: var(--sunset-primary);
 }

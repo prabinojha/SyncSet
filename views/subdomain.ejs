@@ -357,6 +357,15 @@
 
             // Initialize calendar when DOM is loaded
             document.addEventListener('DOMContentLoaded', () => {
+                // Only block booking in preview mode on the confirm booking page
+                if (window.location.search.includes('preview=true')) {
+                    document.addEventListener('submit', function(e) {
+                        if (e.target.classList.contains('booking-form')) {
+                            e.preventDefault();
+                            alert('Cannot make a booking from preview. Visit the website to test booking functionality.');
+                        }
+                    }, true);
+                }
                 calendar.init();
             });
 
@@ -486,50 +495,15 @@
                     // Show success message
                     const container = document.querySelector('.subdomain-content-section');
                     container.innerHTML = `
-                        <div class="booking-confirmed-container" style="
-                            max-width: 400px;
-                            margin: 3rem auto;
-                            padding: 2rem 1.5rem;
-                            border: 1.5px solid #222;
-                            border-radius: 8px;
-                            background: transparent;
-                            box-shadow: none;
-                            display: flex;
-                            flex-direction: column;
-                            align-items: center;
-                        ">
-                            <h2 style="
-                                font-size: 1.25rem;
-                                font-weight: 600;
-                                color: #222;
-                                margin-bottom: 1.2rem;
-                                text-align: center;
-                                letter-spacing: 0.01em;
-                            ">Booking Confirmed</h2>
-                            <p style="
-                                font-size: 1rem;
-                                color: #222;
-                                margin-bottom: 2rem;
-                                text-align: center;
-                                line-height: 1.6;
-                            ">
+                        <div class="booking-success">
+                            <h2>Booking Confirmed</h2>
+                            <p>
                                 Thank you for your booking.<br>
-                                <span style="color: #222; font-weight: 500;">
+                                <span style="font-weight: 500;">
                                     ${formatDate(bookingDetails.date)} at ${bookingDetails.time}
                                 </span>
                             </p>
-                            <button class="confirm-booking-button" onclick="window.location.reload()" style="
-                                border: 1.5px solid #222;
-                                background: transparent;
-                                color: #222;
-                                border-radius: 4px;
-                                padding: 0.6rem 2rem;
-                                font-size: 1rem;
-                                font-weight: 500;
-                                cursor: pointer;
-                                transition: background 0.2s, color 0.2s;
-                                box-shadow: none;
-                            ">Close</button>
+                            <button class="confirm-booking-button" onclick="window.location.reload()">Close</button>
                         </div>
                     `;
                 } catch (error) {
