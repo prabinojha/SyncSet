@@ -113,17 +113,20 @@
 
                 if (hasServices) {
                     servicesList.innerHTML = services.map(service => `
-                    <div class="service-card" data-service-id="${service.id}">
+                    <div class="service-card modern-service-card" data-service-id="${service.id}">
+                        <button class="delete-btn floating-delete-btn" onclick="deleteService('${service.id}')">Delete</button>
+                        <div class="service-card-accent"></div>
                         <div class="service-info">
-                            <div class="service-header">
+                            <div class="service-header-modern">
                                 <h3>${service.title}</h3>
-                                <p class="service-meta">
-                                    $${service.cost} | ${service.duration}mins${service.location ? ` | ${service.location}` : ''}
-                                </p>
+                            </div>
+                            <div class="service-meta-badges">
+                                <span class="service-badge price-badge">$${service.cost}</span>
+                                <span class="service-badge duration-badge">${service.duration} mins</span>
+                                ${service.location ? `<span class="service-badge location-badge">${service.location}</span>` : ''}
                             </div>
                             <p class="service-description">${service.description}</p>
                         </div>
-                        <button class="delete-btn" onclick="deleteService('${service.id}')">Delete</button>
                     </div>
                 `).join('');
                 }

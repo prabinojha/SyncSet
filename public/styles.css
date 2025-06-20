@@ -598,60 +598,119 @@ header {
     gap: 1.5rem;
 }
 
-.service-card {
-    background: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    border: 1px solid var(--light-grey);
-    border-radius: var(--border-radius);
-    padding: 1rem;
+/* --- Modern Service Card Styles --- */
+.modern-service-card {
+    position: relative;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    align-items: stretch;
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid var(--light-grey);
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    margin-bottom: 2rem;
+    min-height: 170px;
+    overflow: hidden;
 }
 
-.service-header {
-    margin-bottom: 0.5rem;
+.service-card-accent {
+    width: 6px;
+    border-radius: 6px;
+    background: var(--primary-blue);
+    margin-right: 2rem;
+    flex-shrink: 0;
+    align-self: stretch;
 }
 
-.service-header h3 {
+.service-header-modern h3 {
     color: var(--primary-dark-blue);
     font-size: 1.25rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+    letter-spacing: 0.2px;
 }
 
-.service-meta {
+.service-meta-badges {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.service-badge {
+    display: inline-block;
+    padding: 0.35em 1em;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    background: #f4f8fb;
+    color: var(--primary-dark-blue);
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 2px rgba(30,41,59,0.03);
+    letter-spacing: 0.01em;
+}
+
+.price-badge {
+    background: #e6f4ff;
     color: var(--primary-blue);
-    font-size: 0.875rem;
+    border-color: #b6e0fe;
+}
+.duration-badge {
+    background: #f3f6fa;
+    color: #64748b;
+    border-color: #e2e8f0;
+}
+.location-badge {
+    background: #f0fdf4;
+    color: #15803d;
+    border-color: #bbf7d0;
 }
 
 .service-description {
-    color: var(--primary-dark-blue);
+    color: #475569;
+    font-size: 1.07rem;
+    margin: 0.5rem 0 0 0;
+    line-height: 1.7;
+    opacity: 0.97;
+}
+
+.service-card-actions {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+    flex: 0 0 120px;
+    min-width: 120px;
 }
 
 .delete-btn {
-    background: var(--primary-purple);
-    color: white;
-    padding: 0.5rem 1.25rem;
-    border-radius: var(--border-radius);
-    border: none;
+    background: #fff;
+    color: #dc2626;
+    border: 1.5px solid #dc2626;
+    padding: 0.6rem 1.5rem;
+    border-radius: 6px;
     font-size: 1rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.2s ease;
-    align-self: center;
+    transition: background 0.18s, color 0.18s, border-color 0.18s;
+    align-self: flex-end;
+    box-shadow: none;
+    margin-top: 1.5rem;
 }
 
 .delete-btn:hover {
-    background: var(--primary-dark-blue);
+    background: #dc2626;
+    color: #fff;
+    border-color: #dc2626;
 }
 
 .service-form-container {
     background: var(--primary-light-blue);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
-    border: 1px solid var(--light-grey);
-    padding: 2rem;
     border-radius: var(--border-radius);
     max-width: 600px;
+    border: 1px solid var(--light-grey);
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
 .service-form-container h2 {
@@ -2835,4 +2894,32 @@ header {
     #cancelConfirm {
         padding: 1.25rem;
     }
+}
+
+.floating-delete-btn {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.5rem;
+    z-index: 2;
+    border-radius: 6px;
+    padding: 0.45rem 1.25rem;
+    font-size: 0.98rem;
+    font-weight: 500;
+    background: #fff;
+    color: #dc2626;
+    border: 1.5px solid #dc2626;
+    box-shadow: 0 2px 8px rgba(220,38,38,0.07);
+    transition: background 0.18s, color 0.18s, border-color 0.18s, box-shadow 0.18s;
+}
+
+.floating-delete-btn:hover {
+    background: #dc2626;
+    color: #fff;
+    border-color: #dc2626;
+    box-shadow: 0 4px 16px rgba(220,38,38,0.13);
+}
+
+/* Add extra right padding to .service-info so content doesn't run under the button */
+.modern-service-card .service-info {
+    padding-right: 120px;
 }
