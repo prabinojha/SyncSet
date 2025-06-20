@@ -308,6 +308,11 @@ body {
     transition: background-color 0.2s ease;
 }
 
+.dark-theme .subdomain-calendar-nav-btn {
+    color: var(--dark-text);
+    font-weight: 600;
+}
+
 .subdomain-weekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -1395,4 +1400,16 @@ body {
     background: var(--sunset-primary);
     color: #fff !important;
     border-color: var(--sunset-primary);
+}
+
+.dark-theme .detail-label {
+    color: var(--dark-text);
+    opacity: 0.95;
+}
+
+.dark-theme .description-toggle {
+    color: var(--dark-text);
+}
+.dark-theme .description-toggle:hover {
+    background-color: rgba(255,255,255,0.08);
 }
