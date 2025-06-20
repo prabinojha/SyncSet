@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "start": "nodemon app.js"
+    "serve": "firebase emulators:start",
+    "deploy": "firebase deploy --only functions,hosting"
   },
   "dependencies": {
     "dotenv": "^16.4.7",
