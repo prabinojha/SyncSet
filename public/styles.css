@@ -2466,3 +2466,373 @@ header {
     margin: 0;
     padding: 0;
 }
+
+/* ======================
+   Edit Booking Modal Styles
+   ====================== */
+
+.edit-booking-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    backdrop-filter: blur(2px);
+}
+
+.edit-booking-content {
+    background-color: white;
+    border-radius: 8px;
+    padding: 0;
+    width: 90%;
+    max-width: 480px;
+    max-height: 85vh;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.edit-booking-header {
+    background-color: var(--primary-dark-blue);
+    color: white;
+    padding: 1.5rem 2rem;
+    text-align: center;
+    position: relative;
+}
+
+.edit-booking-header h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: 0.3px;
+}
+
+.edit-booking-body {
+    padding: 2rem;
+}
+
+.edit-booking-options {
+    text-align: center;
+}
+
+.edit-booking-buttons {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.edit-option-btn,
+.cancel-option-btn {
+    padding: 1rem 1.5rem;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 70px;
+    justify-content: center;
+    background-color: white;
+    color: var(--primary-dark-blue);
+}
+
+.edit-option-btn {
+    border-color: var(--primary-blue);
+    color: var(--primary-blue);
+}
+
+.edit-option-btn:hover {
+    background-color: var(--primary-blue);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(48, 171, 247, 0.2);
+}
+
+.cancel-option-btn {
+    border-color: #e2e8f0;
+    color: #64748b;
+}
+
+.cancel-option-btn:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+    color: #475569;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.edit-option-btn i,
+.cancel-option-btn i {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+}
+
+/* Reschedule Form Styles */
+#rescheduleForm {
+    background-color: #f8fafc;
+    border-radius: 6px;
+    padding: 1.5rem;
+    border: 1px solid #e2e8f0;
+}
+
+#rescheduleForm h3 {
+    color: var(--primary-dark-blue);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.reschedule-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.reschedule-form-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--primary-dark-blue);
+    margin-bottom: 0.5rem;
+}
+
+.reschedule-form-group input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-family: var(--primary-font);
+    background-color: white;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.reschedule-form-group input:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 2px rgba(48, 171, 247, 0.1);
+    background-color: white;
+}
+
+.reschedule-form-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    justify-content: flex-end;
+}
+
+.reschedule-back-btn,
+.reschedule-save-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid #e2e8f0;
+    min-width: 100px;
+}
+
+.reschedule-back-btn {
+    background-color: white;
+    color: #64748b;
+}
+
+.reschedule-back-btn:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+    color: #475569;
+}
+
+.reschedule-save-btn {
+    background-color: var(--primary-blue);
+    color: white;
+    border-color: var(--primary-blue);
+}
+
+.reschedule-save-btn:hover {
+    background-color: #1a97e0;
+    border-color: #1a97e0;
+    transform: translateY(-1px);
+}
+
+/* Cancel Confirmation Styles */
+#cancelConfirm {
+    background-color: #fef2f2;
+    border-radius: 6px;
+    padding: 1.5rem;
+    border: 1px solid #fecaca;
+    text-align: center;
+}
+
+#cancelConfirm h3 {
+    color: #dc2626;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+#cancelConfirm p {
+    color: #7f1d1d;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    opacity: 0.8;
+}
+
+.cancel-confirm-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.cancel-back-btn,
+.confirm-cancel-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid #e2e8f0;
+    min-width: 120px;
+}
+
+.cancel-back-btn {
+    background-color: white;
+    color: #64748b;
+}
+
+.cancel-back-btn:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+    color: #475569;
+}
+
+.confirm-cancel-btn {
+    background-color: #dc2626;
+    color: white;
+    border-color: #dc2626;
+}
+
+.confirm-cancel-btn:hover {
+    background-color: #b91c1c;
+    border-color: #b91c1c;
+    transform: translateY(-1px);
+}
+
+/* Enhanced Close Button */
+.edit-close-modal {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    width: 28px;
+    height: 28px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-size: 1.125rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.edit-close-modal:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .edit-booking-content {
+        width: 95%;
+        max-width: none;
+        margin: 1rem;
+    }
+    
+    .edit-booking-header {
+        padding: 1.25rem 1.5rem;
+    }
+    
+    .edit-booking-header h2 {
+        font-size: 1.125rem;
+    }
+    
+    .edit-booking-body {
+        padding: 1.5rem;
+    }
+    
+    .edit-booking-buttons {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .edit-option-btn,
+    .cancel-option-btn {
+        min-height: 60px;
+        padding: 0.875rem 1.25rem;
+    }
+    
+    .reschedule-form-buttons,
+    .cancel-confirm-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .reschedule-back-btn,
+    .reschedule-save-btn,
+    .cancel-back-btn,
+    .confirm-cancel-btn {
+        width: 100%;
+        min-width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .edit-booking-content {
+        width: 98%;
+        margin: 0.5rem;
+    }
+    
+    .edit-booking-header {
+        padding: 1rem 1.25rem;
+    }
+    
+    .edit-booking-body {
+        padding: 1.25rem;
+    }
+    
+    .edit-booking-options h3 {
+        font-size: 0.95rem;
+    }
+    
+    #rescheduleForm,
+    #cancelConfirm {
+        padding: 1.25rem;
+    }
+}

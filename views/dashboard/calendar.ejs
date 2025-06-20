@@ -443,54 +443,59 @@
                 
                 // Create a modal for editing
                 const modal = document.createElement('div');
-                modal.className = 'booking-details-modal';
+                modal.className = 'edit-booking-modal';
                 
                 const modalContent = document.createElement('div');
-                modalContent.className = 'booking-details-content';
+                modalContent.className = 'edit-booking-content';
                 
-                const closeButton = document.createElement('span');
-                closeButton.className = 'close-modal';
+                const closeButton = document.createElement('button');
+                closeButton.className = 'edit-close-modal';
                 closeButton.innerHTML = '&times;';
                 closeButton.onclick = () => document.body.removeChild(modal);
                 
                 modalContent.innerHTML = `
-                    <h2>Edit Booking</h2>
-                    <div class="edit-booking-options">
-                        <h3>What would you like to do?</h3>
-                        <div class="edit-booking-buttons">
-                            <button id="rescheduleBtn" class="edit-option-btn">
-                                <i class="fas fa-calendar-alt"></i> Reschedule
-                            </button>
-                            <button id="cancelBookingBtn" class="cancel-option-btn">
-                                <i class="fas fa-times-circle"></i> Cancel Booking
-                            </button>
+                    <div class="edit-booking-header">
+                        <h2>Edit Booking</h2>
+                    </div>
+                    <div class="edit-booking-body">
+                        <div class="edit-booking-options">
+                            <div class="edit-booking-buttons">
+                                <button id="rescheduleBtn" class="edit-option-btn">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>Reschedule</span>
+                                </button>
+                                <button id="cancelBookingBtn" class="cancel-option-btn">
+                                    <i class="fas fa-times-circle"></i>
+                                    <span>Cancel Booking</span>
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div id="rescheduleForm" style="display: none;">
-                        <h3>Reschedule Booking</h3>
-                        <form id="bookingRescheduleForm">
-                            <div class="form-group">
-                                <label for="newDate">New Date:</label>
-                                <input type="date" id="newDate" value="${booking.date}" required>
+                        
+                        <div id="rescheduleForm" style="display: none;">
+                            <h3>Reschedule Booking</h3>
+                            <form id="bookingRescheduleForm">
+                                <div class="reschedule-form-group">
+                                    <label for="newDate">New Date</label>
+                                    <input type="date" id="newDate" value="${booking.date}" required>
+                                </div>
+                                <div class="reschedule-form-group">
+                                    <label for="newTime">New Time</label>
+                                    <input type="time" id="newTime" value="${booking.time}" required>
+                                </div>
+                                <div class="reschedule-form-buttons">
+                                    <button type="button" id="backToOptions" class="reschedule-back-btn">Back</button>
+                                    <button type="submit" class="reschedule-save-btn">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <div id="cancelConfirm" style="display: none;">
+                            <h3>Cancel Booking</h3>
+                            <p>Are you sure you want to cancel this booking? This action cannot be undone.</p>
+                            <div class="cancel-confirm-buttons">
+                                <button type="button" id="backFromCancel" class="cancel-back-btn">Back</button>
+                                <button type="button" id="confirmCancel" class="confirm-cancel-btn">Yes, Cancel Booking</button>
                             </div>
-                            <div class="form-group">
-                                <label for="newTime">New Time:</label>
-                                <input type="time" id="newTime" value="${booking.time}" required>
-                            </div>
-                            <div class="form-buttons">
-                                <button type="button" id="backToOptions" class="cancel-btn">Back</button>
-                                <button type="submit" class="save-btn">Save Changes</button>
-                            </div>
-                        </form>
-                    </div>
-                    
-                    <div id="cancelConfirm" style="display: none;">
-                        <h3>Cancel Booking</h3>
-                        <p>Are you sure you want to cancel this booking? This action cannot be undone.</p>
-                        <div class="form-buttons">
-                            <button type="button" id="backFromCancel" class="cancel-btn">Back</button>
-                            <button type="button" id="confirmCancel" class="delete-btn">Yes, Cancel Booking</button>
                         </div>
                     </div>
                 `;
