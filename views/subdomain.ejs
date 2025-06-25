@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html>
+<%- include('includes/head', {title: title}) %>
+
+    <body class="<%= domainData && domainData.theme ? `${domainData.theme}-theme` : 'light-theme' %>">
+        <div class="subdomain-container">
+            <div class="subdomain-content-section">
+                <h1 id="subdomain-title">
+                    <%= title %>
+                </h1>
+                <p id="subdomain-description">
+                    <%= description %>
+                </p>
+
+                <div class="subdomain-calendar-section">
+                    <div class="subdomain-calendar-grid">
+                        <div class="subdomain-calendar-container">
+                            <div class="subdomain-calendar-header">
+                                <button id="subdomain-prevMonth" class="subdomain-calendar-nav-btn">&lt;</button>
+                                <h2 id="subdomain-currentMonth">Month Year</h2>
+                                <button id="subdomain-nextMonth" class="subdomain-calendar-nav-btn">&gt;</button>
+                            </div>
+                            <div class="subdomain-calendar-body">
+                                <div class="subdomain-weekdays"></div>
+                                <div class="subdomain-days"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subdomain-services-grid">
+                    <% if (services && services.length> 0) { %>
+                        <% services.forEach(service=> { %>
+                            <div class="subdomain-service-item" data-service-id="<%= service.id %>">
+                                <div class="service-header">
+                                    <div class="service-title-section">
+                                        <h2>
+                                            <%= service.title %>
+                                        </h2>
+                                        <div class="service-info-row">
+                                            <div class="subdomain-service-details">
+                                                <span class="service-pill">$<%= service.cost %></span>
+                                                <span class="service-pill"><%= service.duration %> minutes</span>
+                                                <% if (service.location) { %>
+                                                    <span class="service-pill"><%= service.location %></span>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="description-toggle" onclick="toggleDescription(this)">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                </div>
+                                <p class="subdomain-service-description">
+                                    <%= service.description %>
+                                </p>
+
+                                <div class="service-time-slots" style="display: none;">
+                                    <div class="time-slots-grid"></div>
+                                </div>
+                            </div>
+                            <% }); %>
+                                <% } %>
+                </div>
+                <div class="subdomain-footer">
+                    <button class="subdomain-cta-button" disabled>Select time and service</button>
+                    <div class="subdomain-powered-by">Powered by SyncSet</div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const services = JSON.parse('<%- JSON.stringify(services) %>');
+
+            window.addEventListener('message', (event) => {
+                if (event.data.type === 'updatePreview') {
+                    const { title, description, theme } = event.data.data;
+                    const subdomain = window.location.pathname.split('/')[1];
+
+                    document.getElementById('subdomain-title').textContent = title || `Welcome to ${subdomain}`;
+                    document.getElementById('subdomain-description').textContent = description || 'No description available';
+
+                    document.body.className = `${theme}-theme`;
+                }
+            });
+
+            const calendar = {
+                currentDate: new Date(),
+                selectedDate: null,
+
+                init() {
+                    this.setupCalendarControls();
+                    this.renderCalendar();
+
+                    // Select current date on initialisation
+                    const today = new Date();
+                    const dateString = today.toISOString().split('T')[0];
+                    this.selectDate(dateString);
+                },
+
+                setupCalendarControls() {
+                    document.getElementById('subdomain-prevMonth').addEventListener('click', () => {
+                        this.currentDate.setMonth(this.currentDate.getMonth() - 1);
+                        this.renderCalendar();
+                    });
+
+                    document.getElementById('subdomain-nextMonth').addEventListener('click', () => {
+                        this.currentDate.setMonth(this.currentDate.getMonth() + 1);
+                        this.renderCalendar();
+                    });
+                },
+
+                renderCalendar() {
+                    const year = this.currentDate.getFullYear();
+                    const month = this.currentDate.getMonth();
+
+                    const monthNames = ["January", "February", "March", "April", "May", "June",
+                        "July", "August", "September", "October", "November", "December"];
+                    document.getElementById('subdomain-currentMonth').textContent = `${monthNames[month]} ${year}`;
+
+                    // Add weekday names
+                    const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                    const weekdaysContainer = document.querySelector('.subdomain-weekdays');
+                    weekdaysContainer.innerHTML = weekdays.map(day => `
+                        <div class="subdomain-weekday">${day}</div>
+                    `).join('');
+
+                    const daysGrid = document.querySelector('.subdomain-days');
+                    daysGrid.innerHTML = '';
+
+                    const firstDay = new Date(year, month, 1);
+                    const lastDay = new Date(year, month + 1, 0);
+
+                    // Add empty cells for days before the first day of the month
+                    for (let i = 0; i < firstDay.getDay(); i++) {
+                        const emptyCell = this.createDayElement('');
+                        emptyCell.classList.add('subdomain-day');
+                        daysGrid.appendChild(emptyCell);
+                    }
+
+                    // Add the days of the month
+                    for (let day = 1; day <= lastDay.getDate(); day++) {
+                        const dayElement = this.createDayElement(day);
+                        const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+                        const currentDate = new Date(dateString);
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+
+                        if (currentDate < today) {
+                            dayElement.classList.add('disabled');
+                        } else {
+                            dayElement.dataset.date = dateString;
+                            dayElement.addEventListener('click', () => this.selectDate(dateString));
+                        }
+
+                        if (this.isToday(year, month, day)) {
+                            dayElement.classList.add('today');
+                        }
+
+                        daysGrid.appendChild(dayElement);
+                    }
+
+                    // Add empty cells for days after the last day of the month
+                    const lastDayOfWeek = lastDay.getDay();
+                    if (lastDayOfWeek < 6) {
+                        for (let i = lastDayOfWeek + 1; i < 7; i++) {
+                            const emptyCell = this.createDayElement('');
+                            emptyCell.classList.add('subdomain-day');
+                            daysGrid.appendChild(emptyCell);
+                        }
+                    }
+                },
+
+                createDayElement(content) {
+                    const div = document.createElement('div');
+                    div.className = 'subdomain-day';
+                    div.textContent = content;
+                    return div;
+                },
+
+                isToday(year, month, day) {
+                    const today = new Date();
+                    return today.getFullYear() === year &&
+                        today.getMonth() === month &&
+                        today.getDate() === day;
+                },
+
+                selectDate: async function (dateString) {
+                    const selectedDate = new Date(dateString);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    if (selectedDate < today) {
+                        return;
+                    }
+
+                    this.selectedDate = dateString;
+                    document.querySelectorAll('.subdomain-day').forEach(day => {
+                        day.classList.remove('selected');
+                        if (day.dataset.date === dateString) {
+                            day.classList.add('selected');
+                        }
+                    });
+
+                    // Clear any previously selected time slots and update button
+                    document.querySelectorAll('.time-slot').forEach(slot => {
+                        slot.classList.remove('selected');
+                    });
+                    updateBookButton();
+
+                    // Fetch and update time slots with booking data
+                    await this.fetchAndUpdateTimeSlots(dateString);
+                },
+
+                fetchAndUpdateTimeSlots: async function (dateString) {
+                    try {
+                        const subdomain = window.location.pathname.split('/')[1];
+                        const response = await fetch(`/api/bookings/${subdomain}/${dateString}`);
+
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+
+                        const bookings = await response.json();
+
+                        // Create a timeline of all booked slots
+                        const bookedRanges = createBookedTimeline(bookings);
+
+                        document.querySelectorAll('.subdomain-service-item').forEach(serviceCard => {
+                            const serviceId = serviceCard.dataset.serviceId;
+                            const service = services.find(s => s.id === serviceId);
+                            const slotsContainer = serviceCard.querySelector('.service-time-slots');
+                            const slotsGrid = serviceCard.querySelector('.time-slots-grid');
+
+                            // Generate time slots considering all bookings
+                            const timeSlots = generateTimeSlots(
+                                service.availability?.startTime || '09:00',
+                                service.availability?.endTime || '17:00',
+                                service.duration || 60,
+                                bookedRanges
+                            );
+
+                            // Render time slots
+                            slotsGrid.innerHTML = timeSlots.map(slot => `
+                                <div class="time-slot${slot.booked ? ' booked' : ''}" 
+                                     data-time="${slot.time}"
+                                     ${slot.booked ? 'disabled' : ''}>
+                                    ${formatTime(slot.time)}
+                                </div>
+                            `).join('');
+
+                            slotsContainer.style.display = 'block';
+
+                            // Add click handlers for time slots
+                            slotsGrid.querySelectorAll('.time-slot:not(.booked)').forEach(slot => {
+                                slot.addEventListener('click', () => {
+                                    document.querySelectorAll('.time-slot').forEach(s =>
+                                        s.classList.remove('selected'));
+                                    slot.classList.add('selected');
+                                    updateBookButton();
+                                });
+                            });
+                        });
+                    } catch (error) {
+                        console.error('Error fetching bookings:', error);
+                        document.querySelectorAll('.service-time-slots').forEach(container => {
+                            container.style.display = 'none';
+                        });
+                    }
+                }
+            };
+
+            // Helper function to create a timeline of booked slots
+            function createBookedTimeline(bookings) {
+                const bookedRanges = [];
+
+                bookings.forEach(booking => {
+                    const startMinutes = timeToMinutes(booking.time);
+                    const endMinutes = startMinutes + parseInt(booking.duration);
+
+                    bookedRanges.push({
+                        start: startMinutes,
+                        end: endMinutes
+                    });
+                });
+
+                return bookedRanges;
+            }
+
+            // Convert time string to minutes since start of day
+            function timeToMinutes(timeStr) {
+                const [hours, minutes] = timeStr.split(':').map(Number);
+                return hours * 60 + minutes;
+            }
+
+            // Convert minutes to time string
+            function minutesToTime(minutes) {
+                const hours = Math.floor(minutes / 60);
+                const mins = minutes % 60;
+                return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+            }
+
+            function generateTimeSlots(startTime, endTime, serviceDuration, bookedRanges) {
+                const slots = [];
+                const startMinutes = timeToMinutes(startTime);
+                const endMinutes = timeToMinutes(endTime);
+                const INTERVAL = 15; // Changed to 15-minute intervals
+
+                // Get current time if it's today
+                const now = new Date();
+                const isToday = calendar.selectedDate === now.toISOString().split('T')[0];
+                const currentMinutes = isToday ? now.getHours() * 60 + now.getMinutes() : 0;
+                // Add 60 minutes (1 hour) buffer for today's bookings
+                const minimumBookingTime = isToday ? currentMinutes + 60 : 0;
+
+                for (let currentTime = startMinutes; currentTime < endMinutes; currentTime += INTERVAL) {
+                    const slotEndTime = currentTime + parseInt(serviceDuration);
+
+                    // Check if this slot would extend beyond the end time
+                    const exceedsEndTime = slotEndTime > endMinutes;
+
+                    // Check if the slot is in the past (including 1-hour buffer)
+                    const isPastTime = isToday && currentTime < minimumBookingTime;
+
+                    // Check if this slot overlaps with any booked range
+                    const isBooked = bookedRanges.some(range => {
+                        return (currentTime >= range.start && currentTime < range.end) ||
+                            (slotEndTime > range.start && slotEndTime <= range.end) ||
+                            (currentTime <= range.start && slotEndTime >= range.end);
+                    });
+
+                    slots.push({
+                        time: minutesToTime(currentTime),
+                        booked: isBooked || exceedsEndTime || isPastTime // Mark as booked if it's past time or exceeds end time
+                    });
+                }
+
+                return slots;
+            }
+
+            function formatTime(time) {
+                return time;
+            }
+
+            function updateBookButton() {
+                const selectedSlot = document.querySelector('.time-slot.selected');
+                const selectedDay = document.querySelector('.subdomain-day.selected');
+                const bookButton = document.querySelector('.subdomain-cta-button');
+
+                if (selectedSlot && selectedDay) {
+                    bookButton.removeAttribute('disabled');
+                    bookButton.textContent = 'Schedule now';
+                } else {
+                    bookButton.setAttribute('disabled', '');
+                    bookButton.textContent = 'Select time and service';
+                }
+            }
+
+            // Initialize calendar when DOM is loaded
+            document.addEventListener('DOMContentLoaded', () => {
+                // Only block booking in preview mode on the confirm booking page
+                if (window.location.search.includes('preview=true')) {
+                    document.addEventListener('submit', function(e) {
+                        if (e.target.classList.contains('booking-form')) {
+                            e.preventDefault();
+                            alert('Cannot make a booking from preview. Visit the website to test booking functionality.');
+                        }
+                    }, true);
+                }
+                calendar.init();
+            });
+
+            document.querySelector('.subdomain-cta-button').addEventListener('click', () => {
+                const selectedSlot = document.querySelector('.time-slot.selected');
+                const selectedDay = document.querySelector('.subdomain-day.selected');
+                const selectedService = selectedSlot.closest('.subdomain-service-item');
+                const service = services.find(s => s.id === selectedService.dataset.serviceId);
+
+                // Show booking confirmation page
+                showBookingConfirmation({
+                    date: selectedDay.dataset.date,
+                    time: selectedSlot.dataset.time,
+                    serviceId: service.id,
+                    serviceName: service.title,
+                    cost: service.cost,
+                    duration: service.duration
+                });
+            });
+
+            function formatDate(dateString) {
+                const options = {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                };
+                return new Date(dateString).toLocaleDateString('en-US', options);
+            }
+
+            function showBookingConfirmation(bookingDetails) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                // Add the class to both the container and body
+                document.body.classList.add('booking-confirmation-view');
+                document.querySelector('.subdomain-container').classList.add('booking-confirmation-view');
+                
+                const container = document.querySelector('.subdomain-content-section');
+                
+                container.innerHTML = `
+                    <div class="booking-header">
+                        <h2>Confirm your booking</h2>
+                        <button class="return-button" onclick="window.location.reload()">Return</button>
+                    </div>
+                    
+                    <div class="service-details-section">
+                        <div class="service-details-grid">
+                            <div class="service-detail-item">
+                                <span class="detail-label">Service</span>
+                                <span class="detail-value">${bookingDetails.serviceName}</span>
+                            </div>
+                            <div class="service-detail-item">
+                                <span class="detail-label">Cost</span>
+                                <span class="detail-value">$${bookingDetails.cost}</span>
+                            </div>
+                            <div class="service-detail-item">
+                                <span class="detail-label">Duration</span>
+                                <span class="detail-value">${bookingDetails.duration} minutes</span>
+                            </div>
+                            <div class="service-detail-item">
+                                <span class="detail-label">Date</span>
+                                <span class="detail-value">${formatDate(bookingDetails.date)}</span>
+                            </div>
+                            <div class="service-detail-item">
+                                <span class="detail-label">Time</span>
+                                <span class="detail-value">
+                                    ${new Date(`2000-01-01T${bookingDetails.time}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })} to 
+                                    ${new Date(new Date(`2000-01-01T${bookingDetails.time}`).getTime() + bookingDetails.duration * 60000).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="booking-form-section">
+                        <form class="booking-form" onsubmit="submitBooking(event)">
+                            <h3 style="text-align: left;">Your Details</h3>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <input type="text" id="clientName" placeholder="Full Name" required>
+                                </div>
+                                <div class="form-group">
+                                    <input type="email" id="clientEmail" placeholder="Email" required>
+                                </div>
+                                <div class="form-group">
+                                    <input type="tel" id="clientPhone" placeholder="Phone Number" required>
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" id="notes" placeholder="Notes (optional)">
+                                </div>
+                            </div>
+                            <button type="submit" class="confirm-button">Confirm Booking</button>
+                        </form>
+                    </div>
+                `;
+
+                // Store booking details in the form
+                const form = container.querySelector('.booking-form');
+                form.dataset.bookingDetails = JSON.stringify(bookingDetails);
+            }
+
+            async function submitBooking(event) {
+                event.preventDefault();
+                const form = event.target;
+                const bookingDetails = JSON.parse(form.dataset.bookingDetails);
+
+                const formData = {
+                    ...bookingDetails,
+                    clientName: form.querySelector('#clientName').value,
+                    clientEmail: form.querySelector('#clientEmail').value,
+                    clientPhone: form.querySelector('#clientPhone').value,
+                    notes: form.querySelector('#notes').value
+                };
+
+                try {
+                    const response = await fetch('/api/bookings', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Booking failed');
+                    }
+
+                    // Show success message
+                    const container = document.querySelector('.subdomain-content-section');
+                    container.innerHTML = `
+                        <div class="booking-success">
+                            <h2>Booking Confirmed</h2>
+                            <p>
+                                Thank you for your booking.<br>
+                                <span style="font-weight: 500;">
+                                    ${formatDate(bookingDetails.date)} at ${bookingDetails.time}
+                                </span>
+                            </p>
+                            <button class="confirm-booking-button" onclick="window.location.reload()">Close</button>
+                        </div>
+                    `;
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Failed to create booking. Please try again.');
+                }
+            }
+
+            function toggleDescription(button) {
+                const description = button.parentElement.nextElementSibling;
+                description.classList.toggle('show');
+                const icon = button.querySelector('i');
+                icon.classList.toggle('fa-chevron-down');
+                icon.classList.toggle('fa-chevron-up');
+            }
+        </script>
+
+        <style>
+            .light-theme {
+                --bg-color: #ffffff;
+                --text-color: #333333;
+                --primary-color: rgb(52, 152, 219);
+                --secondary-color: #f5f5f5;
+                --accent-color: #2c3e50;
+            }
+
+            .dark-theme {
+                --bg-color: #1a1a1a;
+                --text-color: #ffffff;
+                --secondary-color: #2c2c2c;
+                --accent-color: #6c8eaf;
+                --primary-color: #1a1a1a;
+            }
+
+            .ocean-theme {
+                --bg-color: #e6f3ff;
+                --text-color: #1a3b5d;
+                --primary-color: #0077be;
+                --secondary-color: #b3d9ff;
+                --accent-color: #004d7a;
+            }
+
+            .forest-theme {
+                --bg-color: #f0f7f0;
+                --text-color: #2c4a2c;
+                --primary-color: #3e7b3e;
+                --secondary-color: #c8e6c8;
+                --accent-color: #1e4d1e;
+            }
+
+            .sunset-theme {
+                --bg-color: #fff5eb;
+                --text-color: #4a3226;
+                --primary-color: #ff7e33;
+                --secondary-color: #ffd4b8;
+                --accent-color: #cc5414;
+            }
+
+            body {
+                background-color: var(--bg-color);
+                color: var(--text-color);
+            }
+
+            .subdomain-container {
+                background-color: var(--bg-color);
+            }
+
+            .subdomain-service-item {
+                background-color: var(--secondary-color);
+                border: 1px solid var(--accent-color);
+            }
+
+            .subdomain-cta-button {
+                background-color: var(--primary-color);
+                color: white;
+            }
+
+            .subdomain-calendar-nav-btn {
+                color: var(--primary-color);
+            }
+
+            .time-slot {
+                border: 1px solid var(--accent-color);
+                color: var(--text-color);
+            }
+
+            .time-slot:hover {
+                background-color: var(--primary-color);
+                color: white;
+            }
+
+            .time-slot.selected {
+                background-color: var(--primary-color);
+                color: white;
+            }
+
+            .booking-form input {
+                border: 1px solid var(--accent-color);
+                background-color: var(--bg-color);
+                color: var(--text-color);
+            }
+
+            .confirm-button {
+                background-color: var(--primary-color);
+                color: white;
+            }
+        </style>
+    </body>
+</html>
