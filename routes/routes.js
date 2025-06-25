@@ -779,6 +779,7 @@ router.get('/api/analytics', async (req, res) => {
         const serviceBookings = {};
         const dailyBookings = {};
         const dailyRevenue = {};
+        const uniqueClients = new Set();
         
         const startDateStr = startDate.toISOString().split('T')[0];
         const currentDateStr = currentDate.toISOString().split('T')[0];
@@ -800,10 +801,17 @@ router.get('/api/analytics', async (req, res) => {
                     status: booking.status
                 });
                 
-                // Update totals
+                // Count ALL bookings for total (not just non-cancelled)
+                totalBookings++;
+                
+                // Add to unique clients set (all bookings, not just non-cancelled)
+                if (booking.clientEmail) {
+                    uniqueClients.add(booking.clientEmail);
+                }
+                
+                // Only count revenue and service bookings for non-cancelled bookings
                 if (booking.status !== 'cancelled') {
                     totalRevenue += parseFloat(booking.cost) || 0;
-                    totalBookings++;
                     
                     // Update service bookings count
                     serviceBookings[booking.serviceName] = (serviceBookings[booking.serviceName] || 0) + 1;
@@ -812,14 +820,6 @@ router.get('/api/analytics', async (req, res) => {
                     dailyBookings[bookingDate] = (dailyBookings[bookingDate] || 0) + 1;
                     dailyRevenue[bookingDate] = (dailyRevenue[bookingDate] || 0) + (parseFloat(booking.cost) || 0);
                 }
-            }
-        });
-
-        // Get unique clients for the current period
-        const uniqueClients = new Set();
-        bookings.forEach(booking => {
-            if (booking.status !== 'cancelled') {
-                uniqueClients.add(booking.clientEmail);
             }
         });
 
@@ -836,10 +836,17 @@ router.get('/api/analytics', async (req, res) => {
         bookingsSnap.forEach(doc => {
             const booking = doc.data();
             if (booking.date >= previousStartDateStr && booking.date < startDateStr) {
+                // Count ALL bookings for previous period
+                previousTotalBookings++;
+                
+                // Add to unique clients (all bookings)
+                if (booking.clientEmail) {
+                    previousUniqueClients.add(booking.clientEmail);
+                }
+                
+                // Only count revenue for non-cancelled bookings
                 if (booking.status !== 'cancelled') {
                     previousTotalRevenue += parseFloat(booking.cost) || 0;
-                    previousTotalBookings++;
-                    previousUniqueClients.add(booking.clientEmail);
                 }
             }
         });
@@ -852,9 +859,14 @@ router.get('/api/analytics', async (req, res) => {
         const clientsChange = previousUniqueClients.size === 0 ? 100 : 
             Math.round(((uniqueClients.size - previousUniqueClients.size) / previousUniqueClients.size) * 100);
 
-        // Calculate Average Booking Value
-        const averageBookingValue = totalBookings === 0 ? 0 : (totalRevenue / totalBookings);
-        const previousAverageBookingValue = previousTotalBookings === 0 ? 0 : (previousTotalRevenue / previousTotalBookings);
+        // Calculate Average Booking Value (only for non-cancelled bookings)
+        const nonCancelledBookings = bookings.filter(b => b.status !== 'cancelled').length;
+        const averageBookingValue = nonCancelledBookings === 0 ? 0 : (totalRevenue / nonCancelledBookings);
+        const previousNonCancelledBookings = bookingsSnap.docs.filter(doc => {
+            const booking = doc.data();
+            return booking.date >= previousStartDateStr && booking.date < startDateStr && booking.status !== 'cancelled';
+        }).length;
+        const previousAverageBookingValue = previousNonCancelledBookings === 0 ? 0 : (previousTotalRevenue / previousNonCancelledBookings);
         const averageBookingValueChange = previousAverageBookingValue === 0 ? (averageBookingValue > 0 ? 100 : 0) :
             Math.round(((averageBookingValue - previousAverageBookingValue) / previousAverageBookingValue) * 100);
 
