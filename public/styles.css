@@ -284,6 +284,7 @@ header {
     max-width: 30rem;
     box-sizing: border-box;
     padding: 0;
+    margin-left: 1rem;
 }
 
 #domainCheckWrapper span {
@@ -301,6 +302,7 @@ header {
 
 #domainInput {
     width: 100%;
+    margin-left: 1rem;
     padding-left: 1rem;
     padding-right: 3rem;
     padding-top: 0.5rem;
