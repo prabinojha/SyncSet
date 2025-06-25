@@ -39,11 +39,9 @@
                                         </h2>
                                         <div class="service-info-row">
                                             <div class="subdomain-service-details">
-                                                <span class="service-pill">$<%= service.cost %></span>
-                                                <span class="service-pill"><%= service.duration %> minutes</span>
-                                                <% if (service.location) { %>
-                                                    <span class="service-pill"><%= service.location %></span>
-                                                <% } %>
+                                                $<%= service.cost %> | <%= service.duration %> minutes <% if
+                                                            (service.location) { %> | <%= service.location %>
+                                                                <% } %>
                                             </div>
                                         </div>
                                     </div>
