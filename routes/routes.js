@@ -30,7 +30,7 @@ function checkAuth(req, res, next) {
 async function checkEmailVerified(req, res, next) {
   const user = auth.currentUser;
   if (!user) {
-    return res.redirect('/login');
+    return res.redirect('/');
   }
   
   // If Firebase Auth says the email is verified, update Firestore if needed
